@@ -1,7 +1,8 @@
 module.exports = function() {
 	
 	var renderer, scene, camera, controls, floor;
-	var stats = new Stats();
+	var raycaster = new THREE.Raycaster();
+	var mouse = new THREE.Vector2();
 	var wireframeMaterial = new THREE.MeshBasicMaterial({ wireframe: true, color: new THREE.Color('black'), opacity: .5, transparent: true });
 	var shadeMaterial = new THREE.MeshPhongMaterial({
 		color: 0xFFFFFF,
@@ -13,6 +14,7 @@ module.exports = function() {
 	var black = new THREE.Color('black');
 	var timeCursor, timeCursorEndpoint;
 	var playing = false;
+	var rhythmTracks = [];
 	
 	return {
 		
@@ -22,14 +24,11 @@ module.exports = function() {
 				y: 30,
 				z: 0
 			},
-			beatsPerWheel: 16,
-			activateLightHelpers: false,
+			beatsPerWheel: 8,
 			axesHelper: {
 				activateAxesHelper: false,
 				axisLength: 10
 			},
-			activateColorPickers: false,
-			activateStatsFPS: false,
 			font: {
 				enable: true,
 				fontStyle: {
@@ -53,7 +52,6 @@ module.exports = function() {
 
 			let self = this;
 			self.loadFont();
-			self.setUpButtons();
 		},
 		
 		begin: function() {
@@ -66,27 +64,17 @@ module.exports = function() {
 			floor = gfx.addFloor(this.settings.floorSize, scene, this.settings.colors.worldColor, this.settings.colors.gridColor);
 			controls = gfx.enableControls(controls, renderer, camera);
 			gfx.resizeRendererOnWindowResize(renderer, camera);
+			self.setUpButtons();
 			gfx.setUpLights(scene);
 			gfx.setCameraLocation(camera, self.settings.defaultCameraLocation);
 			self.addGeometries();
 			self.setUpRhythm();
-			
-			if (self.settings.activateStatsFPS) {
-				self.enableStats();
-			}
 			
 			var animate = function() {
 
 				requestAnimationFrame(animate);
 				renderer.render(scene, camera);
 				controls.update();
-				stats.update();
-				
-				if (playing) {
-					// scene.remove(timeCursor);
-					// gfx.rotateGeometryAboutLine(timeCursor.geometry, new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 1, 0), -.02);
-					// timeCursor = gfx.drawLine(timeCursor.geometry.vertices[0], timeCursor.geometry.vertices[1], scene, 0xff0000);
-				}
 			};
 			
 			animate();
@@ -174,19 +162,29 @@ module.exports = function() {
 			for (let i = 1; i <= instrumentTracks; i++) {
 				
 				let ring = new THREE.CircleGeometry(circleRadius * i, this.settings.beatsPerWheel);
-				let mesh = new THREE.Mesh(ring, wireframeMaterial);
+				var shadeMaterial = new THREE.MeshPhongMaterial({
+					color: distinctColors[i],
+					side: THREE.DoubleSide,
+					opacity: .25,
+					transparent: true
+				});
+				let mesh = new THREE.Mesh(ring, shadeMaterial);
+				let wireframe = new THREE.Mesh(ring, wireframeMaterial);
 				ring.rotateX(Math.PI/2);
 				scene.add(mesh);
-				mesh.position.y += this.settings.zBufferOffset * i;
+				scene.add(wireframe);
+				mesh.position.y += this.settings.zBufferOffset * (i * 2);
+				wireframe.position.y += this.settings.zBufferOffset * (i * 2 + 1);
+				rhythmTracks.push(mesh);
 				
 				ring = self.reorderCircleVertices(ring);
 				maxRadius = circleRadius * i;
 			}
 			
-			let buffer = (instrumentTracks + 1) * this.settings.zBufferOffset;
+			let buffer = (instrumentTracks * 2 + 5) * this.settings.zBufferOffset;
 			let timeCursorGeometry = gfx.createLine(new THREE.Vector3(0, buffer, 0), new THREE.Vector3(0, buffer, -maxRadius));
 			let material = new THREE.LineBasicMaterial( { color: 0x0000ff } );
-			timeCursor = new THREE.Line( timeCursorGeometry, material );
+			timeCursor = new THREE.Line(timeCursorGeometry, material );
 			scene.add(timeCursor);
 		},
 		
@@ -270,6 +268,41 @@ module.exports = function() {
 					// do stuff when pressing key
 				}
 			});
+			
+			let onMouseMove = function(event) {
+
+				mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+				mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+			};
+			window.addEventListener('mousemove', onMouseMove, false);
+			
+			document.querySelector('canvas').addEventListener('click', function(event) {
+				
+				self.intersects(event);
+			});
+		},
+		
+		intersects: function(event) {
+			
+			raycaster.setFromCamera(mouse, camera);
+			
+			// let objects = [];
+			// rhythmTracks.forEach(function(track) {
+			// 	objects.push(track);
+			// });
+			var intersects = raycaster.intersectObjects( scene.children );
+			
+			if (intersects.length > 0) { // if point clicked intersects with floor
+				
+				let clickedPoint = intersects[0].point;
+				
+				intersects[0].object.material.color.set(0xff0000);
+				
+				// intersects[0].face.vertexColors = THREE.FaceColors;
+				// intersects[0].face.color.setRGB(255, 0, 0);
+				// intersects[0].object.geometry.colorsNeedUpdate = true;
+				console.log(intersects[0].object);
+			}
 		},
 		
 		resizeRendererOnWindowResize: function() {
