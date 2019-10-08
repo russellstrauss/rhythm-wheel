@@ -19,6 +19,7 @@ module.exports = function () {
   var distinctColors = [new THREE.Color('#e6194b'), new THREE.Color('#3cb44b'), new THREE.Color('#ffe119'), new THREE.Color('#4363d8'), new THREE.Color('#f58231'), new THREE.Color('#911eb4'), new THREE.Color('#46f0f0'), new THREE.Color('#f032e6'), new THREE.Color('#bcf60c'), new THREE.Color('#fabebe'), new THREE.Color('#008080'), new THREE.Color('#e6beff'), new THREE.Color('#9a6324'), new THREE.Color('#fffac8'), new THREE.Color('#800000'), new THREE.Color('#aaffc3'), new THREE.Color('#808000'), new THREE.Color('#ffd8b1'), new THREE.Color('#000075'), new THREE.Color('#808080'), new THREE.Color('#ffffff'), new THREE.Color('#000000')];
   var black = new THREE.Color('black');
   var timeCursor, timeCursorEndpoint;
+  var playing = false;
   return {
     settings: {
       defaultCameraLocation: {
@@ -26,6 +27,7 @@ module.exports = function () {
         y: 30,
         z: 0
       },
+      beatsPerWheel: 16,
       activateLightHelpers: false,
       axesHelper: {
         activateAxesHelper: false,
@@ -62,12 +64,12 @@ module.exports = function () {
       renderer = gfx.setUpRenderer(renderer);
       camera = gfx.setUpCamera(camera);
       floor = gfx.addFloor(this.settings.floorSize, scene, this.settings.colors.worldColor, this.settings.colors.gridColor);
-      gfx.enableStats(stats);
       controls = gfx.enableControls(controls, renderer, camera);
       gfx.resizeRendererOnWindowResize(renderer, camera);
       gfx.setUpLights(scene);
       gfx.setCameraLocation(camera, self.settings.defaultCameraLocation);
       self.addGeometries();
+      self.setUpRhythm();
 
       if (self.settings.activateStatsFPS) {
         self.enableStats();
@@ -78,12 +80,71 @@ module.exports = function () {
         renderer.render(scene, camera);
         controls.update();
         stats.update();
-        scene.remove(timeCursor);
-        gfx.rotateGeometryAboutLine(timeCursor.geometry, new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 1, 0), -.02);
-        timeCursor = gfx.drawLine(timeCursor.geometry.vertices[0], timeCursor.geometry.vertices[1], scene, 0xff0000);
+
+        if (playing) {// scene.remove(timeCursor);
+          // gfx.rotateGeometryAboutLine(timeCursor.geometry, new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 1, 0), -.02);
+          // timeCursor = gfx.drawLine(timeCursor.geometry.vertices[0], timeCursor.geometry.vertices[1], scene, 0xff0000);
+        }
       };
 
       animate();
+    },
+    setUpRhythm: function setUpRhythm() {
+      var self = this;
+      var loop = new Tone.Loop(function (time) {
+        //triggered every eighth note. 
+        //console.log(time);
+        scene.remove(timeCursor);
+        gfx.rotateGeometryAboutLine(timeCursor.geometry, new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 1, 0), -2 * Math.PI / self.settings.beatsPerWheel);
+        timeCursor = gfx.drawLine(timeCursor.geometry.vertices[0], timeCursor.geometry.vertices[1], scene, 0xff0000);
+      }, this.settings.beatsPerWheel.toString() + "n").start(0); // Tone.Transport.start();
+      //set the bpm and time signature first
+
+      Tone.Transport.timeSignature = [6, 4];
+      Tone.Transport.bpm.value = 60;
+      var merge = new Tone.Merge(); // L/R channel merging
+
+      var reverb = new Tone.Freeverb({
+        "roomSize": 0.2,
+        "wet": 0.3
+      });
+      merge.chain(reverb, Tone.Master); //the synth settings
+
+      var synthSettings = {
+        "oscillator": {
+          "detune": 0,
+          "type": "custom",
+          "partials": [2, 1, 2, 2],
+          "phase": 0,
+          "volume": 0
+        },
+        "envelope": {
+          "attack": 0.005,
+          "decay": 0.3,
+          "sustain": 0.2,
+          "release": 1
+        },
+        "portamento": 0.01,
+        "volume": -20
+      }; //left and right synthesizers
+
+      var synthL = new Tone.Synth(synthSettings).connect(merge.left);
+      var synthR = new Tone.Synth(synthSettings).connect(merge.right); //the two Tone.Sequences
+
+      var partL = new Tone.Sequence(function (time, note) {
+        synthL.triggerAttackRelease(note, "8n", time);
+      }, ["E4", "F#4", "B4", "C#5", "D5", "F#4", "E4", "C#5", "B4", "F#4", "D5", "C#5"], "8n").start();
+      var partR = new Tone.Sequence(function (time, note) {
+        synthR.triggerAttackRelease(note, "8n", time);
+      }, ["E4", "F#4", "B4", "C#5", "D5", "F#4", "E4", "C#5", "B4", "F#4", "D5", "C#5"], "8n").start("2m"); //set the playback rate of the right part to be slightly slower
+      //partR.playbackRate = 0.985;
+
+      document.querySelector('tone-play-toggle').bind(Tone.Transport);
+      document.querySelector('tone-play-toggle').addEventListener('click', function () {
+        var playButton = this.shadowRoot.querySelector('button');
+        if (playButton.hasAttribute('playing')) playing = true;else playing = false;
+      }); // document.querySelector("#left").bind(partL);
+      // document.querySelector("#right").bind(partR);
     },
     addGeometries: function addGeometries() {
       var self = this;
@@ -92,7 +153,7 @@ module.exports = function () {
       var maxRadius = 0;
 
       for (var i = 1; i <= instrumentTracks; i++) {
-        var ring = new THREE.CircleGeometry(circleRadius * i, 8);
+        var ring = new THREE.CircleGeometry(circleRadius * i, this.settings.beatsPerWheel);
         var mesh = new THREE.Mesh(ring, wireframeMaterial);
         ring.rotateX(Math.PI / 2);
         scene.add(mesh);
@@ -152,9 +213,6 @@ module.exports = function () {
       controls.minDistance = 0;
       controls.maxDistance = 200;
       controls.maxPolarAngle = Math.PI / 2;
-    },
-    enableStats: function enableStats() {
-      document.body.appendChild(stats.dom);
     },
     loadFont: function loadFont() {
       var self = this;

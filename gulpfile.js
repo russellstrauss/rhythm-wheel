@@ -33,6 +33,13 @@ gulp.task('sync', ['sass'], function() {
 var vendors = {
 	merge: [
 		//'./assets/vendors/js/three.js'
+		
+		'./assets/vendors/js/three.js/build/three.js',
+		'./assets/vendors/js/three.js/examples/js/controls/OrbitControls.js',
+		'./assets/vendors/js/three.js/examples/js/libs/stats.min.js',
+		'./assets/vendors/js/three.js/examples/js/libs/dat.gui.min.js',
+		'./assets/vendors/js/Tone.js',
+		'./assets/vendors/js/tonejs-ui.js'
 	]
 };
 
