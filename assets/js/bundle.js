@@ -11,13 +11,7 @@ module.exports = function () {
     opacity: .5,
     transparent: true
   });
-  var shadeMaterial = new THREE.MeshPhongMaterial({
-    color: 0xFFFFFF,
-    side: THREE.DoubleSide,
-    opacity: .25,
-    transparent: true
-  });
-  var distinctColors = [new THREE.Color('#e6194b'), new THREE.Color('#3cb44b'), new THREE.Color('#ffe119'), new THREE.Color('#4363d8'), new THREE.Color('#f58231'), new THREE.Color('#911eb4'), new THREE.Color('#46f0f0'), new THREE.Color('#f032e6'), new THREE.Color('#bcf60c'), new THREE.Color('#fabebe'), new THREE.Color('#008080'), new THREE.Color('#e6beff'), new THREE.Color('#9a6324'), new THREE.Color('#fffac8'), new THREE.Color('#800000'), new THREE.Color('#aaffc3'), new THREE.Color('#808000'), new THREE.Color('#ffd8b1'), new THREE.Color('#000075'), new THREE.Color('#808080'), new THREE.Color('#ffffff'), new THREE.Color('#000000')];
+  var distinctColors = [new THREE.Color('#18995B'), new THREE.Color('#2F72CA'), new THREE.Color('#A82F2F'), new THREE.Color('#F2B233'), new THREE.Color('#f58231'), new THREE.Color('#911eb4'), new THREE.Color('#46f0f0'), new THREE.Color('#f032e6'), new THREE.Color('#bcf60c'), new THREE.Color('#fabebe'), new THREE.Color('#008080'), new THREE.Color('#e6beff'), new THREE.Color('#9a6324'), new THREE.Color('#fffac8'), new THREE.Color('#800000'), new THREE.Color('#aaffc3'), new THREE.Color('#808000'), new THREE.Color('#ffd8b1'), new THREE.Color('#000075'), new THREE.Color('#808080'), new THREE.Color('#ffffff'), new THREE.Color('#000000')];
   var black = new THREE.Color('black');
   var timeCursor, timeCursorEndpoint;
   var playing = false;
@@ -140,18 +134,19 @@ module.exports = function () {
       var instrumentTracks = 4;
       var circleRadius = 4;
       var maxRadius = 0;
+      var colors = [new THREE.Color('red'), new THREE.Color('green'), new THREE.Color('blue'), new THREE.Color('purple'), new THREE.Color('orange')];
 
       for (var i = 1; i <= instrumentTracks; i++) {
         var ring = new THREE.CircleGeometry(circleRadius * i, this.settings.beatsPerWheel);
         var shadeMaterial = new THREE.MeshPhongMaterial({
-          color: distinctColors[i],
-          side: THREE.DoubleSide,
-          opacity: .25,
-          transparent: true
+          //color: colors[i%colors.length],
+          color: new THREE.Color('purple'),
+          transparent: true,
+          opacity: .25
         });
         var mesh = new THREE.Mesh(ring, shadeMaterial);
         var wireframe = new THREE.Mesh(ring, wireframeMaterial);
-        ring.rotateX(Math.PI / 2);
+        ring.rotateX(-Math.PI / 2);
         scene.add(mesh);
         scene.add(wireframe);
         mesh.position.y += this.settings.zBufferOffset * (i * 2);
@@ -261,11 +256,12 @@ module.exports = function () {
       if (intersects.length > 0) {
         // if point clicked intersects with floor
         var clickedPoint = intersects[0].point;
-        intersects[0].object.material.color.set(0xff0000); // intersects[0].face.vertexColors = THREE.FaceColors;
+        var clickedObject = intersects[intersects.length - 1].object;
+        clickedObject.material.color.set(0xff0000); // intersects[0].face.vertexColors = THREE.FaceColors;
         // intersects[0].face.color.setRGB(255, 0, 0);
         // intersects[0].object.geometry.colorsNeedUpdate = true;
 
-        console.log(intersects[0].object);
+        console.log(clickedObject);
       }
     },
     resizeRendererOnWindowResize: function resizeRendererOnWindowResize() {
