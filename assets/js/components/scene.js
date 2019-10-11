@@ -155,40 +155,47 @@ module.exports = function() {
 			let maxRadius = 0;
 			let colors = [new THREE.Color('red'), new THREE.Color('green'), new THREE.Color('blue'), new THREE.Color('purple'), new THREE.Color('orange')];
 			
-			for (let i = 1; i <= instrumentTracks; i++) {
+			// for (let i = 1; i <= instrumentTracks; i++) {
 				
-				let ring = new THREE.CircleGeometry(circleRadius * i, this.settings.beatsPerWheel);
-				console.log(ring);
-				ring.rotateX(-Math.PI/2);
-				let faceColorMaterial = new THREE.MeshBasicMaterial({
-					color: new THREE.Color('purple'),
-					vertexColors: THREE.FaceColors//,
-					// transparent: true,
-					// opacity: .5
-				});
-				for (let j = 0; j < ring.faces.length; j++) {
-					ring.faces[j].color.setRGB( 0, 0, 0.8 * Math.random() + 0.2 );		
-				}
-				let mesh = new THREE.Mesh(ring.clone(), faceColorMaterial);
-				console.log(mesh);
-				mesh.name = 'Mesh-' + i.toString();
-				let wireframe = new THREE.Mesh(ring, wireframeMaterial);
+			// 	let ring = new THREE.CircleGeometry(circleRadius * i, this.settings.beatsPerWheel);
+			// 	console.log(ring);
+			// 	ring.rotateX(-Math.PI/2);
+			// 	let faceColorMaterial = new THREE.MeshBasicMaterial({
+			// 		color: new THREE.Color('purple'),
+			// 		vertexColors: THREE.FaceColors//,
+			// 		// transparent: true,
+			// 		// opacity: .5
+			// 	});
+			// 	for (let j = 0; j < ring.faces.length; j++) {
+			// 		ring.faces[j].color.setRGB( 0, 0, 0.8 * Math.random() + 0.2 );		
+			// 	}
+			// 	let mesh = new THREE.Mesh(ring.clone(), faceColorMaterial);
+			// 	console.log(mesh);
+			// 	mesh.name = 'Mesh-' + i.toString();
+			// 	let wireframe = new THREE.Mesh(ring, wireframeMaterial);
 				
-				mesh.position.y += this.settings.zBufferOffset * (i * 2);
-				scene.add(mesh);
-				scene.add(wireframe);
-				wireframe.position.y += this.settings.zBufferOffset * (i * 2 + 1);
-				targetList.push(mesh);
+			// 	mesh.position.y += this.settings.zBufferOffset * (i * 2);
+			// 	scene.add(mesh);
+			// 	scene.add(wireframe);
+			// 	wireframe.position.y += this.settings.zBufferOffset * (i * 2 + 1);
+			// 	targetList.push(mesh);
 				
 				
-				//ring = self.reorderCircleVertices(ring);
-				maxRadius = circleRadius * i;
-			}
+			// 	//ring = self.reorderCircleVertices(ring);
+			// 	maxRadius = circleRadius * i;
+			// }
 			
-			let buffer = (instrumentTracks * 2 + 5) * this.settings.zBufferOffset;
-			let timeCursorGeometry = gfx.createLine(new THREE.Vector3(0, buffer, 0), new THREE.Vector3(0, buffer, -maxRadius));
-			let material = new THREE.LineBasicMaterial( { color: 0x0000ff } );
-			timeCursor = new THREE.Line(timeCursorGeometry, material );
+			//let buffer = (instrumentTracks * 2 + 5) * this.settings.zBufferOffset;
+			
+			var geometry = new THREE.RingGeometry( 1, 5, this.settings.beatsPerWheel, 4 );
+			geometry.rotateX(-Math.PI/2);
+			var material = new THREE.MeshBasicMaterial( { color: 0xffff00, side: THREE.DoubleSide } );
+			var mesh = new THREE.Mesh( geometry, wireframeMaterial );
+			scene.add( mesh );
+			
+			let timeCursorGeometry = gfx.createLine(new THREE.Vector3(0, this.settings.zBufferOffset, 0), new THREE.Vector3(0, this.settings.zBufferOffset, -maxRadius));
+			let lineMaterial = new THREE.LineBasicMaterial( { color: 0x0000ff } );
+			timeCursor = new THREE.Line(timeCursorGeometry, lineMaterial);
 			scene.add(timeCursor);
 		},
 		
