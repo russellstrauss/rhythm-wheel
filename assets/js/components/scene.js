@@ -91,7 +91,7 @@ module.exports = function() {
 			
 			//set the bpm and time signature first
 			Tone.Transport.timeSignature = [6, 4];
-			Tone.Transport.bpm.value = 60;
+			Tone.Transport.bpm.value = 180;
 			var merge = new Tone.Merge(); // L/R channel merging
 			var reverb = new Tone.Freeverb({
 				"roomSize" : 0.2,

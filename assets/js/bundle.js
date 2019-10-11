@@ -2,6 +2,33 @@
 "use strict";
 
 module.exports = function () {
+  return {
+    settings: {},
+    init: function init() {
+      /*
+      * Drums
+      */
+      var drums505 = new Tone.Sampler({
+        D4: 'snare.[mp3|ogg]',
+        C3: 'kick.[mp3|ogg]',
+        G3: 'hh.[mp3|ogg]',
+        A3: 'hho.[mp3|ogg]'
+      }, {
+        volume: 11,
+        release: 1,
+        baseUrl: './assets/audio/505/'
+      }).toMaster();
+      document.querySelector('#play-btn').addEventListener('click', function () {
+        drums505.triggerAttackRelease('D4', '4n');
+      });
+    }
+  };
+};
+
+},{}],2:[function(require,module,exports){
+"use strict";
+
+module.exports = function () {
   var renderer, scene, camera, controls, floor;
   var raycaster = new THREE.Raycaster();
   var mouse = new THREE.Vector2();
@@ -84,7 +111,7 @@ module.exports = function () {
       //set the bpm and time signature first
 
       Tone.Transport.timeSignature = [6, 4];
-      Tone.Transport.bpm.value = 60;
+      Tone.Transport.bpm.value = 180;
       var merge = new Tone.Merge(); // L/R channel merging
 
       var reverb = new Tone.Freeverb({
@@ -120,8 +147,8 @@ module.exports = function () {
       var partR = new Tone.Sequence(function (time, note) {
         synthR.triggerAttackRelease(note, "8n", time);
       }, ["E4", "F#4", "B4", "C#5", "D5", "F#4", "E4", "C#5", "B4", "F#4", "D5", "C#5"], "8n").start("2m"); //set the playback rate of the right part to be slightly slower
-      //partR.playbackRate = 0.985;
 
+      partR.playbackRate = 0.985;
       document.querySelector('tone-play-toggle').bind(Tone.Transport);
       document.querySelector('tone-play-toggle').addEventListener('click', function () {
         var playButton = this.shadowRoot.querySelector('button');
@@ -277,7 +304,7 @@ module.exports = function () {
   };
 };
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 "use strict";
 
 (function () {
@@ -698,10 +725,12 @@ module.exports = function () {
   module.exports = window.gfx;
 })();
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 "use strict";
 
 var Scene = require('./components/scene.js');
+
+var Beats = require('./components/beats.js');
 
 var Utilities = require('./utils.js');
 
@@ -710,10 +739,11 @@ var Graphics = require('./graphics.js');
 (function () {
   document.addEventListener('DOMContentLoaded', function () {
     Scene().init();
+    Beats().init();
   });
 })();
 
-},{"./components/scene.js":1,"./graphics.js":2,"./utils.js":4}],4:[function(require,module,exports){
+},{"./components/beats.js":1,"./components/scene.js":2,"./graphics.js":3,"./utils.js":5}],5:[function(require,module,exports){
 "use strict";
 
 (function () {
@@ -816,4 +846,4 @@ var Graphics = require('./graphics.js');
   module.exports = window.utils;
 })();
 
-},{}]},{},[3]);
+},{}]},{},[4]);

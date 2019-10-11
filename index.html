@@ -42,6 +42,26 @@
 		</div>
 	</div>
 	
+	<div class="boxes">
+		<div class="bassbox box">Bass</div>
+		<div class="kickbox box">Kick</div>
+		<div class="snarebox box">Snare</div>
+		<div class="pizzbox box">Pizz</div>
+		<div class="highhatbox box">HH</div>
+	</div>
+	<form id="music-controls" class="music-controls" style="position: fixed; width: 500px; height: 200px; top: 50%; background: white; border: 1px solid black; left: 50%;">
+		<label>BPM
+			<input id="bpm-range" type="range" min="20" max="80" value="50">
+		</label>
+		<label>Swing
+			<input id="swing-range" type="range" min="0" max="1" value="0">
+		</label>
+		<label>Filter
+			<input id="filter-range" type="range" min="0" max="2200" value="800" step="1">
+		</label>
+		<input id="play-btn" type="button" value="play">
+	</form>
+	
 	<div id="author">
 		<div class="column description">
 			Code Authors:<br>
@@ -55,6 +75,7 @@
 			<div id="portrait">
 				<img src="assets/img/portrait.jpg" alt="">
 			</div>
+			<button id="play-btn">play</button>
 		</div>
 	</div>
 	
