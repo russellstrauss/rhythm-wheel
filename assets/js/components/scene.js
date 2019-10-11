@@ -8,7 +8,7 @@ module.exports = function() {
 	var black = new THREE.Color('black');
 	var timeCursor, timeCursorEndpoint;
 	var playing = false;
-	var rhythmTracks = [];
+	var targetList = [];
 	
 	return {
 		
@@ -153,26 +153,35 @@ module.exports = function() {
 			let instrumentTracks = 4;
 			let circleRadius = 4;
 			let maxRadius = 0;
-			let colors = [new THREE.Color('red'), new THREE.Color('green'), new THREE.Color('blue'), new THREE.Color('purple'), new THREE.Color('orange')]
+			let colors = [new THREE.Color('red'), new THREE.Color('green'), new THREE.Color('blue'), new THREE.Color('purple'), new THREE.Color('orange')];
+			
 			for (let i = 1; i <= instrumentTracks; i++) {
 				
 				let ring = new THREE.CircleGeometry(circleRadius * i, this.settings.beatsPerWheel);
-				var shadeMaterial = new THREE.MeshPhongMaterial({
-					//color: colors[i%colors.length],
-					color: new THREE.Color('purple'),
-					transparent: true,
-					opacity: .25
-				});
-				let mesh = new THREE.Mesh(ring, shadeMaterial);
-				let wireframe = new THREE.Mesh(ring, wireframeMaterial);
+				console.log(ring);
 				ring.rotateX(-Math.PI/2);
+				let faceColorMaterial = new THREE.MeshBasicMaterial({
+					color: new THREE.Color('purple'),
+					vertexColors: THREE.FaceColors//,
+					// transparent: true,
+					// opacity: .5
+				});
+				for (let j = 0; j < ring.faces.length; j++) {
+					ring.faces[j].color.setRGB( 0, 0, 0.8 * Math.random() + 0.2 );		
+				}
+				let mesh = new THREE.Mesh(ring.clone(), faceColorMaterial);
+				console.log(mesh);
+				mesh.name = 'Mesh-' + i.toString();
+				let wireframe = new THREE.Mesh(ring, wireframeMaterial);
+				
+				mesh.position.y += this.settings.zBufferOffset * (i * 2);
 				scene.add(mesh);
 				scene.add(wireframe);
-				mesh.position.y += this.settings.zBufferOffset * (i * 2);
 				wireframe.position.y += this.settings.zBufferOffset * (i * 2 + 1);
-				rhythmTracks.push(mesh);
+				targetList.push(mesh);
 				
-				ring = self.reorderCircleVertices(ring);
+				
+				//ring = self.reorderCircleVertices(ring);
 				maxRadius = circleRadius * i;
 			}
 			
@@ -265,10 +274,10 @@ module.exports = function() {
 			});
 			
 			let onMouseMove = function(event) {
-
-				mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-				mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+				mouse.x = ( (event.clientX - renderer.domElement.offsetLeft) / renderer.domElement.width ) * 2 - 1;
+				mouse.y = -( (event.clientY - renderer.domElement.offsetTop) / renderer.domElement.height ) * 2 + 1;
 			};
+			
 			window.addEventListener('mousemove', onMouseMove, false);
 			
 			document.querySelector('canvas').addEventListener('click', function(event) {
@@ -280,24 +289,14 @@ module.exports = function() {
 		intersects: function(event) {
 			
 			raycaster.setFromCamera(mouse, camera);
+			var intersects = raycaster.intersectObjects( targetList );
 			
-			// let objects = [];
-			// rhythmTracks.forEach(function(track) {
-			// 	objects.push(track);
-			// });
-			var intersects = raycaster.intersectObjects( scene.children );
-			
-			if (intersects.length > 0) { // if point clicked intersects with floor
+			if (intersects.length > 0) {
 				
-				let clickedPoint = intersects[0].point;
-				let clickedObject = intersects[intersects.length - 1].object;
-				
-				clickedObject.material.color.set(0xff0000);
-				
-				// intersects[0].face.vertexColors = THREE.FaceColors;
-				// intersects[0].face.color.setRGB(255, 0, 0);
-				// intersects[0].object.geometry.colorsNeedUpdate = true;
-				console.log(clickedObject);
+				console.log(intersects[ 0 ]);
+				//console.log(intersects[ 0 ].object.geometry.uuid);
+				intersects[ 0 ].face.color.setRGB( 0.8 * Math.random() + 0.2, 0, 0 ); 
+				intersects[ 0 ].object.geometry.colorsNeedUpdate = true;
 			}
 		},
 		

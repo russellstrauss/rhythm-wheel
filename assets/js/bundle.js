@@ -15,7 +15,7 @@ module.exports = function () {
   var black = new THREE.Color('black');
   var timeCursor, timeCursorEndpoint;
   var playing = false;
-  var rhythmTracks = [];
+  var targetList = [];
   return {
     settings: {
       defaultCameraLocation: {
@@ -138,21 +138,30 @@ module.exports = function () {
 
       for (var i = 1; i <= instrumentTracks; i++) {
         var ring = new THREE.CircleGeometry(circleRadius * i, this.settings.beatsPerWheel);
-        var shadeMaterial = new THREE.MeshPhongMaterial({
-          //color: colors[i%colors.length],
-          color: new THREE.Color('purple'),
-          transparent: true,
-          opacity: .25
-        });
-        var mesh = new THREE.Mesh(ring, shadeMaterial);
-        var wireframe = new THREE.Mesh(ring, wireframeMaterial);
+        console.log(ring);
         ring.rotateX(-Math.PI / 2);
+        var faceColorMaterial = new THREE.MeshBasicMaterial({
+          color: new THREE.Color('purple'),
+          vertexColors: THREE.FaceColors //,
+          // transparent: true,
+          // opacity: .5
+
+        });
+
+        for (var j = 0; j < ring.faces.length; j++) {
+          ring.faces[j].color.setRGB(0, 0, 0.8 * Math.random() + 0.2);
+        }
+
+        var mesh = new THREE.Mesh(ring.clone(), faceColorMaterial);
+        console.log(mesh);
+        mesh.name = 'Mesh-' + i.toString();
+        var wireframe = new THREE.Mesh(ring, wireframeMaterial);
+        mesh.position.y += this.settings.zBufferOffset * (i * 2);
         scene.add(mesh);
         scene.add(wireframe);
-        mesh.position.y += this.settings.zBufferOffset * (i * 2);
         wireframe.position.y += this.settings.zBufferOffset * (i * 2 + 1);
-        rhythmTracks.push(mesh);
-        ring = self.reorderCircleVertices(ring);
+        targetList.push(mesh); //ring = self.reorderCircleVertices(ring);
+
         maxRadius = circleRadius * i;
       }
 
@@ -236,8 +245,8 @@ module.exports = function () {
       });
 
       var onMouseMove = function onMouseMove(event) {
-        mouse.x = event.clientX / window.innerWidth * 2 - 1;
-        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        mouse.x = (event.clientX - renderer.domElement.offsetLeft) / renderer.domElement.width * 2 - 1;
+        mouse.y = -((event.clientY - renderer.domElement.offsetTop) / renderer.domElement.height) * 2 + 1;
       };
 
       window.addEventListener('mousemove', onMouseMove, false);
@@ -246,22 +255,14 @@ module.exports = function () {
       });
     },
     intersects: function intersects(event) {
-      raycaster.setFromCamera(mouse, camera); // let objects = [];
-      // rhythmTracks.forEach(function(track) {
-      // 	objects.push(track);
-      // });
-
-      var intersects = raycaster.intersectObjects(scene.children);
+      raycaster.setFromCamera(mouse, camera);
+      var intersects = raycaster.intersectObjects(targetList);
 
       if (intersects.length > 0) {
-        // if point clicked intersects with floor
-        var clickedPoint = intersects[0].point;
-        var clickedObject = intersects[intersects.length - 1].object;
-        clickedObject.material.color.set(0xff0000); // intersects[0].face.vertexColors = THREE.FaceColors;
-        // intersects[0].face.color.setRGB(255, 0, 0);
-        // intersects[0].object.geometry.colorsNeedUpdate = true;
+        console.log(intersects[0]); //console.log(intersects[ 0 ].object.geometry.uuid);
 
-        console.log(clickedObject);
+        intersects[0].face.color.setRGB(0.8 * Math.random() + 0.2, 0, 0);
+        intersects[0].object.geometry.colorsNeedUpdate = true;
       }
     },
     resizeRendererOnWindowResize: function resizeRendererOnWindowResize() {
