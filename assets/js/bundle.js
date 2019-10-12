@@ -45,6 +45,8 @@ module.exports = function () {
   var targetList = [];
   var rhythmWheelMesh;
   var tracks = [];
+  var rhythmCount = 0;
+  var scope;
   var drums505 = new Tone.Sampler({
     D4: 'snare.[mp3|ogg]',
     C3: 'kick.[mp3|ogg]',
@@ -54,6 +56,15 @@ module.exports = function () {
     volume: 11,
     release: 1,
     baseUrl: './assets/audio/505/'
+  }).toMaster();
+  var keys = new Tone.Players({
+    "D4": "./assets/audio/casio/A1.[mp3|ogg]",
+    "C#": "./assets/audio/casio/Cs2.[mp3|ogg]",
+    "E": "./assets/audio/casio/E2.[mp3|ogg]",
+    "F#": "./assets/audio/casio/Fs2.[mp3|ogg]"
+  }, {
+    volume: 5,
+    fadeOut: "64n"
   }).toMaster();
   return {
     settings: {
@@ -130,17 +141,25 @@ module.exports = function () {
         }
       }
 
-      var loop = new Tone.Loop(function (time) {
-        //triggered every eighth note. 
-        console.log(time);
-        scene.remove(timeCursor);
-        gfx.rotateGeometryAboutLine(timeCursor.geometry, new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 1, 0), -2 * Math.PI / self.settings.rhythmWheel.beats);
-        timeCursor = gfx.drawLine(timeCursor.geometry.vertices[0], timeCursor.geometry.vertices[1], scene, 0xff0000); //drums505.triggerAttackRelease('D4');
-      }, this.settings.rhythmWheel.beats.toString() + "n").start(0); // Tone.Transport.start();
-      //set the bpm and time signature first
+      scope = self;
+      Tone.Transport.scheduleRepeat(triggerBeats, this.settings.rhythmWheel.beats.toString() + 'n');
 
-      Tone.Transport.timeSignature = [6, 4];
-      Tone.Transport.bpm.value = 180;
+      function triggerBeats(time) {
+        scene.remove(timeCursor);
+        gfx.rotateGeometryAboutLine(timeCursor.geometry, new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 1, 0), -2 * Math.PI / scope.settings.rhythmWheel.beats);
+        timeCursor = gfx.drawLine(timeCursor.geometry.vertices[0], timeCursor.geometry.vertices[1], scene, 0xff0000);
+        var beat = rhythmCount % scope.settings.rhythmWheel.beats;
+
+        for (var _i = 0; _i < scope.settings.rhythmWheel.tracks; _i++) {
+          if (tracks[_i][beat] !== null) drums505.triggerAttackRelease(tracks[_i][beat], scope.settings.rhythmWheel.beats.toString() + 'n', time);
+        }
+
+        rhythmCount++;
+      } //set the bpm and time signature first
+      //Tone.Transport.timeSignature = [6, 4];
+
+
+      Tone.Transport.bpm.value = 120;
       var merge = new Tone.Merge(); // L/R channel merging
 
       var reverb = new Tone.Freeverb({
@@ -166,19 +185,19 @@ module.exports = function () {
         "portamento": 0.01,
         "volume": -20
       }; //left and right synthesizers
-
-      var synthL = new Tone.Synth(synthSettings).connect(merge.left);
-      var synthR = new Tone.Synth(synthSettings).connect(merge.right); //the two Tone.Sequences
-
-      var partL = new Tone.Sequence(function (time, note) {
-        synthL.triggerAttackRelease(note, "8n", time);
-      }, ["E4", "F#4", "B4", "C#5", "D5", "F#4", "E4", "C#5", "B4", "F#4", "D5", "C#5"], "8n").start();
-      var partR = new Tone.Sequence(function (time, note) {
-        synthR.triggerAttackRelease(note, "8n", time);
-      }, ["E4", "F#4", "B4", "C#5", "D5", "F#4", "E4", "C#5", "B4", "F#4", "D5", "C#5"], "8n").start("2m");
-      var snareTrack = new Tone.Sequence(function (time, note) {
-        drums505.triggerAttackRelease(note, self.settings.rhythmWheel.beats.toString() + 'n', time);
-      }, ['D4', null, null, null, 'D4', null, null, null], self.settings.rhythmWheel.beats.toString() + 'n').start(); //set the playback rate of the right part to be slightly slower
+      // var synthL = new Tone.Synth(synthSettings).connect(merge.left);
+      // var synthR = new Tone.Synth(synthSettings).connect(merge.right);
+      // //the two Tone.Sequences
+      // var partL = new Tone.Sequence(function(time, note){
+      // 	synthL.triggerAttackRelease(note, "8n", time);
+      // }, ["E4", "F#4", "B4", "C#5", "D5", "F#4", "E4", "C#5", "B4", "F#4", "D5", "C#5"], "8n").start();
+      // var partR = new Tone.Sequence(function(time, note){
+      // 	synthR.triggerAttackRelease(note, "8n", time);
+      // }, ["E4", "F#4", "B4", "C#5", "D5", "F#4", "E4", "C#5", "B4", "F#4", "D5", "C#5"], "8n").start("2m");
+      // var snareTrack = new Tone.Sequence(function(time, note){
+      // 	drums505.triggerAttackRelease(note, self.settings.rhythmWheel.beats.toString() + 'n', time);
+      // }, ['D4', null, null, null, 'D4', null, null, null], self.settings.rhythmWheel.beats.toString() + 'n').start();
+      //set the playback rate of the right part to be slightly slower
       //partR.playbackRate = 0.985;
 
       document.querySelector('tone-play-toggle').bind(Tone.Transport);
