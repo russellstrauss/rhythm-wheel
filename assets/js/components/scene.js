@@ -130,7 +130,6 @@ module.exports = function() {
 				}
 			}
 	
-			
 			scope = self;
 			Tone.Transport.scheduleRepeat(triggerBeats, this.settings.rhythmWheel.beats.toString() + 'n');
 			
@@ -153,12 +152,6 @@ module.exports = function() {
 				}
 				rhythmCount++;
 			}
-			
-			let playButton = document.querySelector('.play-controls .play');
-			playButton.addEventListener('click', function() {
-				Tone.Transport.start();
-				//Tone.Transport.stop();
-			});
 		},
 		
 		addGeometries: function() {

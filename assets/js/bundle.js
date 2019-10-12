@@ -139,11 +139,6 @@ module.exports = function () {
 
         rhythmCount++;
       }
-
-      var playButton = document.querySelector('.play-controls .play');
-      playButton.addEventListener('click', function () {
-        Tone.Transport.start(); //Tone.Transport.stop();
-      });
     },
     addGeometries: function addGeometries() {
       var self = this;
@@ -294,9 +289,10 @@ module.exports = function () {
           Tone.Transport.bpm.value -= 10;
         });
       });
-      var bpmInput = document.querySelector('#bpm');
-      if (bpmInput) bpmInput.addEventListener('change', function () {
-        console.log('input update');
+      var playToggle = document.querySelector('.play-toggle');
+      playToggle.addEventListener('click', function () {
+        playToggle.classList.toggle('active');
+        Tone.Transport.toggle();
       });
     }
   };

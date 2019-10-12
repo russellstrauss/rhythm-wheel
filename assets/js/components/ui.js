@@ -32,10 +32,11 @@ module.exports = function() {
 				});
 			});
 			
-			let bpmInput = document.querySelector('#bpm');
-			if (bpmInput) bpmInput.addEventListener('change', function() {
-				console.log('input update');
-			})
+			let playToggle = document.querySelector('.play-toggle');
+			playToggle.addEventListener('click', function() {
+				playToggle.classList.toggle('active');
+				Tone.Transport.toggle();
+			});
 		}
 	}
 }

@@ -95,15 +95,38 @@ $legendWidth: 150px;
 
 .play-controls {
 	position: absolute;
-	left: $legendWidth + 40px;
+	//left: $legendWidth + 40px;
+	left: 20px;
 	bottom: 20px;
 	display: flex;
 	
-	.play {
-		width: 50px;
-		height: 50px;
-		cursor: pointer;
-		margin-right: 50px;
+	.play-toggle {
+		
+		&.active {
+			
+			.play {
+				display: none;
+			}
+			
+			.pause {
+				display: block;
+			}
+		}
+		
+		.play {
+			display: block;
+		}
+		
+		.pause {
+			display: none;
+		}
+		
+		.play, .pause {
+			width: 50px;
+			height: 50px;
+			cursor: pointer;
+			margin-right: 50px;
+		}
 	}
 }
 
