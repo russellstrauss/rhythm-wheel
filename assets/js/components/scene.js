@@ -9,7 +9,8 @@ module.exports = function() {
 	var timeCursor, timeCursorEndpoint;
 	var playing = false;
 	var targetList = [];
-	var ringMesh;
+	var rhythmWheelMesh;
+	var tracks = [];
 	
 	var drums505 = new Tone.Sampler({
 		D4: 'snare.[mp3|ogg]',
@@ -30,8 +31,6 @@ module.exports = function() {
 				y: 10,
 				z: 0
 			},
-			beatsPerWheel: 8,
-			tracksPerWheel: 4,
 			axesHelper: {
 				activateAxesHelper: false,
 				axisLength: 10
@@ -52,7 +51,13 @@ module.exports = function() {
 				gridColor: black,
 				arrowColor: black
 			},
-			floorSize: 100
+			floorSize: 100,
+			rhythmWheel: {
+				innerRadius: 1,
+				outerRadius: 5,
+				beats: 8,
+				tracks: 4
+			}
 		},
 		
 		init: function() {
@@ -84,7 +89,7 @@ module.exports = function() {
 				renderer.render(scene, camera);
 				if (controls) controls.update();
 				
-				ringMesh.geometry.colorsNeedUpdate = true;
+				rhythmWheelMesh.geometry.colorsNeedUpdate = true;
 			};
 			
 			animate();
@@ -93,15 +98,25 @@ module.exports = function() {
 		setUpRhythm: function() {
 			
 			let self = this;
+			
+			for (let i = 0; i < self.settings.rhythmWheel.tracks; i++) { // init empty beats
+				tracks.push([]);
+				for (let j = 0; j < self.settings.rhythmWheel.beats; j++) {
+					tracks[i].push(null);
+				}
+			}
+			
 			var loop = new Tone.Loop(function(time){
 				//triggered every eighth note. 
-				//console.log(time);
+				console.log(time);
 				
 				scene.remove(timeCursor);
-				gfx.rotateGeometryAboutLine(timeCursor.geometry, new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 1, 0), -2*Math.PI/self.settings.beatsPerWheel);
+				gfx.rotateGeometryAboutLine(timeCursor.geometry, new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 1, 0), -2*Math.PI/self.settings.rhythmWheel.beats);
 				timeCursor = gfx.drawLine(timeCursor.geometry.vertices[0], timeCursor.geometry.vertices[1], scene, 0xff0000);
 				
-			}, this.settings.beatsPerWheel.toString() + "n").start(0);
+				//drums505.triggerAttackRelease('D4');
+				
+			}, this.settings.rhythmWheel.beats.toString() + "n").start(0);
 			// Tone.Transport.start();
 			
 			
@@ -148,6 +163,11 @@ module.exports = function() {
 				synthR.triggerAttackRelease(note, "8n", time);
 			}, ["E4", "F#4", "B4", "C#5", "D5", "F#4", "E4", "C#5", "B4", "F#4", "D5", "C#5"], "8n").start("2m");
 			
+			
+			var snareTrack = new Tone.Sequence(function(time, note){
+				drums505.triggerAttackRelease(note, self.settings.rhythmWheel.beats.toString() + 'n', time);
+			}, ['D4', null, null, null, 'D4', null, null, null], self.settings.rhythmWheel.beats.toString() + 'n').start();
+			
 			//set the playback rate of the right part to be slightly slower
 			//partR.playbackRate = 0.985;
 
@@ -166,29 +186,24 @@ module.exports = function() {
 			
 			let self = this;
 			
-			let circleRadius = 4;
-			let maxRadius = 0;
-			let colors = [new THREE.Color('red'), new THREE.Color('green'), new THREE.Color('blue'), new THREE.Color('purple'), new THREE.Color('orange')];
-			
-			let ring = new THREE.RingGeometry(1, 5, this.settings.beatsPerWheel, this.settings.tracksPerWheel);
-			ring.rotateX(-Math.PI/2);
-			ring.rotateY(Math.PI/2);
-			ring.translate(0, this.settings.zBufferOffset, 0);
+			let rhythmWheel = new THREE.RingGeometry(this.settings.rhythmWheel.innerRadius, this.settings.rhythmWheel.outerRadius, this.settings.rhythmWheel.beats, this.settings.rhythmWheel.tracks);
+			rhythmWheel.rotateX(-Math.PI/2);
+			rhythmWheel.rotateY(Math.PI/2);
+			rhythmWheel.translate(0, this.settings.zBufferOffset, 0);
 			
 			let faceColorMaterial = new THREE.MeshBasicMaterial({
 				color: new THREE.Color('white'),
 				vertexColors: THREE.FaceColors
 			});
-			ringMesh = new THREE.Mesh(ring, faceColorMaterial);
+			rhythmWheelMesh = new THREE.Mesh(rhythmWheel, faceColorMaterial);
 			
-			let wireframeMesh = new THREE.Mesh(ring, wireframeMaterial);
+			let wireframeMesh = new THREE.Mesh(rhythmWheel, wireframeMaterial);
 			wireframeMesh.position.y += this.settings.zBufferOffset * 2;
-			targetList.push(ringMesh);
-			scene.add(ringMesh);
+			targetList.push(rhythmWheelMesh);
+			scene.add(rhythmWheelMesh);
 			scene.add(wireframeMesh);
-			console.log(wireframeMesh);
 			
-			let timeCursorGeometry = gfx.createLine(new THREE.Vector3(0, this.settings.zBufferOffset, 0), new THREE.Vector3(0, this.settings.zBufferOffset, -maxRadius));
+			let timeCursorGeometry = gfx.createLine(new THREE.Vector3(0, this.settings.zBufferOffset * 2, -this.settings.rhythmWheel.innerRadius), new THREE.Vector3(0, this.settings.zBufferOffset * 2, -this.settings.rhythmWheel.outerRadius));
 			let lineMaterial = new THREE.LineBasicMaterial({ color: 0x0000ff });
 			timeCursor = new THREE.Line(timeCursorGeometry, lineMaterial);
 			scene.add(timeCursor);
@@ -249,31 +264,36 @@ module.exports = function() {
 		
 		setFaceColor: function(faceIndex) {
 			
-			let beatIndex = (this.settings.beatsPerWheel - 1) - Math.floor(faceIndex / 2) % this.settings.beatsPerWheel;
-			let trackIndex = Math.floor(faceIndex / (this.settings.beatsPerWheel * 2));
+			let beatIndex = (this.settings.rhythmWheel.beats - 1) - Math.floor(faceIndex / 2) % this.settings.rhythmWheel.beats;
+			let trackIndex = Math.floor(faceIndex / (this.settings.rhythmWheel.beats * 2));
 			
 			let setColor;
-			if (ringMesh.geometry.faces[faceIndex].selected === true) {
+			if (rhythmWheelMesh.geometry.faces[faceIndex].selected === true) {
 				setColor = new THREE.Color('white');
 			}
 			else {
-				setColor = new THREE.Color('black');
+				setColor = distinctColors[trackIndex];
 			}
 			
 			let evenFace = (faceIndex % 2 === 0);
 			if (evenFace) {
-				ringMesh.geometry.faces[faceIndex].color.setRGB(setColor.r, setColor.g, setColor.b);
-				ringMesh.geometry.faces[faceIndex + 1].color.setRGB(setColor.r, setColor.g, setColor.b);
-				ringMesh.geometry.faces[faceIndex].selected = !ringMesh.geometry.faces[faceIndex].selected;
-				ringMesh.geometry.faces[faceIndex + 1].selected = !ringMesh.geometry.faces[faceIndex + 1].selected;
+				rhythmWheelMesh.geometry.faces[faceIndex].color.setRGB(setColor.r, setColor.g, setColor.b);
+				rhythmWheelMesh.geometry.faces[faceIndex + 1].color.setRGB(setColor.r, setColor.g, setColor.b);
+				rhythmWheelMesh.geometry.faces[faceIndex].selected = !rhythmWheelMesh.geometry.faces[faceIndex].selected;
+				rhythmWheelMesh.geometry.faces[faceIndex + 1].selected = !rhythmWheelMesh.geometry.faces[faceIndex + 1].selected;
 			}
 			else {
-				ringMesh.geometry.faces[faceIndex].color.setRGB(setColor.r, setColor.g, setColor.b);
-				ringMesh.geometry.faces[faceIndex - 1].color.setRGB(setColor.r, setColor.g, setColor.b);
-				ringMesh.geometry.faces[faceIndex].selected = !ringMesh.geometry.faces[faceIndex].selected;
-				ringMesh.geometry.faces[faceIndex - 1].selected = !ringMesh.geometry.faces[faceIndex - 1].selected;
+				rhythmWheelMesh.geometry.faces[faceIndex].color.setRGB(setColor.r, setColor.g, setColor.b);
+				rhythmWheelMesh.geometry.faces[faceIndex - 1].color.setRGB(setColor.r, setColor.g, setColor.b);
+				rhythmWheelMesh.geometry.faces[faceIndex].selected = !rhythmWheelMesh.geometry.faces[faceIndex].selected;
+				rhythmWheelMesh.geometry.faces[faceIndex - 1].selected = !rhythmWheelMesh.geometry.faces[faceIndex - 1].selected;
 			}
-			ringMesh.geometry.colorsNeedUpdate = true;
+			rhythmWheelMesh.geometry.colorsNeedUpdate = true;
+			
+			if (tracks[trackIndex][beatIndex] === null) tracks[trackIndex][beatIndex] = 'D4';
+			else tracks[trackIndex][beatIndex] = null;
+			
+			console.log(tracks);
 		},
 		
 		loadFont: function() {
