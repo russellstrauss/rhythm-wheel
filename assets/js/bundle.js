@@ -57,6 +57,7 @@ module.exports = function () {
     release: 1,
     baseUrl: './assets/audio/505/'
   }).toMaster();
+  var noteValues = ['D4', 'C3', 'G3', 'A3'];
   var keys = new Tone.Players({
     "D4": "./assets/audio/casio/A1.[mp3|ogg]",
     "C#": "./assets/audio/casio/Cs2.[mp3|ogg]",
@@ -298,8 +299,8 @@ module.exports = function () {
       }
 
       rhythmWheelMesh.geometry.colorsNeedUpdate = true;
-      if (tracks[trackIndex][beatIndex] === null) tracks[trackIndex][beatIndex] = 'D4';else tracks[trackIndex][beatIndex] = null;
-      console.log(tracks);
+      if (tracks[trackIndex][beatIndex] === null) tracks[trackIndex][beatIndex] = noteValues[trackIndex]; // get an instrument for each row
+      else tracks[trackIndex][beatIndex] = null;
     },
     loadFont: function loadFont() {
       var self = this;
