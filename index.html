@@ -11,10 +11,8 @@
 </head>
 <body>
 	
-	<tone-play-toggle></tone-play-toggle>
-	
 	<div id="message"></div>
-	<div id="legend">
+	<div id="legend">		
 		<span class="legend-title">Controls</span>
 		<div class="backdrop">
 			<table>
@@ -42,40 +40,45 @@
 		</div>
 	</div>
 	
-	<div class="boxes">
-		<div class="bassbox box">Bass</div>
-		<div class="kickbox box">Kick</div>
-		<div class="snarebox box">Snare</div>
-		<div class="pizzbox box">Pizz</div>
-		<div class="highhatbox box">HH</div>
+	<div class="play-controls">
+		
+		<div class="control">
+			<svg class="play" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="124.512px" height="124.512px" viewBox="0 0 124.512 124.512" xml:space="preserve">
+				<g>
+					<path d="M113.956,57.006l-97.4-56.2c-4-2.3-9,0.6-9,5.2v112.5c0,4.6,5,7.5,9,5.2l97.4-56.2 C117.956,65.105,117.956,59.306,113.956,57.006z"/>
+				</g>
+			</svg>
+		</div>
+		
+		<div class="control">
+			<div class="input-stepper">
+				<div class="input-items">	
+					<button type="button" class="decrease">–</button>
+					<input type="number" id="bpm" name="bpm" min="40" max="200" step="10" value="120">
+					<button type="button" class="increase">+</button>
+				</div>
+				<label for="bpm">BPM</label>
+			</div>
+		</div>
+		
 	</div>
-	<form id="music-controls" class="music-controls" style="position: fixed; width: 500px; height: 200px; top: 15%; background: white; border: 1px solid black; left: 20px;">
-		<label>BPM
-			<input id="bpm-range" type="range" min="20" max="80" value="50">
-		</label>
-		<label>Swing
-			<input id="swing-range" type="range" min="0" max="1" value="0">
-		</label>
-		<label>Filter
-			<input id="filter-range" type="range" min="0" max="2200" value="800" step="1">
-		</label>
-		<input id="play-btn" type="button" value="play">
-	</form>
 	
 	<div id="author">
 		<div class="column description">
 			Code Authors:<br>
-			Russell Strauss<br>
+			Russell Strauss & Jiewen Wang<br>
 			CS 6497: Computational Aesthetics<br>
 			Taught by Jarek Rossinac<br>
 			Georgia Insitute of Technology<br>
 			Fall 2019
 		</div>
 		<div class="column">
-			<div id="portrait">
+			<div class="portrait">
 				<img src="assets/img/portrait.jpg" alt="">
 			</div>
-			<button id="play-btn">play</button>
+			<div class="portrait">
+				<img src="assets/img/jwang.jpg" alt="">
+			</div>
 		</div>
 	</div>
 	

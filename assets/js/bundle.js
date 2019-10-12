@@ -2,33 +2,6 @@
 "use strict";
 
 module.exports = function () {
-  return {
-    settings: {},
-    init: function init() {
-      /*
-      * Drums
-      */
-      var drums505 = new Tone.Sampler({
-        D4: 'snare.[mp3|ogg]',
-        C3: 'kick.[mp3|ogg]',
-        G3: 'hh.[mp3|ogg]',
-        A3: 'hho.[mp3|ogg]'
-      }, {
-        volume: 11,
-        release: 1,
-        baseUrl: './assets/audio/505/'
-      }).toMaster();
-      document.querySelector('#play-btn').addEventListener('click', function () {
-        drums505.triggerAttackRelease('D4', '4n');
-      });
-    }
-  };
-};
-
-},{}],2:[function(require,module,exports){
-"use strict";
-
-module.exports = function () {
   var renderer, scene, camera, controls, floor;
   var raycaster = new THREE.Raycaster();
   var mouse = new THREE.Vector2();
@@ -38,7 +11,7 @@ module.exports = function () {
     opacity: .25,
     transparent: true
   });
-  var distinctColors = [new THREE.Color('#18995B'), new THREE.Color('#2F72CA'), new THREE.Color('#A82F2F'), new THREE.Color('#F2B233'), new THREE.Color('#f58231'), new THREE.Color('#911eb4'), new THREE.Color('#46f0f0'), new THREE.Color('#f032e6'), new THREE.Color('#bcf60c'), new THREE.Color('#fabebe'), new THREE.Color('#008080'), new THREE.Color('#e6beff'), new THREE.Color('#9a6324'), new THREE.Color('#fffac8'), new THREE.Color('#800000'), new THREE.Color('#aaffc3'), new THREE.Color('#808000'), new THREE.Color('#ffd8b1'), new THREE.Color('#000075'), new THREE.Color('#808080'), new THREE.Color('#ffffff'), new THREE.Color('#000000')];
+  var distinctColors = [new THREE.Color('#2F72CA'), new THREE.Color('#A82F2F'), new THREE.Color('#18995B'), new THREE.Color('#F2B233'), new THREE.Color('#f58231'), new THREE.Color('#911eb4'), new THREE.Color('#46f0f0'), new THREE.Color('#f032e6'), new THREE.Color('#bcf60c'), new THREE.Color('#fabebe'), new THREE.Color('#008080'), new THREE.Color('#e6beff'), new THREE.Color('#9a6324'), new THREE.Color('#fffac8'), new THREE.Color('#800000'), new THREE.Color('#aaffc3'), new THREE.Color('#808000'), new THREE.Color('#ffd8b1'), new THREE.Color('#000075'), new THREE.Color('#808080'), new THREE.Color('#ffffff'), new THREE.Color('#000000')];
   var black = new THREE.Color('black');
   var timeCursor, timeCursorEndpoint;
   var playing = false;
@@ -47,25 +20,29 @@ module.exports = function () {
   var tracks = [];
   var rhythmCount = 0;
   var scope;
+  var presets = {
+    rapBeat: []
+  };
+  var reverb = new Tone.Reverb().toMaster();
   var drums505 = new Tone.Sampler({
     D4: 'snare.[mp3|ogg]',
     C3: 'kick.[mp3|ogg]',
     G3: 'hh.[mp3|ogg]',
     A3: 'hho.[mp3|ogg]'
   }, {
-    volume: 11,
+    volume: 4,
     release: 1,
     baseUrl: './assets/audio/505/'
   }).toMaster();
   var noteValues = ['D4', 'C3', 'G3', 'A3'];
   var keys = new Tone.Players({
-    "D4": "./assets/audio/casio/A1.[mp3|ogg]",
-    "C#": "./assets/audio/casio/Cs2.[mp3|ogg]",
-    "E": "./assets/audio/casio/E2.[mp3|ogg]",
-    "F#": "./assets/audio/casio/Fs2.[mp3|ogg]"
+    D4: './assets/audio/snare.[mp3|ogg]',
+    C3: './assets/audio/kick.[mp3|ogg]',
+    G3: './assets/audio/hh.[mp3|ogg]',
+    A3: './assets/audio/hho.[mp3|ogg]'
   }, {
     volume: 5,
-    fadeOut: "64n"
+    fadeOut: "16n"
   }).toMaster();
   return {
     settings: {
@@ -98,8 +75,9 @@ module.exports = function () {
       rhythmWheel: {
         innerRadius: 1,
         outerRadius: 5,
-        beats: 8,
-        tracks: 4
+        beats: 16,
+        tracks: 4,
+        bpm: 120
       }
     },
     init: function init() {
@@ -132,6 +110,7 @@ module.exports = function () {
     },
     setUpRhythm: function setUpRhythm() {
       var self = this;
+      Tone.Transport.bpm.value = self.settings.rhythmWheel.bpm;
 
       for (var i = 0; i < self.settings.rhythmWheel.tracks; i++) {
         // init empty beats
@@ -152,61 +131,19 @@ module.exports = function () {
         var beat = rhythmCount % scope.settings.rhythmWheel.beats;
 
         for (var _i = 0; _i < scope.settings.rhythmWheel.tracks; _i++) {
-          if (tracks[_i][beat] !== null) drums505.triggerAttackRelease(tracks[_i][beat], scope.settings.rhythmWheel.beats.toString() + 'n', time);
+          if (tracks[_i][beat] !== null) {
+            drums505.triggerAttackRelease(tracks[_i][beat], scope.settings.rhythmWheel.beats.toString() + 'n', time); // var vel = Math.random() * 0.5 + 0.5;
+            // keys.get(tracks[i][beat]).start(time, 0, scope.settings.rhythmWheel.beats.toString() + 'n', 0, vel);
+          }
         }
 
         rhythmCount++;
-      } //set the bpm and time signature first
-      //Tone.Transport.timeSignature = [6, 4];
+      }
 
-
-      Tone.Transport.bpm.value = 120;
-      var merge = new Tone.Merge(); // L/R channel merging
-
-      var reverb = new Tone.Freeverb({
-        "roomSize": 0.2,
-        "wet": 0.3
+      var playButton = document.querySelector('.play-controls .play');
+      playButton.addEventListener('click', function () {
+        Tone.Transport.start(); //Tone.Transport.stop();
       });
-      merge.chain(reverb, Tone.Master); //the synth settings
-
-      var synthSettings = {
-        "oscillator": {
-          "detune": 0,
-          "type": "custom",
-          "partials": [2, 1, 2, 2],
-          "phase": 0,
-          "volume": 0
-        },
-        "envelope": {
-          "attack": 0.005,
-          "decay": 0.3,
-          "sustain": 0.2,
-          "release": 1
-        },
-        "portamento": 0.01,
-        "volume": -20
-      }; //left and right synthesizers
-      // var synthL = new Tone.Synth(synthSettings).connect(merge.left);
-      // var synthR = new Tone.Synth(synthSettings).connect(merge.right);
-      // //the two Tone.Sequences
-      // var partL = new Tone.Sequence(function(time, note){
-      // 	synthL.triggerAttackRelease(note, "8n", time);
-      // }, ["E4", "F#4", "B4", "C#5", "D5", "F#4", "E4", "C#5", "B4", "F#4", "D5", "C#5"], "8n").start();
-      // var partR = new Tone.Sequence(function(time, note){
-      // 	synthR.triggerAttackRelease(note, "8n", time);
-      // }, ["E4", "F#4", "B4", "C#5", "D5", "F#4", "E4", "C#5", "B4", "F#4", "D5", "C#5"], "8n").start("2m");
-      // var snareTrack = new Tone.Sequence(function(time, note){
-      // 	drums505.triggerAttackRelease(note, self.settings.rhythmWheel.beats.toString() + 'n', time);
-      // }, ['D4', null, null, null, 'D4', null, null, null], self.settings.rhythmWheel.beats.toString() + 'n').start();
-      //set the playback rate of the right part to be slightly slower
-      //partR.playbackRate = 0.985;
-
-      document.querySelector('tone-play-toggle').bind(Tone.Transport);
-      document.querySelector('tone-play-toggle').addEventListener('click', function () {
-        var playButton = this.shadowRoot.querySelector('button');
-        if (playButton.hasAttribute('playing')) playing = true;else playing = false;
-      }); // document.querySelector("#left").bind(partL);
-      // document.querySelector("#right").bind(partR);
     },
     addGeometries: function addGeometries() {
       var self = this;
@@ -299,7 +236,7 @@ module.exports = function () {
       }
 
       rhythmWheelMesh.geometry.colorsNeedUpdate = true;
-      if (tracks[trackIndex][beatIndex] === null) tracks[trackIndex][beatIndex] = noteValues[trackIndex]; // get an instrument for each row
+      if (tracks[trackIndex][beatIndex] === null) tracks[trackIndex][beatIndex] = noteValues[trackIndex]; // get an instrument for each track row
       else tracks[trackIndex][beatIndex] = null;
     },
     loadFont: function loadFont() {
@@ -327,6 +264,40 @@ module.exports = function () {
           renderer.setSize(window.innerWidth, window.innerHeight);
         }
       }, 250));
+    }
+  };
+};
+
+},{}],2:[function(require,module,exports){
+"use strict";
+
+module.exports = function () {
+  return {
+    settings: {},
+    init: function init() {
+      this.bindEvents();
+    },
+    bindEvents: function bindEvents() {
+      var inputSteppers = document.querySelectorAll('.input-stepper');
+      inputSteppers.forEach(function (inputStepper) {
+        var input = inputStepper.querySelector('input');
+        var increase = inputStepper.querySelector('.increase');
+        if (increase) increase.addEventListener('click', function () {
+          var max = parseInt(input.getAttribute('max'));
+          if (input.value < max) input.value = parseInt(input.value) + 10;
+          Tone.Transport.bpm.value += 10;
+        });
+        var decrease = inputStepper.querySelector('.decrease');
+        if (decrease) decrease.addEventListener('click', function () {
+          var min = parseInt(input.getAttribute('min'));
+          if (input.value > min) input.value = parseInt(input.value) - 10;
+          Tone.Transport.bpm.value -= 10;
+        });
+      });
+      var bpmInput = document.querySelector('#bpm');
+      if (bpmInput) bpmInput.addEventListener('change', function () {
+        console.log('input update');
+      });
     }
   };
 };
@@ -757,7 +728,7 @@ module.exports = function () {
 
 var Scene = require('./components/scene.js');
 
-var Beats = require('./components/beats.js');
+var UI = require('./components/ui.js');
 
 var Utilities = require('./utils.js');
 
@@ -766,11 +737,11 @@ var Graphics = require('./graphics.js');
 (function () {
   document.addEventListener('DOMContentLoaded', function () {
     Scene().init();
-    Beats().init();
+    UI().init();
   });
 })();
 
-},{"./components/beats.js":1,"./components/scene.js":2,"./graphics.js":3,"./utils.js":5}],5:[function(require,module,exports){
+},{"./components/scene.js":1,"./components/ui.js":2,"./graphics.js":3,"./utils.js":5}],5:[function(require,module,exports){
 "use strict";
 
 (function () {

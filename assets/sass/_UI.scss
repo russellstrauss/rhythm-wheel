@@ -41,8 +41,9 @@
 	transform: translateX(-50%);
 }
 
+$legendWidth: 150px;
 #legend {
-	width: 150px;
+	width: $legendWidth;
 	font-size: 12px;
 	position: absolute;
 	bottom: 20px;
@@ -76,7 +77,7 @@
 		tr {
 			
 			&.divider {
-				height: 20lrlrpx;
+				height: 20px;
 				vertical-align: bottom;
 			}
 			
@@ -92,12 +93,86 @@
 	}
 }
 
+.play-controls {
+	position: absolute;
+	left: $legendWidth + 40px;
+	bottom: 20px;
+	display: flex;
+	
+	.play {
+		width: 50px;
+		height: 50px;
+		cursor: pointer;
+		margin-right: 50px;
+	}
+}
+
+.input-stepper {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	
+	label {
+		text-align: center;
+		display: block;
+	}
+	
+	.input-items {
+		display: flex;
+		
+		input {
+			width: 4rem;
+			text-align: center;
+			appearance: none;
+			-moz-appearance: textfield;
+		}
+		
+		input[type="number"]::-webkit-outer-spin-button,
+		input[type="number"]::-webkit-inner-spin-button {
+			-webkit-appearance: none;
+			margin: 0;
+		}
+	
+		button, input {
+			font-size: 2rem;
+			font-weight: bold;
+			text-align: center;
+			border: 0;
+			background: none;
+			
+			
+			&:focus {
+				outline: none;
+			}
+		}
+		
+		input {
+			transition: all 125ms ease;
+			
+			&:hover {
+				transform: scale(1.1);
+			}
+		}
+		
+		button {
+			width: 1em;
+			cursor: pointer;
+			
+			&:hover {
+				transform: scale(1.2);
+			}
+		}
+	}
+}
+
 #author {
+	@include disable-highlight;
 	position: absolute;
 	right: 20px;
 	top: 20px;
 	display: flex;
 	font-size: 12px;
+	pointer-events: none;
 	
 	.column {
 		
@@ -106,10 +181,11 @@
 			padding-right: 10px;
 		}
 		
-		#portrait {
+		.portrait {
 			display: flex;
 			border: 1px solid black;
 			width: 100px;
+			margin-bottom: 5px;
 		}
 	}
 }
