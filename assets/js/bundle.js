@@ -177,6 +177,7 @@ module.exports = function () {
       var colors = [new THREE.Color('red'), new THREE.Color('green'), new THREE.Color('blue'), new THREE.Color('purple'), new THREE.Color('orange')];
       var ring = new THREE.RingGeometry(1, 5, this.settings.beatsPerWheel, this.settings.tracksPerWheel);
       ring.rotateX(-Math.PI / 2);
+      ring.rotateY(Math.PI / 2);
       ring.translate(0, this.settings.zBufferOffset, 0);
       var faceColorMaterial = new THREE.MeshBasicMaterial({
         color: new THREE.Color('white'),
@@ -196,38 +197,6 @@ module.exports = function () {
       timeCursor = new THREE.Line(timeCursorGeometry, lineMaterial);
       scene.add(timeCursor);
     },
-    reorderCircleVertices: function reorderCircleVertices(geometry) {
-      // Re-order vertex counting to match the clock
-      var result = geometry.clone();
-
-      for (var i = 1; i < geometry.vertices.length; i++) {
-        result.vertices[i] = geometry.vertices[geometry.vertices.length - i];
-      }
-
-      return result;
-    },
-    renderScaleTitle: function renderScaleTitle(geometry, label) {
-      var self = this;
-      self.labelPoint({
-        x: geometry.vertices[0].x - 5,
-        y: geometry.vertices[0].y + 10,
-        z: geometry.vertices[0].z
-      }, label, black);
-    },
-    labelInterval: function labelInterval(geometry) {
-      var self = this;
-
-      for (var i = 1; i < geometry.vertices.length; i++) {
-        self.labelPoint(geometry.vertices[i], i.toString(), black);
-      }
-    },
-    labelScaleNotes: function labelScaleNotes(scaleGeometry, notes) {
-      var self = this;
-
-      for (var i = 0; i < notes.length; i++) {
-        self.showPoint(scaleGeometry.vertices[notes[i]]);
-      }
-    },
     enableControls: function enableControls() {
       controls = new THREE.OrbitControls(camera, renderer.domElement);
       controls.target.set(0, 0, 0);
@@ -239,23 +208,6 @@ module.exports = function () {
       controls.minDistance = 0;
       controls.maxDistance = 200;
       controls.maxPolarAngle = Math.PI / 2;
-    },
-    loadFont: function loadFont() {
-      var self = this;
-      var loader = new THREE.FontLoader();
-      var fontPath = '';
-      fontPath = 'assets/vendors/js/three.js/examples/fonts/helvetiker_regular.typeface.json';
-      loader.load(fontPath, function (font) {
-        // success event
-        self.settings.font.fontStyle.font = font;
-        self.begin();
-        if (self.settings.axesHelper.activateAxesHelper) self.labelAxes();
-      }, function (event) {// in progress event.
-      }, function (event) {
-        // error event
-        self.settings.font.enable = false;
-        self.begin();
-      });
     },
     setUpButtons: function setUpButtons() {
       var self = this;
@@ -288,6 +240,8 @@ module.exports = function () {
       }
     },
     setFaceColor: function setFaceColor(faceIndex) {
+      var beatIndex = this.settings.beatsPerWheel - 1 - Math.floor(faceIndex / 2) % this.settings.beatsPerWheel;
+      var trackIndex = Math.floor(faceIndex / (this.settings.beatsPerWheel * 2));
       var setColor;
 
       if (ringMesh.geometry.faces[faceIndex].selected === true) {
@@ -308,11 +262,26 @@ module.exports = function () {
         ringMesh.geometry.faces[faceIndex - 1].color.setRGB(setColor.r, setColor.g, setColor.b);
         ringMesh.geometry.faces[faceIndex].selected = !ringMesh.geometry.faces[faceIndex].selected;
         ringMesh.geometry.faces[faceIndex - 1].selected = !ringMesh.geometry.faces[faceIndex - 1].selected;
-      } // ringMesh.geometry.faces[faceIndex].color.setRGB(0, 0, 1);
-      // console.log(ringMesh.geometry.faces[faceIndex]);
-
+      }
 
       ringMesh.geometry.colorsNeedUpdate = true;
+    },
+    loadFont: function loadFont() {
+      var self = this;
+      var loader = new THREE.FontLoader();
+      var fontPath = '';
+      fontPath = 'assets/vendors/js/three.js/examples/fonts/helvetiker_regular.typeface.json';
+      loader.load(fontPath, function (font) {
+        // success event
+        self.settings.font.fontStyle.font = font;
+        self.begin();
+        if (self.settings.axesHelper.activateAxesHelper) self.labelAxes();
+      }, function (event) {// in progress event.
+      }, function (event) {
+        // error event
+        self.settings.font.enable = false;
+        self.begin();
+      });
     },
     resizeRendererOnWindowResize: function resizeRendererOnWindowResize() {
       window.addEventListener('resize', utils.debounce(function () {
