@@ -21,7 +21,7 @@ module.exports = function () {
   var rhythmCount = 0;
   var scope;
   var presets = {
-    rapBeat: []
+    rapBeat: [[]]
   };
   var reverb = new Tone.Reverb().toMaster();
   var drums505 = new Tone.Sampler({
@@ -36,10 +36,10 @@ module.exports = function () {
   }).toMaster();
   var noteValues = ['D4', 'C3', 'G3', 'A3'];
   var keys = new Tone.Players({
-    D4: './assets/audio/snare.[mp3|ogg]',
-    C3: './assets/audio/kick.[mp3|ogg]',
-    G3: './assets/audio/hh.[mp3|ogg]',
-    A3: './assets/audio/hho.[mp3|ogg]'
+    D4: './assets/audio/505/snare.[mp3|ogg]',
+    C3: './assets/audio/505/kick.[mp3|ogg]',
+    G3: './assets/audio/505/hh.[mp3|ogg]',
+    A3: './assets/audio/505/hho.[mp3|ogg]'
   }, {
     volume: 5,
     fadeOut: "16n"
@@ -59,7 +59,7 @@ module.exports = function () {
         enable: true,
         fontStyle: {
           font: null,
-          size: 1,
+          size: .25,
           height: 0,
           curveSegments: 1
         }
@@ -89,14 +89,15 @@ module.exports = function () {
       scene = gfx.setUpScene(scene);
       renderer = gfx.setUpRenderer(renderer);
       camera = gfx.setUpCamera(camera);
-      floor = gfx.addFloor(this.settings.floorSize, scene, this.settings.colors.worldColor, this.settings.colors.gridColor); //controls = gfx.enableControls(controls, renderer, camera);
-
+      floor = gfx.addFloor(this.settings.floorSize, scene, this.settings.colors.worldColor, this.settings.colors.gridColor);
+      controls = gfx.enableControls(controls, renderer, camera);
       gfx.resizeRendererOnWindowResize(renderer, camera);
       self.setUpButtons();
       gfx.setUpLights(scene);
       gfx.setCameraLocation(camera, self.settings.defaultCameraLocation);
       camera.lookAt(new THREE.Vector3(0, 0, 0));
       self.addGeometries();
+      self.addLabels();
       self.setUpRhythm();
 
       var animate = function animate() {
@@ -132,8 +133,9 @@ module.exports = function () {
 
         for (var _i = 0; _i < scope.settings.rhythmWheel.tracks; _i++) {
           if (tracks[_i][beat] !== null) {
-            drums505.triggerAttackRelease(tracks[_i][beat], scope.settings.rhythmWheel.beats.toString() + 'n', time); // var vel = Math.random() * 0.5 + 0.5;
-            // keys.get(tracks[i][beat]).start(time, 0, scope.settings.rhythmWheel.beats.toString() + 'n', 0, vel);
+            //drums505.triggerAttackRelease(tracks[i][beat], scope.settings.rhythmWheel.beats.toString() + 'n', time);
+            var vel = Math.random() * 0.5 + 0.5;
+            keys.get(tracks[_i][beat]).start(time, 0, scope.settings.rhythmWheel.beats.toString() + 'n', 0, vel);
           }
         }
 
@@ -178,12 +180,6 @@ module.exports = function () {
     setUpButtons: function setUpButtons() {
       var self = this;
       var message = document.getElementById('message');
-      document.addEventListener('keyup', function (event) {
-        var L = 76;
-
-        if (event.keyCode === L) {// do stuff when pressing key
-        }
-      });
 
       var onMouseMove = function onMouseMove(event) {
         mouse.x = (event.clientX - renderer.domElement.offsetLeft) / renderer.domElement.width * 2 - 1;
@@ -259,6 +255,40 @@ module.exports = function () {
           renderer.setSize(window.innerWidth, window.innerHeight);
         }
       }, 250));
+    },
+    labelPoint: function labelPoint(pt, label, scene, color) {
+      var self = this;
+      var textCenterOffset = this.settings.font.fontStyle.size / 2;
+
+      if (this.settings.font.enable) {
+        color = color || 0xff0000;
+        var textGeometry = new THREE.TextGeometry(label, this.settings.font.fontStyle);
+        textGeometry.rotateX(-Math.PI / 2);
+        textGeometry.translate(pt.x - textCenterOffset, pt.y, pt.z + textCenterOffset);
+        var textMaterial = new THREE.MeshBasicMaterial({
+          color: color
+        });
+        var mesh = new THREE.Mesh(textGeometry, textMaterial);
+        scene.add(mesh);
+      }
+    },
+    addLabels: function addLabels() {
+      var self = this;
+      var transform = new THREE.Vector3(0, 0, -this.settings.rhythmWheel.outerRadius);
+
+      for (var i = 0; i < self.settings.rhythmWheel.beats; i++) {
+        var axis = new THREE.Vector3(0, 1, 0);
+        var placementRotation = -(2 * Math.PI / self.settings.rhythmWheel.beats) * (i + 1);
+        var centerRotation = Math.PI / self.settings.rhythmWheel.beats;
+        var totalRotation = placementRotation + centerRotation;
+        var result = transform.clone().applyAxisAngle(axis, totalRotation);
+        result.setLength(result.length() * (1 + self.settings.font.fontStyle.size / 2));
+        var arrowHelper = new THREE.ArrowHelper(result.clone().normalize(), new THREE.Vector3(0, 2 * self.settings.zBufferOffset, 0), this.settings.rhythmWheel.outerRadius, black);
+        var labelPoint = gfx.movePoint(new THREE.Vector3(0, 0, 0), result);
+        var label = ((i + 2) / 2).toString();
+        if (i % 2 === 1) label = '&';
+        this.labelPoint(labelPoint, label, scene, black);
+      }
     }
   };
 };
@@ -271,6 +301,7 @@ module.exports = function () {
     settings: {},
     init: function init() {
       this.bindEvents();
+      this.setKeys();
     },
     bindEvents: function bindEvents() {
       var inputSteppers = document.querySelectorAll('.input-stepper');
@@ -279,20 +310,29 @@ module.exports = function () {
         var increase = inputStepper.querySelector('.increase');
         if (increase) increase.addEventListener('click', function () {
           var max = parseInt(input.getAttribute('max'));
-          if (input.value < max) input.value = parseInt(input.value) + 10;
-          Tone.Transport.bpm.value += 10;
+          if (input.value < max) input.value = parseInt(input.value) + 5;
+          Tone.Transport.bpm.value += 5;
         });
         var decrease = inputStepper.querySelector('.decrease');
         if (decrease) decrease.addEventListener('click', function () {
           var min = parseInt(input.getAttribute('min'));
-          if (input.value > min) input.value = parseInt(input.value) - 10;
-          Tone.Transport.bpm.value -= 10;
+          if (input.value > min) input.value = parseInt(input.value) - 5;
+          Tone.Transport.bpm.value -= 5;
         });
       });
       var playToggle = document.querySelector('.play-toggle');
       playToggle.addEventListener('click', function () {
         playToggle.classList.toggle('active');
         Tone.Transport.toggle();
+      });
+    },
+    setKeys: function setKeys() {
+      document.addEventListener('keyup', function (event) {
+        var space = 32; //alert(event.keyCode);
+
+        if (event.keyCode === space) {
+          Tone.Transport.toggle();
+        }
       });
     }
   };
@@ -311,15 +351,6 @@ module.exports = function () {
         axesHelper: {
           activateAxesHelper: false,
           axisLength: 10
-        },
-        font: {
-          enable: true,
-          fontStyle: {
-            font: null,
-            size: 1,
-            height: 0,
-            curveSegments: 1
-          }
         },
         errorLogging: false
       },
@@ -523,22 +554,6 @@ module.exports = function () {
         color = color || 0xff0000;
         var arrowHelper = new THREE.ArrowHelper(vector, origin, vector.length(), color);
         scene.add(arrowHelper);
-      },
-
-      /* 	Inputs: pt - point in space to label, in the form of object with x, y, and z properties; label - text content for label; color - optional */
-      labelPoint: function labelPoint(pt, label, scene, color) {
-        var self = this;
-
-        if (gfx.appSettings.font.enable) {
-          color = color || 0xff0000;
-          var textGeometry = new THREE.TextGeometry(label, self.appSettings.font.fontStyle);
-          var textMaterial = new THREE.MeshBasicMaterial({
-            color: color
-          });
-          var mesh = new THREE.Mesh(textGeometry, textMaterial);
-          textGeometry.translate(pt.x, pt.y, pt.z);
-          scene.add(mesh);
-        }
       },
       drawLine: function drawLine(pt1, pt2, scene, color) {
         color = color || 0x0000ff;

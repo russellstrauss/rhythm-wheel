@@ -17,7 +17,7 @@ module.exports = function() {
 	
 	var presets = {
 		rapBeat: [
-			
+			[]
 		]
 	}
 	
@@ -35,10 +35,10 @@ module.exports = function() {
 	let noteValues = ['D4', 'C3', 'G3', 'A3'];
 	
 	var keys = new Tone.Players({
-		D4: './assets/audio/snare.[mp3|ogg]',
-		C3: './assets/audio/kick.[mp3|ogg]',
-		G3: './assets/audio/hh.[mp3|ogg]',
-		A3: './assets/audio/hho.[mp3|ogg]'
+		D4: './assets/audio/505/snare.[mp3|ogg]',
+		C3: './assets/audio/505/kick.[mp3|ogg]',
+		G3: './assets/audio/505/hh.[mp3|ogg]',
+		A3: './assets/audio/505/hho.[mp3|ogg]'
 	},{
 		volume: 5,
 		fadeOut: "16n"
@@ -60,7 +60,7 @@ module.exports = function() {
 				enable: true,
 				fontStyle: {
 					font: null,
-					size: 1,
+					size: .25,
 					height: 0,
 					curveSegments: 1
 				}
@@ -96,13 +96,14 @@ module.exports = function() {
 			renderer = gfx.setUpRenderer(renderer);
 			camera = gfx.setUpCamera(camera);
 			floor = gfx.addFloor(this.settings.floorSize, scene, this.settings.colors.worldColor, this.settings.colors.gridColor);
-			//controls = gfx.enableControls(controls, renderer, camera);
+			controls = gfx.enableControls(controls, renderer, camera);
 			gfx.resizeRendererOnWindowResize(renderer, camera);
 			self.setUpButtons();
 			gfx.setUpLights(scene);
 			gfx.setCameraLocation(camera, self.settings.defaultCameraLocation);
 			camera.lookAt(new THREE.Vector3(0, 0, 0));
 			self.addGeometries();
+			self.addLabels();
 			self.setUpRhythm();
 			
 			var animate = function() {
@@ -144,10 +145,10 @@ module.exports = function() {
 				for (let i = 0; i < scope.settings.rhythmWheel.tracks; i++) {
 
 					if (tracks[i][beat] !== null) {
-						drums505.triggerAttackRelease(tracks[i][beat], scope.settings.rhythmWheel.beats.toString() + 'n', time);
+						//drums505.triggerAttackRelease(tracks[i][beat], scope.settings.rhythmWheel.beats.toString() + 'n', time);
 						
-						// var vel = Math.random() * 0.5 + 0.5;
-						// keys.get(tracks[i][beat]).start(time, 0, scope.settings.rhythmWheel.beats.toString() + 'n', 0, vel);
+						var vel = Math.random() * 0.5 + 0.5;
+						keys.get(tracks[i][beat]).start(time, 0, scope.settings.rhythmWheel.beats.toString() + 'n', 0, vel);
 					}
 				}
 				rhythmCount++;
@@ -197,16 +198,6 @@ module.exports = function() {
 			
 			let self = this;
 			let message = document.getElementById('message');
-			
-			document.addEventListener('keyup', function(event) {
-				
-				let L = 76;
-				
-				if (event.keyCode === L) {
-					
-					// do stuff when pressing key
-				}
-			});
 			
 			let onMouseMove = function(event) {
 				mouse.x = ( (event.clientX - renderer.domElement.offsetLeft) / renderer.domElement.width ) * 2 - 1;
@@ -298,6 +289,46 @@ module.exports = function() {
 					renderer.setSize(window.innerWidth, window.innerHeight);
 				}
 			}, 250));
+		},
+		
+		labelPoint: function(pt, label, scene, color) {
+			
+			let self = this;
+			
+			let textCenterOffset = this.settings.font.fontStyle.size / 2;
+			if (this.settings.font.enable) {
+				color = color || 0xff0000;
+				let textGeometry = new THREE.TextGeometry(label, this.settings.font.fontStyle);
+				textGeometry.rotateX(-Math.PI / 2);
+				textGeometry.translate(pt.x - textCenterOffset, pt.y, pt.z + textCenterOffset);
+				let textMaterial = new THREE.MeshBasicMaterial({ color: color });
+				let mesh = new THREE.Mesh(textGeometry, textMaterial);
+
+				scene.add(mesh);
+			}
+		},
+		
+		addLabels: function() {
+			
+			let self = this;
+			let transform = new THREE.Vector3(0, 0, -this.settings.rhythmWheel.outerRadius);
+			
+			for (let i = 0; i < self.settings.rhythmWheel.beats; i++) {
+				
+				let axis = new THREE.Vector3(0, 1, 0);
+				let placementRotation = -(2 * Math.PI / self.settings.rhythmWheel.beats) * (i+ 1);
+				let centerRotation = Math.PI / self.settings.rhythmWheel.beats;
+				let totalRotation = placementRotation + centerRotation;
+				let result = transform.clone().applyAxisAngle(axis, totalRotation);
+				result.setLength(result.length() * (1 + self.settings.font.fontStyle.size / 2));
+				var arrowHelper = new THREE.ArrowHelper(result.clone().normalize(), new THREE.Vector3(0, 2 * self.settings.zBufferOffset, 0), this.settings.rhythmWheel.outerRadius, black);
+				
+				let labelPoint = gfx.movePoint(new THREE.Vector3(0, 0, 0), result);
+				let label = ((i + 2)/2).toString();
+				if (i % 2 === 1) label = '&';
+				
+				this.labelPoint(labelPoint, label, scene, black);
+			}
 		}
 	}
 }

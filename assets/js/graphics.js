@@ -12,15 +12,6 @@
 					activateAxesHelper: false,
 					axisLength: 10
 				},
-				font: {
-					enable: true,
-					fontStyle: {
-						font: null,
-						size: 1,
-						height: 0,
-						curveSegments: 1
-					}
-				},
 				errorLogging: false
 			},
 
@@ -284,20 +275,6 @@
 				color = color || 0xff0000;
 				let arrowHelper = new THREE.ArrowHelper(vector, origin, vector.length(), color);
 				scene.add(arrowHelper);
-			},
-
-			/* 	Inputs: pt - point in space to label, in the form of object with x, y, and z properties; label - text content for label; color - optional */
-			labelPoint: function(pt, label, scene, color) {
-				
-				let self = this;
-				if (gfx.appSettings.font.enable) {
-					color = color || 0xff0000;
-					let textGeometry = new THREE.TextGeometry(label, self.appSettings.font.fontStyle);
-					let textMaterial = new THREE.MeshBasicMaterial({ color: color });
-					let mesh = new THREE.Mesh(textGeometry, textMaterial);
-					textGeometry.translate(pt.x, pt.y, pt.z);
-					scene.add(mesh);
-				}
 			},
 
 			drawLine: function(pt1, pt2, scene, color) {
