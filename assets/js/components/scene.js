@@ -3,22 +3,35 @@ module.exports = function() {
 	var renderer, scene, camera, controls, floor;
 	var raycaster = new THREE.Raycaster();
 	var mouse = new THREE.Vector2();
-	var wireframeMaterial = new THREE.MeshBasicMaterial({ wireframe: true, color: new THREE.Color('black'), opacity: .5, transparent: true });
+	var wireframeMaterial = new THREE.MeshBasicMaterial({ wireframe: true, color: new THREE.Color('black'), opacity: .25, transparent: true });
 	var distinctColors = [new THREE.Color('#18995B'), new THREE.Color('#2F72CA'), new THREE.Color('#A82F2F'), new THREE.Color('#F2B233'), new THREE.Color('#f58231'), new THREE.Color('#911eb4'), new THREE.Color('#46f0f0'), new THREE.Color('#f032e6'), new THREE.Color('#bcf60c'), new THREE.Color('#fabebe'), new THREE.Color('#008080'), new THREE.Color('#e6beff'), new THREE.Color('#9a6324'), new THREE.Color('#fffac8'), new THREE.Color('#800000'), new THREE.Color('#aaffc3'), new THREE.Color('#808000'), new THREE.Color('#ffd8b1'), new THREE.Color('#000075'), new THREE.Color('#808080'), new THREE.Color('#ffffff'), new THREE.Color('#000000')];
 	var black = new THREE.Color('black');
 	var timeCursor, timeCursorEndpoint;
 	var playing = false;
 	var targetList = [];
+	var ringMesh;
+	
+	var drums505 = new Tone.Sampler({
+		D4: 'snare.[mp3|ogg]',
+		C3: 'kick.[mp3|ogg]',
+		G3: 'hh.[mp3|ogg]',
+		A3: 'hho.[mp3|ogg]'
+	}, {
+		volume: 11,
+		release: 1,
+		baseUrl: './assets/audio/505/'
+	}).toMaster();
 	
 	return {
 		
 		settings: {
 			defaultCameraLocation: {
 				x: 0,
-				y: 30,
+				y: 10,
 				z: 0
 			},
 			beatsPerWheel: 8,
+			tracksPerWheel: 4,
 			axesHelper: {
 				activateAxesHelper: false,
 				axisLength: 10
@@ -56,11 +69,12 @@ module.exports = function() {
 			renderer = gfx.setUpRenderer(renderer);
 			camera = gfx.setUpCamera(camera);
 			floor = gfx.addFloor(this.settings.floorSize, scene, this.settings.colors.worldColor, this.settings.colors.gridColor);
-			controls = gfx.enableControls(controls, renderer, camera);
+			//controls = gfx.enableControls(controls, renderer, camera);
 			gfx.resizeRendererOnWindowResize(renderer, camera);
 			self.setUpButtons();
 			gfx.setUpLights(scene);
 			gfx.setCameraLocation(camera, self.settings.defaultCameraLocation);
+			camera.lookAt(new THREE.Vector3(0, 0, 0));
 			self.addGeometries();
 			self.setUpRhythm();
 			
@@ -68,7 +82,9 @@ module.exports = function() {
 
 				requestAnimationFrame(animate);
 				renderer.render(scene, camera);
-				controls.update();
+				if (controls) controls.update();
+				
+				ringMesh.geometry.colorsNeedUpdate = true;
 			};
 			
 			animate();
@@ -150,51 +166,29 @@ module.exports = function() {
 			
 			let self = this;
 			
-			let instrumentTracks = 4;
 			let circleRadius = 4;
 			let maxRadius = 0;
 			let colors = [new THREE.Color('red'), new THREE.Color('green'), new THREE.Color('blue'), new THREE.Color('purple'), new THREE.Color('orange')];
 			
-			// for (let i = 1; i <= instrumentTracks; i++) {
-				
-			// 	let ring = new THREE.CircleGeometry(circleRadius * i, this.settings.beatsPerWheel);
-			// 	console.log(ring);
-			// 	ring.rotateX(-Math.PI/2);
-			// 	let faceColorMaterial = new THREE.MeshBasicMaterial({
-			// 		color: new THREE.Color('purple'),
-			// 		vertexColors: THREE.FaceColors//,
-			// 		// transparent: true,
-			// 		// opacity: .5
-			// 	});
-			// 	for (let j = 0; j < ring.faces.length; j++) {
-			// 		ring.faces[j].color.setRGB( 0, 0, 0.8 * Math.random() + 0.2 );		
-			// 	}
-			// 	let mesh = new THREE.Mesh(ring.clone(), faceColorMaterial);
-			// 	console.log(mesh);
-			// 	mesh.name = 'Mesh-' + i.toString();
-			// 	let wireframe = new THREE.Mesh(ring, wireframeMaterial);
-				
-			// 	mesh.position.y += this.settings.zBufferOffset * (i * 2);
-			// 	scene.add(mesh);
-			// 	scene.add(wireframe);
-			// 	wireframe.position.y += this.settings.zBufferOffset * (i * 2 + 1);
-			// 	targetList.push(mesh);
-				
-				
-			// 	//ring = self.reorderCircleVertices(ring);
-			// 	maxRadius = circleRadius * i;
-			// }
+			let ring = new THREE.RingGeometry(1, 5, this.settings.beatsPerWheel, this.settings.tracksPerWheel);
+			ring.rotateX(-Math.PI/2);
+			ring.translate(0, this.settings.zBufferOffset, 0);
 			
-			//let buffer = (instrumentTracks * 2 + 5) * this.settings.zBufferOffset;
+			let faceColorMaterial = new THREE.MeshBasicMaterial({
+				color: new THREE.Color('white'),
+				vertexColors: THREE.FaceColors
+			});
+			ringMesh = new THREE.Mesh(ring, faceColorMaterial);
 			
-			var geometry = new THREE.RingGeometry( 1, 5, this.settings.beatsPerWheel, 4 );
-			geometry.rotateX(-Math.PI/2);
-			var material = new THREE.MeshBasicMaterial( { color: 0xffff00, side: THREE.DoubleSide } );
-			var mesh = new THREE.Mesh( geometry, wireframeMaterial );
-			scene.add( mesh );
+			let wireframeMesh = new THREE.Mesh(ring, wireframeMaterial);
+			wireframeMesh.position.y += this.settings.zBufferOffset * 2;
+			targetList.push(ringMesh);
+			scene.add(ringMesh);
+			scene.add(wireframeMesh);
+			console.log(wireframeMesh);
 			
 			let timeCursorGeometry = gfx.createLine(new THREE.Vector3(0, this.settings.zBufferOffset, 0), new THREE.Vector3(0, this.settings.zBufferOffset, -maxRadius));
-			let lineMaterial = new THREE.LineBasicMaterial( { color: 0x0000ff } );
+			let lineMaterial = new THREE.LineBasicMaterial({ color: 0x0000ff });
 			timeCursor = new THREE.Line(timeCursorGeometry, lineMaterial);
 			scene.add(timeCursor);
 		},
@@ -295,16 +289,46 @@ module.exports = function() {
 		
 		intersects: function(event) {
 			
+			let self = this;
 			raycaster.setFromCamera(mouse, camera);
-			var intersects = raycaster.intersectObjects( targetList );
+			var intersects = raycaster.intersectObjects(targetList);
 			
 			if (intersects.length > 0) {
 				
-				console.log(intersects[ 0 ]);
-				//console.log(intersects[ 0 ].object.geometry.uuid);
-				intersects[ 0 ].face.color.setRGB( 0.8 * Math.random() + 0.2, 0, 0 ); 
-				intersects[ 0 ].object.geometry.colorsNeedUpdate = true;
+				let faceIndex = intersects[0].faceIndex;
+				self.setFaceColor(faceIndex);
 			}
+		},
+		
+		setFaceColor: function(faceIndex) {
+			
+			let setColor;
+			if (ringMesh.geometry.faces[faceIndex].selected === true) {
+				setColor = new THREE.Color('white');
+			}
+			else {
+				setColor = new THREE.Color('black');
+			}
+			
+			let evenFace = (faceIndex % 2 === 0);
+			if (evenFace) {
+				ringMesh.geometry.faces[faceIndex].color.setRGB(setColor.r, setColor.g, setColor.b);
+				ringMesh.geometry.faces[faceIndex + 1].color.setRGB(setColor.r, setColor.g, setColor.b);
+				ringMesh.geometry.faces[faceIndex].selected = !ringMesh.geometry.faces[faceIndex].selected;
+				ringMesh.geometry.faces[faceIndex + 1].selected = !ringMesh.geometry.faces[faceIndex + 1].selected;
+			}
+			else {
+				ringMesh.geometry.faces[faceIndex].color.setRGB(setColor.r, setColor.g, setColor.b);
+				ringMesh.geometry.faces[faceIndex - 1].color.setRGB(setColor.r, setColor.g, setColor.b);
+				ringMesh.geometry.faces[faceIndex].selected = !ringMesh.geometry.faces[faceIndex].selected;
+				ringMesh.geometry.faces[faceIndex - 1].selected = !ringMesh.geometry.faces[faceIndex - 1].selected;
+			}
+			
+			
+			// ringMesh.geometry.faces[faceIndex].color.setRGB(0, 0, 1);
+			// console.log(ringMesh.geometry.faces[faceIndex]);
+			
+			ringMesh.geometry.colorsNeedUpdate = true;
 		},
 		
 		resizeRendererOnWindowResize: function() {
