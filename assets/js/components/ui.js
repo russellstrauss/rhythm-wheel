@@ -21,15 +21,15 @@ module.exports = function() {
 				let increase = inputStepper.querySelector('.increase');
 				if (increase) increase.addEventListener('click', function() {
 					let max = parseInt(input.getAttribute('max'));
-					if (input.value < max) input.value = parseInt(input.value) + 5;
-					Tone.Transport.bpm.value += 5;
+					if (input.value < max) input.value = parseInt(input.value) + 1;
+					Tone.Transport.bpm.value += 1;
 				});
 				
 				let decrease = inputStepper.querySelector('.decrease');
 				if (decrease) decrease.addEventListener('click', function() {
 					let min = parseInt(input.getAttribute('min'));
-					if (input.value > min) input.value = parseInt(input.value) - 5;
-					Tone.Transport.bpm.value -= 5;
+					if (input.value > min) input.value = parseInt(input.value) - 1;
+					Tone.Transport.bpm.value -= 1;
 				});
 			});
 			

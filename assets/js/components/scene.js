@@ -7,7 +7,7 @@ module.exports = function() {
 	var distinctColors = [new THREE.Color('#2F72CA'), new THREE.Color('#A82F2F'), new THREE.Color('#18995B'), new THREE.Color('#F2B233'), new THREE.Color('#f58231'), new THREE.Color('#911eb4'), new THREE.Color('#46f0f0'), new THREE.Color('#f032e6'), new THREE.Color('#bcf60c'), new THREE.Color('#fabebe'), new THREE.Color('#008080'), new THREE.Color('#e6beff'), new THREE.Color('#9a6324'), new THREE.Color('#fffac8'), new THREE.Color('#800000'), new THREE.Color('#aaffc3'), new THREE.Color('#808000'), new THREE.Color('#ffd8b1'), new THREE.Color('#000075'), new THREE.Color('#808080'), new THREE.Color('#ffffff'), new THREE.Color('#000000')];
 	
 	var black = new THREE.Color('black');
-	var timeCursor, timeCursorEndpoint;
+	var timeCursor;
 	var playing = false;
 	var targetList = [];
 	var rhythmWheelMesh;
@@ -17,24 +17,16 @@ module.exports = function() {
 	
 	var presets = {
 		rapBeat: [
-			[]
+			[null, null, null, null, 'D4', null, null, null, null, null, null, null, 'D4', null, null, null],
+			['C3', null, null, null, null, null, null, 'C3', 'C3', null, null, null, null, null, 'C3', null],
+			['G3', null, 'G3', null, 'G3', null, 'G3', 'G3', 'G3', null, null, null, 'G3', null, 'G3', null],
+			[null, null, null, null, null, null, null, null, null, null, 'A3', null, null, null, null, null]
 		]
 	}
+	var preset = presets.rapBeat;
+	preset = null;
 	
-	var reverb = new Tone.Reverb().toMaster();
-	var drums505 = new Tone.Sampler({
-		D4: 'snare.[mp3|ogg]',
-		C3: 'kick.[mp3|ogg]',
-		G3: 'hh.[mp3|ogg]',
-		A3: 'hho.[mp3|ogg]'
-	}, {
-		volume: 4,
-		release: 1,
-		baseUrl: './assets/audio/505/'
-	}).toMaster();
-	let noteValues = ['D4', 'C3', 'G3', 'A3'];
-	
-	var keys = new Tone.Players({
+	var drums = new Tone.Players({
 		D4: './assets/audio/505/snare.[mp3|ogg]',
 		C3: './assets/audio/505/kick.[mp3|ogg]',
 		G3: './assets/audio/505/hh.[mp3|ogg]',
@@ -43,6 +35,8 @@ module.exports = function() {
 		volume: 5,
 		fadeOut: "16n"
 	}).toMaster();
+	let noteValues = ['D4', 'C3', 'G3', 'A3'];
+	
 	
 	return {
 		
@@ -96,11 +90,12 @@ module.exports = function() {
 			renderer = gfx.setUpRenderer(renderer);
 			camera = gfx.setUpCamera(camera);
 			floor = gfx.addFloor(this.settings.floorSize, scene, this.settings.colors.worldColor, this.settings.colors.gridColor);
-			controls = gfx.enableControls(controls, renderer, camera);
+			//controls = gfx.enableControls(controls, renderer, camera);
 			gfx.resizeRendererOnWindowResize(renderer, camera);
 			self.setUpButtons();
 			gfx.setUpLights(scene);
 			gfx.setCameraLocation(camera, self.settings.defaultCameraLocation);
+			if (utils.mobile()) gfx.setCameraLocation(camera, new THREE.Vector3(self.settings.defaultCameraLocation.x, self.settings.defaultCameraLocation.y + 5, self.settings.defaultCameraLocation.z));
 			camera.lookAt(new THREE.Vector3(0, 0, 0));
 			self.addGeometries();
 			self.addLabels();
@@ -125,30 +120,27 @@ module.exports = function() {
 			Tone.Transport.bpm.value = self.settings.rhythmWheel.bpm;
 			
 			for (let i = 0; i < self.settings.rhythmWheel.tracks; i++) { // init empty beats
-				tracks.push([]);
+				
+				if (preset)	tracks.push(presets.rapBeat[i]);
+				else tracks.push([]);
 				for (let j = 0; j < self.settings.rhythmWheel.beats; j++) {
-					tracks[i].push(null);
+					if (!preset) tracks[i].push(null);
 				}
 			}
 	
 			scope = self;
-			Tone.Transport.scheduleRepeat(triggerBeats, this.settings.rhythmWheel.beats.toString() + 'n');
+			Tone.Transport.scheduleRepeat(triggerBeats, '16n');
 			
 			function triggerBeats(time) {
-
-				scene.remove(timeCursor);
-				gfx.rotateGeometryAboutLine(timeCursor.geometry, new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 1, 0), -2*Math.PI/scope.settings.rhythmWheel.beats);
-				timeCursor = gfx.drawLine(timeCursor.geometry.vertices[0], timeCursor.geometry.vertices[1], scene, 0xff0000);
+				
+				timeCursor.rotation.y += -2*Math.PI/scope.settings.rhythmWheel.beats;
 				
 				let beat = rhythmCount % scope.settings.rhythmWheel.beats;
 
 				for (let i = 0; i < scope.settings.rhythmWheel.tracks; i++) {
 
 					if (tracks[i][beat] !== null) {
-						//drums505.triggerAttackRelease(tracks[i][beat], scope.settings.rhythmWheel.beats.toString() + 'n', time);
-						
-						var vel = Math.random() * 0.5 + 0.5;
-						keys.get(tracks[i][beat]).start(time, 0, scope.settings.rhythmWheel.beats.toString() + 'n', 0, vel);
+						drums.get(tracks[i][beat]).start(time, 0, scope.settings.rhythmWheel.beats.toString() + 'n', 0);
 					}
 				}
 				rhythmCount++;
@@ -176,9 +168,10 @@ module.exports = function() {
 			scene.add(rhythmWheelMesh);
 			scene.add(wireframeMesh);
 			
-			let timeCursorGeometry = gfx.createLine(new THREE.Vector3(0, this.settings.zBufferOffset * 2, -this.settings.rhythmWheel.innerRadius), new THREE.Vector3(0, this.settings.zBufferOffset * 2, -this.settings.rhythmWheel.outerRadius));
-			let lineMaterial = new THREE.LineBasicMaterial({ color: 0x0000ff });
-			timeCursor = new THREE.Line(timeCursorGeometry, lineMaterial);
+			var geometry = new THREE.BoxGeometry( .1, .01, this.settings.rhythmWheel.outerRadius - this.settings.rhythmWheel.innerRadius);
+			geometry.translate(0, .1/2, -(this.settings.rhythmWheel.outerRadius - this.settings.rhythmWheel.innerRadius)/2 - this.settings.rhythmWheel.innerRadius);
+			var material = new THREE.MeshBasicMaterial( {color: black, transparent: true, opacity: .75} );
+			timeCursor = new THREE.Mesh( geometry, material );
 			scene.add(timeCursor);
 		},
 

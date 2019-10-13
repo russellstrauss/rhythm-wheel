@@ -97,10 +97,13 @@ $legendWidth: 150px;
 	position: absolute;
 	//left: $legendWidth + 40px;
 	left: 20px;
-	bottom: 20px;
+	bottom: 10px;
 	display: flex;
 	
 	.play-toggle {
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
 		
 		&.active {
 			
@@ -196,6 +199,10 @@ $legendWidth: 150px;
 	display: flex;
 	font-size: 12px;
 	pointer-events: none;
+	
+	@include mobile-only {
+		display: none;
+	}
 	
 	.column {
 		
