@@ -188,6 +188,21 @@ module.exports = function() {
 			var material = new THREE.MeshBasicMaterial({color: black, transparent: true, opacity: .75});
 			timeCursor = new THREE.Mesh(geometry, material);
 			scene.add(timeCursor);
+			
+			let facesPerRow = this.settings.rhythmWheel.beats * 2;
+			for (let track = 3; track < 5; track++) {
+				
+				for (let beat = 0; beat < this.settings.rhythmWheel.beats * 2; beat++) {
+					
+					let beatIndex = (beat % (this.settings.rhythmWheel.beats * 2));
+					console.log(beatIndex);
+					
+					let faceIndex = (facesPerRow * track - 1) - beatIndex;
+					
+					this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, black);
+				}
+			}
+			
 		},
 
 		enableControls: function() {
@@ -246,6 +261,8 @@ module.exports = function() {
 				setColor = distinctColors[trackIndex];
 			}
 			
+			console.log(faceIndex);
+			
 			let evenFace = (faceIndex % 2 === 0);
 			if (evenFace) {
 				this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, setColor);
@@ -268,6 +285,10 @@ module.exports = function() {
 		setFaceColorByIndex: function(mesh, faceIndex, color) {
 			mesh.geometry.faces[faceIndex].color.setRGB(color.r, color.g, color.b);
 			mesh.geometry.colorsNeedUpdate = true;
+		},
+		
+		setFaceColorByNotePosition: function(beatIndex, trackIndex) {
+			
 		},
 		
 		loadFont: function() {

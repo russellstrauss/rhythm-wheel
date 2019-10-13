@@ -171,6 +171,16 @@ module.exports = function () {
       });
       timeCursor = new THREE.Mesh(geometry, material);
       scene.add(timeCursor);
+      var facesPerRow = this.settings.rhythmWheel.beats * 2;
+
+      for (var track = 3; track < 5; track++) {
+        for (var beat = 0; beat < this.settings.rhythmWheel.beats * 2; beat++) {
+          var beatIndex = beat % (this.settings.rhythmWheel.beats * 2);
+          console.log(beatIndex);
+          var faceIndex = facesPerRow * track - 1 - beatIndex;
+          this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, black);
+        }
+      }
     },
     enableControls: function enableControls() {
       controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -219,6 +229,7 @@ module.exports = function () {
         setColor = distinctColors[trackIndex];
       }
 
+      console.log(faceIndex);
       var evenFace = faceIndex % 2 === 0;
 
       if (evenFace) {
@@ -241,6 +252,7 @@ module.exports = function () {
       mesh.geometry.faces[faceIndex].color.setRGB(color.r, color.g, color.b);
       mesh.geometry.colorsNeedUpdate = true;
     },
+    setFaceColorByNotePosition: function setFaceColorByNotePosition(beatIndex, trackIndex) {},
     loadFont: function loadFont() {
       var self = this;
       var loader = new THREE.FontLoader();
