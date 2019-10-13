@@ -24,7 +24,6 @@ module.exports = function() {
 		]
 	}
 	var preset = presets.rapBeat;
-	preset = null;
 	
 	var drums = new Tone.Players({
 		snare: './assets/audio/505/snare.[mp3|ogg]',
@@ -85,7 +84,7 @@ module.exports = function() {
 				innerRadius: 1,
 				outerRadius: 5,
 				beats: 16,
-				tracks: 12,
+				tracks: 4,
 				bpm: 120
 			}
 		},
@@ -135,11 +134,21 @@ module.exports = function() {
 			Tone.Transport.timeSignature = [2, 4];
 			
 			for (let i = 0; i < self.settings.rhythmWheel.tracks; i++) { // init empty beats
-				
-				if (preset)	tracks.push(presets.rapBeat[i]);
-				else tracks.push([]);
+				tracks.push([]);
 				for (let j = 0; j < self.settings.rhythmWheel.beats; j++) {
-					if (!preset) tracks[i].push(null);
+					tracks[i].push(null);
+				}
+			}
+			
+			if (preset) {
+				tracks = preset;
+				
+				for (let track = 0; track < preset.length; track++) {
+					
+					for (let beat = 0; beat < preset[track].length; beat++) {
+						
+						if (tracks[track][beat]) this.setFaceColorByNotePosition(beat, track);
+					}
 				}
 			}
 	
@@ -188,15 +197,6 @@ module.exports = function() {
 			var material = new THREE.MeshBasicMaterial({color: black, transparent: true, opacity: .75});
 			timeCursor = new THREE.Mesh(geometry, material);
 			scene.add(timeCursor);
-			
-			// Fill in all notes for testing
-			// for (let track = 0; track < this.settings.rhythmWheel.tracks; track++) {
-				
-			// 	for (let beat = 0; beat < this.settings.rhythmWheel.beats; beat++) {
-					
-			// 		this.setFaceColorByNotePosition(beat, track);
-			// 	}
-			// }
 		},
 		
 		setFaceColorByNotePosition: function(beatIndex, trackIndex) {
@@ -206,8 +206,10 @@ module.exports = function() {
 			let facesPerRow = this.settings.rhythmWheel.beats * 2;
 			let faceIndex = (facesPerRow * track - 1) - (beatIndex * 2);
 
-			this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, black);
-			this.setFaceColorByIndex(rhythmWheelMesh, faceIndex - 1, black);
+			this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, distinctColors[trackIndex]);
+			this.setFaceColorByIndex(rhythmWheelMesh, faceIndex - 1, distinctColors[trackIndex]);
+			rhythmWheelMesh.geometry.faces[faceIndex].selected = true;
+			rhythmWheelMesh.geometry.faces[faceIndex - 1].selected = true;
 		},
 
 		enableControls: function() {
@@ -265,8 +267,6 @@ module.exports = function() {
 			else {
 				setColor = distinctColors[trackIndex];
 			}
-			
-			console.log(faceIndex);
 			
 			let evenFace = (faceIndex % 2 === 0);
 			if (evenFace) {

@@ -24,7 +24,6 @@ module.exports = function () {
     rapBeat: [[null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null], ['kick', null, null, null, null, null, null, 'kick', 'kick', null, null, null, null, null, 'kick', null], ['hh', null, 'hh', null, 'hh', null, 'hh', 'hh', 'hh', null, null, null, 'hh', null, 'hh', null], [null, null, null, null, null, null, null, null, null, null, 'hho', null, null, null, null, null]]
   };
   var preset = presets.rapBeat;
-  preset = null;
   var drums = new Tone.Players({
     snare: './assets/audio/505/snare.[mp3|ogg]',
     kick: './assets/audio/505/kick.[mp3|ogg]',
@@ -82,7 +81,7 @@ module.exports = function () {
         innerRadius: 1,
         outerRadius: 5,
         beats: 16,
-        tracks: 12,
+        tracks: 4,
         bpm: 120
       }
     },
@@ -123,10 +122,20 @@ module.exports = function () {
 
       for (var i = 0; i < self.settings.rhythmWheel.tracks; i++) {
         // init empty beats
-        if (preset) tracks.push(presets.rapBeat[i]);else tracks.push([]);
+        tracks.push([]);
 
         for (var j = 0; j < self.settings.rhythmWheel.beats; j++) {
-          if (!preset) tracks[i].push(null);
+          tracks[i].push(null);
+        }
+      }
+
+      if (preset) {
+        tracks = preset;
+
+        for (var track = 0; track < preset.length; track++) {
+          for (var beat = 0; beat < preset[track].length; beat++) {
+            if (tracks[track][beat]) this.setFaceColorByNotePosition(beat, track);
+          }
         }
       }
 
@@ -170,20 +179,17 @@ module.exports = function () {
         opacity: .75
       });
       timeCursor = new THREE.Mesh(geometry, material);
-      scene.add(timeCursor); // Fill in all notes for testing
-      // for (let track = 0; track < this.settings.rhythmWheel.tracks; track++) {
-      // 	for (let beat = 0; beat < this.settings.rhythmWheel.beats; beat++) {
-      // 		this.setFaceColorByNotePosition(beat, track);
-      // 	}
-      // }
+      scene.add(timeCursor);
     },
     setFaceColorByNotePosition: function setFaceColorByNotePosition(beatIndex, trackIndex) {
       var track = trackIndex + 1;
       beatIndex = beatIndex % this.settings.rhythmWheel.beats;
       var facesPerRow = this.settings.rhythmWheel.beats * 2;
       var faceIndex = facesPerRow * track - 1 - beatIndex * 2;
-      this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, black);
-      this.setFaceColorByIndex(rhythmWheelMesh, faceIndex - 1, black);
+      this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, distinctColors[trackIndex]);
+      this.setFaceColorByIndex(rhythmWheelMesh, faceIndex - 1, distinctColors[trackIndex]);
+      rhythmWheelMesh.geometry.faces[faceIndex].selected = true;
+      rhythmWheelMesh.geometry.faces[faceIndex - 1].selected = true;
     },
     enableControls: function enableControls() {
       controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -232,7 +238,6 @@ module.exports = function () {
         setColor = distinctColors[trackIndex];
       }
 
-      console.log(faceIndex);
       var evenFace = faceIndex % 2 === 0;
 
       if (evenFace) {
