@@ -170,17 +170,20 @@ module.exports = function () {
         opacity: .75
       });
       timeCursor = new THREE.Mesh(geometry, material);
-      scene.add(timeCursor);
+      scene.add(timeCursor); // Fill in all notes for testing
+      // for (let track = 0; track < this.settings.rhythmWheel.tracks; track++) {
+      // 	for (let beat = 0; beat < this.settings.rhythmWheel.beats; beat++) {
+      // 		this.setFaceColorByNotePosition(beat, track);
+      // 	}
+      // }
+    },
+    setFaceColorByNotePosition: function setFaceColorByNotePosition(beatIndex, trackIndex) {
+      var track = trackIndex + 1;
+      beatIndex = beatIndex % this.settings.rhythmWheel.beats;
       var facesPerRow = this.settings.rhythmWheel.beats * 2;
-
-      for (var track = 3; track < 5; track++) {
-        for (var beat = 0; beat < this.settings.rhythmWheel.beats * 2; beat++) {
-          var beatIndex = beat % (this.settings.rhythmWheel.beats * 2);
-          console.log(beatIndex);
-          var faceIndex = facesPerRow * track - 1 - beatIndex;
-          this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, black);
-        }
-      }
+      var faceIndex = facesPerRow * track - 1 - beatIndex * 2;
+      this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, black);
+      this.setFaceColorByIndex(rhythmWheelMesh, faceIndex - 1, black);
     },
     enableControls: function enableControls() {
       controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -252,7 +255,6 @@ module.exports = function () {
       mesh.geometry.faces[faceIndex].color.setRGB(color.r, color.g, color.b);
       mesh.geometry.colorsNeedUpdate = true;
     },
-    setFaceColorByNotePosition: function setFaceColorByNotePosition(beatIndex, trackIndex) {},
     loadFont: function loadFont() {
       var self = this;
       var loader = new THREE.FontLoader();
