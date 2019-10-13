@@ -56,7 +56,15 @@ module.exports = function () {
         enable: true,
         fontStyle: {
           font: null,
-          size: .25,
+          size: .5,
+          height: 0,
+          curveSegments: 1
+        }
+      },
+      smallFont: {
+        fontStyle: {
+          font: null,
+          size: .18,
           height: 0,
           curveSegments: 1
         }
@@ -235,6 +243,7 @@ module.exports = function () {
       loader.load(fontPath, function (font) {
         // success event
         self.settings.font.fontStyle.font = font;
+        self.settings.smallFont.fontStyle.font = font;
         self.begin();
         if (self.settings.axesHelper.activateAxesHelper) self.labelAxes();
       }, function (event) {// in progress event.
@@ -253,13 +262,14 @@ module.exports = function () {
         }
       }, 250));
     },
-    labelPoint: function labelPoint(pt, label, scene, color) {
+    labelPoint: function labelPoint(pt, label, scene, color, font) {
+      font = font || this.settings.font;
       var self = this;
-      var textCenterOffset = this.settings.font.fontStyle.size / 2;
+      var textCenterOffset = font.fontStyle.size / 2;
 
       if (this.settings.font.enable) {
         color = color || 0xff0000;
-        var textGeometry = new THREE.TextGeometry(label, this.settings.font.fontStyle);
+        var textGeometry = new THREE.TextGeometry(label, font.fontStyle);
         textGeometry.rotateX(-Math.PI / 2);
         textGeometry.translate(pt.x - textCenterOffset, pt.y, pt.z + textCenterOffset);
         var textMaterial = new THREE.MeshBasicMaterial({
@@ -279,12 +289,15 @@ module.exports = function () {
         var centerRotation = Math.PI / self.settings.rhythmWheel.beats;
         var totalRotation = placementRotation + centerRotation;
         var result = transform.clone().applyAxisAngle(axis, totalRotation);
-        result.setLength(result.length() * (1 + self.settings.font.fontStyle.size / 2));
+        result.setLength(result.length() * (1 + self.settings.font.fontStyle.size / 8));
         var arrowHelper = new THREE.ArrowHelper(result.clone().normalize(), new THREE.Vector3(0, 2 * self.settings.zBufferOffset, 0), this.settings.rhythmWheel.outerRadius, black);
         var labelPoint = gfx.movePoint(new THREE.Vector3(0, 0, 0), result);
-        var label = ((i + 2) / 2).toString();
-        if (i % 2 === 1) label = '&';
-        this.labelPoint(labelPoint, label, scene, black);
+
+        if (i % 2 === 1) {
+          self.labelPoint(labelPoint, Math.floor((i + 2) / 2).toString(), scene, black);
+        } else {
+          self.labelPoint(labelPoint, '&', scene, black, self.settings.smallFont);
+        }
       }
     }
   };
