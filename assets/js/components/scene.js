@@ -4,7 +4,7 @@ module.exports = function() {
 	var raycaster = new THREE.Raycaster();
 	var mouse = new THREE.Vector2();
 	var wireframeMaterial = new THREE.MeshBasicMaterial({ wireframe: true, color: new THREE.Color('black'), opacity: .25, transparent: true });
-	var distinctColors = [new THREE.Color('#2F72CA'), new THREE.Color('#A82F2F'), new THREE.Color('#18995B'), new THREE.Color('#F2B233'), new THREE.Color('#f58231'), new THREE.Color('#911eb4'), new THREE.Color('#46f0f0'), new THREE.Color('#f032e6'), new THREE.Color('#bcf60c'), new THREE.Color('#fabebe'), new THREE.Color('#008080'), new THREE.Color('#e6beff'), new THREE.Color('#9a6324'), new THREE.Color('#fffac8'), new THREE.Color('#800000'), new THREE.Color('#aaffc3'), new THREE.Color('#808000'), new THREE.Color('#ffd8b1'), new THREE.Color('#000075'), new THREE.Color('#808080'), new THREE.Color('#ffffff'), new THREE.Color('#000000')];
+	var distinctColors = [new THREE.Color('#2F72CA'), new THREE.Color('#A82F2F'), new THREE.Color('#18995B'), new THREE.Color('#F2B233'), new THREE.Color('#f58231'), new THREE.Color('#911eb4'), new THREE.Color('#46f0f0'), new THREE.Color('#f032e6'), new THREE.Color('#bcf60c'), new THREE.Color('#fabebe'), new THREE.Color('#008080'), new THREE.Color('#e6beff'), new THREE.Color('#9a6324'), new THREE.Color('#fffac8'), new THREE.Color('#800000'), new THREE.Color('#aaffkick'), new THREE.Color('#808000'), new THREE.Color('#ffd8b1'), new THREE.Color('#000075'), new THREE.Color('#808080'), new THREE.Color('#ffffff'), new THREE.Color('#000000')];
 	
 	var black = new THREE.Color('black');
 	var timeCursor;
@@ -17,25 +17,31 @@ module.exports = function() {
 	
 	var presets = {
 		rapBeat: [
-			[null, null, null, null, 'D4', null, null, null, null, null, null, null, 'D4', null, null, null],
-			['C3', null, null, null, null, null, null, 'C3', 'C3', null, null, null, null, null, 'C3', null],
-			['G3', null, 'G3', null, 'G3', null, 'G3', 'G3', 'G3', null, null, null, 'G3', null, 'G3', null],
-			[null, null, null, null, null, null, null, null, null, null, 'A3', null, null, null, null, null]
+			[null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null],
+			['kick', null, null, null, null, null, null, 'kick', 'kick', null, null, null, null, null, 'kick', null],
+			['hh', null, 'hh', null, 'hh', null, 'hh', 'hh', 'hh', null, null, null, 'hh', null, 'hh', null],
+			[null, null, null, null, null, null, null, null, null, null, 'hho', null, null, null, null, null]
 		]
 	}
 	var preset = presets.rapBeat;
 	preset = null;
 	
 	var drums = new Tone.Players({
-		D4: './assets/audio/505/snare.[mp3|ogg]',
-		C3: './assets/audio/505/kick.[mp3|ogg]',
-		G3: './assets/audio/505/hh.[mp3|ogg]',
-		A3: './assets/audio/505/hho.[mp3|ogg]'
+		snare: './assets/audio/505/snare.[mp3|ogg]',
+		kick: './assets/audio/505/kick.[mp3|ogg]',
+		hh: './assets/audio/505/hh.[mp3|ogg]',
+		hho: './assets/audio/505/hho.[mp3|ogg]',
+		bongoLow: './assets/audio/jazz/MTBongoLow.wav',
+		bongoHigh: './assets/audio/jazz/MTBongoHigh.wav',
+		congaLow: './assets/audio/jazz/MTCongaLow.wav',
+		congaHigh: './assets/audio/jazz/MTCongaHigh.wav',
+		congaMuteHigh: './assets/audio/jazz/MTCongaMutHi.wav',
+		cowbell: './assets/audio/jazz/cowbell.wav',
+		ride: './assets/audio/jazz/ride1.wav'
 	},{
-		volume: 5,
-		fadeOut: "16n"
+		volume: 5
 	}).toMaster();
-	let noteValues = ['D4', 'C3', 'G3', 'A3'];
+	let noteValues = ['snare', 'kick', 'hh', 'hho', 'bongoLow', 'bongoHigh', 'congaLow', 'congaHigh', 'congaMuteHigh', 'cowbell', 'ride'];
 	
 	
 	return {
@@ -71,7 +77,7 @@ module.exports = function() {
 				innerRadius: 1,
 				outerRadius: 5,
 				beats: 16,
-				tracks: 4,
+				tracks: 11,
 				bpm: 120
 			}
 		},
@@ -140,7 +146,7 @@ module.exports = function() {
 				for (let i = 0; i < scope.settings.rhythmWheel.tracks; i++) {
 
 					if (tracks[i][beat] !== null) {
-						drums.get(tracks[i][beat]).start(time, 0, scope.settings.rhythmWheel.beats.toString() + 'n', 0);
+						drums.get(tracks[i][beat]).start(time, 0);
 					}
 				}
 				rhythmCount++;
@@ -168,10 +174,10 @@ module.exports = function() {
 			scene.add(rhythmWheelMesh);
 			scene.add(wireframeMesh);
 			
-			var geometry = new THREE.BoxGeometry( .1, .01, this.settings.rhythmWheel.outerRadius - this.settings.rhythmWheel.innerRadius);
+			var geometry = new THREE.BoxGeometry(.1, .01, this.settings.rhythmWheel.outerRadius - this.settings.rhythmWheel.innerRadius);
 			geometry.translate(0, .1/2, -(this.settings.rhythmWheel.outerRadius - this.settings.rhythmWheel.innerRadius)/2 - this.settings.rhythmWheel.innerRadius);
-			var material = new THREE.MeshBasicMaterial( {color: black, transparent: true, opacity: .75} );
-			timeCursor = new THREE.Mesh( geometry, material );
+			var material = new THREE.MeshBasicMaterial({color: black, transparent: true, opacity: .75});
+			timeCursor = new THREE.Mesh(geometry, material);
 			scene.add(timeCursor);
 		},
 
