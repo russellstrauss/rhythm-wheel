@@ -130,7 +130,8 @@ module.exports = function() {
 			
 			let self = this;
 			
-			Tone.Transport.bpm.value = self.settings.rhythmWheel.bpm;
+			Tone.Transport.bpm.value = preset.bpm;
+			document.querySelector('#bpm').value = preset.bpm.toString();
 			Tone.Transport.timeSignature = [2, 4];
 			
 			for (let i = 0; i < self.settings.rhythmWheel.tracks; i++) { // init empty beats
