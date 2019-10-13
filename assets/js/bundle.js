@@ -36,11 +36,12 @@ module.exports = function () {
     congaHigh: './assets/audio/jazz/MTCongaHigh.wav',
     congaMuteHigh: './assets/audio/jazz/MTCongaMutHi.wav',
     cowbell: './assets/audio/jazz/cowbell.wav',
-    ride: './assets/audio/jazz/ride1.wav'
+    ride: './assets/audio/jazz/ride5.wav',
+    snareRim: './assets/audio/jazz/snare-rim.wav'
   }, {
     volume: 5
   }).toMaster();
-  var noteValues = ['snare', 'kick', 'hh', 'hho', 'bongoLow', 'bongoHigh', 'congaLow', 'congaHigh', 'congaMuteHigh', 'cowbell', 'ride'];
+  var noteValues = ['snare', 'kick', 'hh', 'hho', 'bongoLow', 'bongoHigh', 'congaLow', 'congaHigh', 'congaMuteHigh', 'cowbell', 'ride', 'snareRim'];
   return {
     settings: {
       defaultCameraLocation: {
@@ -81,7 +82,7 @@ module.exports = function () {
         innerRadius: 1,
         outerRadius: 5,
         beats: 16,
-        tracks: 11,
+        tracks: 12,
         bpm: 120
       }
     },
@@ -118,6 +119,7 @@ module.exports = function () {
     setUpRhythm: function setUpRhythm() {
       var self = this;
       Tone.Transport.bpm.value = self.settings.rhythmWheel.bpm;
+      Tone.Transport.timeSignature = [2, 4];
 
       for (var i = 0; i < self.settings.rhythmWheel.tracks; i++) {
         // init empty beats
@@ -203,10 +205,10 @@ module.exports = function () {
 
       if (intersects.length > 0) {
         var faceIndex = intersects[0].faceIndex;
-        self.setFaceColor(faceIndex);
+        self.setUpFaceClicks(faceIndex);
       }
     },
-    setFaceColor: function setFaceColor(faceIndex) {
+    setUpFaceClicks: function setUpFaceClicks(faceIndex) {
       var beatIndex = this.settings.rhythmWheel.beats - 1 - Math.floor(faceIndex / 2) % this.settings.rhythmWheel.beats;
       var trackIndex = Math.floor(faceIndex / (this.settings.rhythmWheel.beats * 2));
       var setColor;
@@ -220,13 +222,13 @@ module.exports = function () {
       var evenFace = faceIndex % 2 === 0;
 
       if (evenFace) {
-        rhythmWheelMesh.geometry.faces[faceIndex].color.setRGB(setColor.r, setColor.g, setColor.b);
-        rhythmWheelMesh.geometry.faces[faceIndex + 1].color.setRGB(setColor.r, setColor.g, setColor.b);
+        this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, setColor);
+        this.setFaceColorByIndex(rhythmWheelMesh, faceIndex + 1, setColor);
         rhythmWheelMesh.geometry.faces[faceIndex].selected = !rhythmWheelMesh.geometry.faces[faceIndex].selected;
         rhythmWheelMesh.geometry.faces[faceIndex + 1].selected = !rhythmWheelMesh.geometry.faces[faceIndex + 1].selected;
       } else {
-        rhythmWheelMesh.geometry.faces[faceIndex].color.setRGB(setColor.r, setColor.g, setColor.b);
-        rhythmWheelMesh.geometry.faces[faceIndex - 1].color.setRGB(setColor.r, setColor.g, setColor.b);
+        this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, setColor);
+        this.setFaceColorByIndex(rhythmWheelMesh, faceIndex - 1, setColor);
         rhythmWheelMesh.geometry.faces[faceIndex].selected = !rhythmWheelMesh.geometry.faces[faceIndex].selected;
         rhythmWheelMesh.geometry.faces[faceIndex - 1].selected = !rhythmWheelMesh.geometry.faces[faceIndex - 1].selected;
       }
@@ -234,6 +236,10 @@ module.exports = function () {
       rhythmWheelMesh.geometry.colorsNeedUpdate = true;
       if (tracks[trackIndex][beatIndex] === null) tracks[trackIndex][beatIndex] = noteValues[trackIndex]; // get an instrument for each track row
       else tracks[trackIndex][beatIndex] = null;
+    },
+    setFaceColorByIndex: function setFaceColorByIndex(mesh, faceIndex, color) {
+      mesh.geometry.faces[faceIndex].color.setRGB(color.r, color.g, color.b);
+      mesh.geometry.colorsNeedUpdate = true;
     },
     loadFont: function loadFont() {
       var self = this;
