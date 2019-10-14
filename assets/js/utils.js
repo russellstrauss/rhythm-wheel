@@ -100,7 +100,7 @@
 			*/
 			getTransitionDuration: function(element) {
 				var $element = $(element);
-				return utils.secondsToMilliseconds(parseFloat(getComputedStyle($element[0])['transitionDuration']));
+				return utils.secondsToMilliseconds(parseFloat(getComputedStyle($element[0]).transitionDuration));
 			},
 			
 			isInteger: function(number) {
@@ -111,7 +111,7 @@
 				array.push(array.shift());
 				return array;
 			}
-		}
+		};
 	})();
 	
 	module.exports = window.utils;

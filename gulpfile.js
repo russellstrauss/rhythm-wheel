@@ -95,4 +95,4 @@ gulp.task('watch', function() {
 });
 
 // Default Task
-gulp.task('default', ['vendors', 'javascript', 'sass', 'watch', 'sync']);
+gulp.task('default', ['vendors', 'validateJS', 'javascript', 'sass', 'watch', 'sync']);

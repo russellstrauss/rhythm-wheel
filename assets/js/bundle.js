@@ -8,10 +8,10 @@ module.exports = function () {
   var wireframeMaterial = new THREE.MeshBasicMaterial({
     wireframe: true,
     color: new THREE.Color('black'),
-    opacity: .25,
+    opacity: 0.25,
     transparent: true
   });
-  var distinctColors = [new THREE.Color('#2F72CA'), new THREE.Color('#A82F2F'), new THREE.Color('#18995B'), new THREE.Color('#F2B233'), new THREE.Color('#f58231'), new THREE.Color('#911eb4'), new THREE.Color('#46f0f0'), new THREE.Color('#f032e6'), new THREE.Color('#bcf60c'), new THREE.Color('#fabebe'), new THREE.Color('#008080'), new THREE.Color('#e6beff'), new THREE.Color('#9a6324'), new THREE.Color('#fffac8'), new THREE.Color('#800000'), new THREE.Color('#aaffkick'), new THREE.Color('#808000'), new THREE.Color('#ffd8b1'), new THREE.Color('#000075'), new THREE.Color('#808080'), new THREE.Color('#ffffff'), new THREE.Color('#000000')];
+  var distinctColors = [new THREE.Color('#2F72CA'), new THREE.Color('#A82F2F'), new THREE.Color('#18995B'), new THREE.Color('#F2B233'), new THREE.Color('#f58231'), new THREE.Color('#911eb4'), new THREE.Color('#46f0f0'), new THREE.Color('#f032e6'), new THREE.Color('#bcf60c'), new THREE.Color('#fabebe'), new THREE.Color('#008080'), new THREE.Color('#e6beff'), new THREE.Color('#9a6324'), new THREE.Color('#fffac8'), new THREE.Color('#800000'), new THREE.Color('#aaffd3'), new THREE.Color('#808000'), new THREE.Color('#ffd8b1'), new THREE.Color('#000075'), new THREE.Color('#808080'), new THREE.Color('#ffffff'), new THREE.Color('#000000')];
   var black = new THREE.Color('black');
   var timeCursor;
   var playing = false;
@@ -21,8 +21,17 @@ module.exports = function () {
   var rhythmCount = 0;
   var scope;
   var presets = {
-    rapBeat: [[null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null], ['kick', null, null, null, null, null, null, 'kick', 'kick', null, null, null, null, null, 'kick', null], ['hh', null, 'hh', null, 'hh', null, 'hh', 'hh', 'hh', null, null, null, 'hh', null, 'hh', null], [null, null, null, null, null, null, null, null, null, null, 'hho', null, null, null, null, null]]
+    rapBeat: {
+      beat: []
+    },
+    bossaNova: {
+      beat: []
+    }
   };
+  presets.rapBeat.beat.push([null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null]);
+  presets.rapBeat.beat.push(['kick', null, null, null, null, null, null, 'kick', 'kick', null, null, null, null, null, 'kick', null]);
+  presets.rapBeat.beat.push(['hh', null, 'hh', null, 'hh', null, 'hh', 'hh', 'hh', null, null, null, 'hh', null, 'hh', null]);
+  presets.rapBeat.beat.push([null, null, null, null, null, null, null, null, null, null, 'hho', null, null, null, null, null]);
   var preset = presets.rapBeat;
   var drums = new Tone.Players({
     snare: './assets/audio/505/snare.[mp3|ogg]',
@@ -40,7 +49,6 @@ module.exports = function () {
   }, {
     volume: 5
   }).toMaster();
-  var noteValues = ['snare', 'kick', 'hh', 'hho', 'bongoLow', 'bongoHigh', 'congaLow', 'congaHigh', 'congaMuteHigh', 'cowbell', 'ride', 'snareRim'];
   return {
     settings: {
       defaultCameraLocation: {
@@ -56,7 +64,7 @@ module.exports = function () {
         enable: true,
         fontStyle: {
           font: null,
-          size: .5,
+          size: 0.5,
           height: 0,
           curveSegments: 1
         }
@@ -64,13 +72,13 @@ module.exports = function () {
       smallFont: {
         fontStyle: {
           font: null,
-          size: .18,
+          size: 0.18,
           height: 0,
           curveSegments: 1
         }
       },
       messageDuration: 2000,
-      zBufferOffset: .01,
+      zBufferOffset: 0.01,
       colors: {
         worldColor: new THREE.Color('white'),
         gridColor: black,
@@ -117,7 +125,8 @@ module.exports = function () {
     },
     setUpRhythm: function setUpRhythm() {
       var self = this;
-      Tone.Transport.bpm.value = self.settings.rhythmWheel.bpm;
+      Tone.Transport.bpm.value = this.settings.rhythmWheel.bpm;
+      document.querySelector('#bpm').value = Tone.Transport.bpm.value.toString();
       Tone.Transport.timeSignature = [2, 4];
 
       for (var i = 0; i < self.settings.rhythmWheel.tracks; i++) {
@@ -130,10 +139,10 @@ module.exports = function () {
       }
 
       if (preset) {
-        tracks = preset;
+        tracks = preset.beat;
 
-        for (var track = 0; track < preset.length; track++) {
-          for (var beat = 0; beat < preset[track].length; beat++) {
+        for (var track = 0; track < tracks.length; track++) {
+          for (var beat = 0; beat < tracks[track].length; beat++) {
             if (tracks[track][beat]) this.setFaceColorByNotePosition(beat, track);
           }
         }
@@ -171,12 +180,12 @@ module.exports = function () {
       targetList.push(rhythmWheelMesh);
       scene.add(rhythmWheelMesh);
       scene.add(wireframeMesh);
-      var geometry = new THREE.BoxGeometry(.1, .01, this.settings.rhythmWheel.outerRadius - this.settings.rhythmWheel.innerRadius);
-      geometry.translate(0, .1 / 2, -(this.settings.rhythmWheel.outerRadius - this.settings.rhythmWheel.innerRadius) / 2 - this.settings.rhythmWheel.innerRadius);
+      var geometry = new THREE.BoxGeometry(0.1, 0.01, this.settings.rhythmWheel.outerRadius - this.settings.rhythmWheel.innerRadius);
+      geometry.translate(0, 0.1 / 2, -(this.settings.rhythmWheel.outerRadius - this.settings.rhythmWheel.innerRadius) / 2 - this.settings.rhythmWheel.innerRadius);
       var material = new THREE.MeshBasicMaterial({
         color: black,
         transparent: true,
-        opacity: .75
+        opacity: 0.75
       });
       timeCursor = new THREE.Mesh(geometry, material);
       scene.add(timeCursor);
@@ -253,7 +262,8 @@ module.exports = function () {
       }
 
       rhythmWheelMesh.geometry.colorsNeedUpdate = true;
-      if (tracks[trackIndex][beatIndex] === null) tracks[trackIndex][beatIndex] = noteValues[trackIndex]; // get an instrument for each track row
+      console.log(Object.keys(drums._players)[trackIndex]);
+      if (tracks[trackIndex][beatIndex] === null) tracks[trackIndex][beatIndex] = Object.keys(drums._players)[trackIndex]; // get an instrument for each track row
       else tracks[trackIndex][beatIndex] = null;
     },
     setFaceColorByIndex: function setFaceColorByIndex(mesh, faceIndex, color) {
@@ -409,7 +419,7 @@ module.exports = function () {
         plane.receiveShadow = true;
         scene.add(plane);
         var helper = new THREE.GridHelper(size, 20, gridColor, gridColor);
-        helper.material.opacity = .1;
+        helper.material.opacity = 0.1;
         helper.material.transparent = true;
         scene.add(helper);
         scene.background = worldColor;
@@ -875,7 +885,7 @@ var Graphics = require('./graphics.js');
       */
       getTransitionDuration: function getTransitionDuration(element) {
         var $element = $(element);
-        return utils.secondsToMilliseconds(parseFloat(getComputedStyle($element[0])['transitionDuration']));
+        return utils.secondsToMilliseconds(parseFloat(getComputedStyle($element[0]).transitionDuration));
       },
       isInteger: function isInteger(number) {
         return number % 1 === 0;

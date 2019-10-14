@@ -42,7 +42,7 @@
 				scene.add(plane);
 	
 				var helper = new THREE.GridHelper(size, 20, gridColor, gridColor);
-				helper.material.opacity = .1;
+				helper.material.opacity = 0.1;
 				helper.material.transparent = true;
 				scene.add(helper);
 				scene.background = worldColor;
@@ -393,7 +393,7 @@
 				const light2 = new THREE.DirectionalLight(color, intensity);
 				light2.position.set(0, 2, -8);
 				scene.add(light2);
-				lights.push(light2)
+				lights.push(light2);
 				
 				if (gfx.appSettings.activateLightHelpers) {
 					gfx.activateLightHelpers(lights);
@@ -466,7 +466,7 @@
 				let angle = vector1.angleTo(vector2);
 				return angle;
 			}
-		}
+		};
 	})();
 	
 	module.exports = window.gfx;
