@@ -15,14 +15,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   }, _defineProperty(_ref, "kick", './assets/audio/505/kick.mp3'), _defineProperty(_ref, "hh", './assets/audio/505/hh.mp3'), _defineProperty(_ref, "hho", './assets/audio/505/hho.mp3'), _defineProperty(_ref, "bongoLow", './assets/audio/jazz/MTBongoLow.wav'), _defineProperty(_ref, "bongoHigh", './assets/audio/jazz/MTBongoHigh.wav'), _defineProperty(_ref, "congaLow", './assets/audio/jazz/MTCongaLow.wav'), _defineProperty(_ref, "congaHigh", './assets/audio/jazz/MTCongaHigh.wav'), _defineProperty(_ref, "congaMuteHigh", './assets/audio/jazz/MTCongaMutHi.wav'), _ref), {
     volume: 5
   }).toMaster();
+  var defaultInstruments = [player.get('snare'), player.get('kick'), player.get('hh'), player.get('hho'), player.get('bongoLow'), player.get('bongoHigh'), player.get('congaLow'), player.get('congaHigh'), player.get('congaMuteHigh')];
 
   window.beats = function () {
     return {
       allInstruments: player,
       empty: {
-        beat: [],
+        beat: new Array(defaultInstruments.length),
         bpm: 100,
-        instruments: [player.get('snare'), player.get('kick'), player.get('hh'), player.get('hho'), player.get('bongoLow'), player.get('bongoHigh'), player.get('congaLow'), player.get('congaHigh'), player.get('congaMuteHigh')]
+        instruments: defaultInstruments
       },
       rap: {
         beat: [[null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null], ['kick', null, null, null, null, null, null, 'kick', 'kick', null, null, null, null, null, 'kick', null], ['hh', null, 'hh', null, 'hh', null, 'hh', 'hh', 'hh', null, null, null, 'hh', null, 'hh', null], [null, null, null, null, null, null, null, null, null, null, 'hho', null, null, null, null, null]],
@@ -30,7 +31,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         instruments: [player.get('snare'), player.get('kick'), player.get('hh'), player.get('hho')]
       },
       bossaNova: {
-        beat: [['ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride'], ['kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick'], ['snareRim', null, null, 'snareRim', null, null, 'snareRim', null, null, null, 'snareRim', null, null, 'snareRim', null, null], [null, 'cowbell', null, null, null, null, null, null, null, null, null, null, null, null, null, null], ['hh', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]],
+        beat: [['ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride'], ['kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick'], ['snareRim', null, null, 'snareRim', null, null, 'snareRim', null, null, null, 'snareRim', null, null, 'snareRim', null, null]],
         bpm: 80,
         instruments: [player.get('ride'), player.get('kick'), player.get('snareRim'), player.get('cowbell'), player.get('hh')]
       }
@@ -63,7 +64,7 @@ module.exports = function () {
   var rhythmCount = 0;
   var scope;
   var preset = beats.bossaNova;
-  var wheelLength = 32;
+  var wheelLength = 16;
   if (preset.beat[0]) wheelLength = preset.beat[0].length;
   return {
     settings: {
@@ -105,7 +106,7 @@ module.exports = function () {
         innerRadius: 1,
         outerRadius: 5,
         beats: wheelLength,
-        tracks: preset.instruments.length
+        tracks: preset.beat.length
       }
     },
     init: function init() {
@@ -159,7 +160,7 @@ module.exports = function () {
         }
       }
 
-      if (preset.beat.length) tracks = preset.beat;
+      if (typeof preset.beat[0] !== 'undefined') tracks = preset.beat; //console.log(preset.beat[0]);
 
       for (var track = 0; track < tracks.length; track++) {
         for (var beat = 0; beat < tracks[track].length; beat++) {

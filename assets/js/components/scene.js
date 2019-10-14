@@ -16,7 +16,7 @@ module.exports = function() {
 	var scope;
 
 	var preset = beats.bossaNova;
-	var wheelLength = 32;
+	var wheelLength = 16;
 	if (preset.beat[0]) wheelLength = preset.beat[0].length;
 	
 	return {
@@ -60,7 +60,7 @@ module.exports = function() {
 				innerRadius: 1,
 				outerRadius: 5,
 				beats: wheelLength,
-				tracks: preset.instruments.length
+				tracks: preset.beat.length
 			}
 		},
 		
@@ -120,7 +120,9 @@ module.exports = function() {
 				}
 			}
 			
-			if (preset.beat.length) tracks = preset.beat;
+			if (typeof preset.beat[0] !== 'undefined') tracks = preset.beat;
+			
+			//console.log(preset.beat[0]);
 			
 			for (let track = 0; track < tracks.length; track++) {
 				

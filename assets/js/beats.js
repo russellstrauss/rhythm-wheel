@@ -21,6 +21,18 @@
 		}
 	).toMaster();
 	
+	var defaultInstruments = [
+		player.get('snare'),
+		player.get('kick'),
+		player.get('hh'),
+		player.get('hho'),
+		player.get('bongoLow'),
+		player.get('bongoHigh'),
+		player.get('congaLow'),
+		player.get('congaHigh'),
+		player.get('congaMuteHigh')
+	];
+	
 	window.beats = (function() {
 		
 		return {
@@ -28,19 +40,9 @@
 			allInstruments: player,
 			
 			empty: {
-				beat: [],
+				beat: new Array(defaultInstruments.length),
 				bpm: 100,
-				instruments: [
-					player.get('snare'),
-					player.get('kick'),
-					player.get('hh'),
-					player.get('hho'),
-					player.get('bongoLow'),
-					player.get('bongoHigh'),
-					player.get('congaLow'),
-					player.get('congaHigh'),
-					player.get('congaMuteHigh')
-				]
+				instruments: defaultInstruments
 			},
 			
 			rap: {
@@ -63,9 +65,7 @@
 				beat: [
 					['ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride'],
 					['kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick'],
-					['snareRim', null, null, 'snareRim', null, null, 'snareRim', null, null, null, 'snareRim', null, null, 'snareRim', null, null],
-					[null, 'cowbell', null, null, null, null, null, null, null, null, null, null, null, null, null, null],
-					['hh', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+					['snareRim', null, null, 'snareRim', null, null, 'snareRim', null, null, null, 'snareRim', null, null, 'snareRim', null, null]
 				],
 				bpm: 80,
 				instruments: [
