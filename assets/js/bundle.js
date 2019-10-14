@@ -1,6 +1,26 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
 
+(function () {
+  window.beats = function () {
+    return {
+      rap: {
+        beat: [[null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null], ['kick', null, null, null, null, null, null, 'kick', 'kick', null, null, null, null, null, 'kick', null], ['hh', null, 'hh', null, 'hh', null, 'hh', 'hh', 'hh', null, null, null, 'hh', null, 'hh', null], [null, null, null, null, null, null, null, null, null, null, 'hho', null, null, null, null, null]],
+        bpm: 100
+      },
+      test: {
+        beat: [['ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride'], ['kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick'], ['cowbell', null, null, 'cowbell', null, null, 'cowbell', null, null, null, 'cowbell', null, null, 'cowbell', null, null]],
+        bpm: 80
+      }
+    };
+  }();
+
+  module.exports = window.beats;
+})();
+
+},{}],2:[function(require,module,exports){
+"use strict";
+
 module.exports = function () {
   var renderer, scene, camera, controls, floor;
   var raycaster = new THREE.Raycaster();
@@ -20,24 +40,12 @@ module.exports = function () {
   var tracks = [];
   var rhythmCount = 0;
   var scope;
-  var presets = {
-    rapBeat: {
-      beat: []
-    },
-    bossaNova: {
-      beat: []
-    }
-  };
-  presets.rapBeat.beat.push([null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null]);
-  presets.rapBeat.beat.push(['kick', null, null, null, null, null, null, 'kick', 'kick', null, null, null, null, null, 'kick', null]);
-  presets.rapBeat.beat.push(['hh', null, 'hh', null, 'hh', null, 'hh', 'hh', 'hh', null, null, null, 'hh', null, 'hh', null]);
-  presets.rapBeat.beat.push([null, null, null, null, null, null, null, null, null, null, 'hho', null, null, null, null, null]);
-  var preset = presets.rapBeat;
+  var preset = beats.rap;
   var drums = new Tone.Players({
-    snare: './assets/audio/505/snare.[mp3|ogg]',
-    kick: './assets/audio/505/kick.[mp3|ogg]',
-    hh: './assets/audio/505/hh.[mp3|ogg]',
-    hho: './assets/audio/505/hho.[mp3|ogg]',
+    snare: './assets/audio/505/snare.mp3',
+    kick: './assets/audio/505/kick.mp3',
+    hh: './assets/audio/505/hh.mp3',
+    hho: './assets/audio/505/hho.mp3',
     bongoLow: './assets/audio/jazz/MTBongoLow.wav',
     bongoHigh: './assets/audio/jazz/MTBongoHigh.wav',
     congaLow: './assets/audio/jazz/MTCongaLow.wav',
@@ -89,8 +97,7 @@ module.exports = function () {
         innerRadius: 1,
         outerRadius: 5,
         beats: 16,
-        tracks: 4,
-        bpm: 120
+        tracks: preset.beat.length
       }
     },
     init: function init() {
@@ -125,7 +132,13 @@ module.exports = function () {
     },
     setUpRhythm: function setUpRhythm() {
       var self = this;
-      Tone.Transport.bpm.value = this.settings.rhythmWheel.bpm;
+      var bpm = 120;
+
+      if (preset) {
+        bpm = preset.bpm;
+      }
+
+      Tone.Transport.bpm.value = bpm;
       document.querySelector('#bpm').value = Tone.Transport.bpm.value.toString();
       Tone.Transport.timeSignature = [2, 4];
 
@@ -338,7 +351,7 @@ module.exports = function () {
   };
 };
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 "use strict";
 
 module.exports = function () {
@@ -383,7 +396,7 @@ module.exports = function () {
   };
 };
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 "use strict";
 
 (function () {
@@ -779,7 +792,7 @@ module.exports = function () {
   module.exports = window.gfx;
 })();
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 "use strict";
 
 var Scene = require('./components/scene.js');
@@ -787,6 +800,8 @@ var Scene = require('./components/scene.js');
 var UI = require('./components/ui.js');
 
 var Utilities = require('./utils.js');
+
+var Beats = require('./beats.js');
 
 var Graphics = require('./graphics.js');
 
@@ -797,7 +812,7 @@ var Graphics = require('./graphics.js');
   });
 })();
 
-},{"./components/scene.js":1,"./components/ui.js":2,"./graphics.js":3,"./utils.js":5}],5:[function(require,module,exports){
+},{"./beats.js":1,"./components/scene.js":2,"./components/ui.js":3,"./graphics.js":4,"./utils.js":6}],6:[function(require,module,exports){
 "use strict";
 
 (function () {
@@ -900,4 +915,4 @@ var Graphics = require('./graphics.js');
   module.exports = window.utils;
 })();
 
-},{}]},{},[4]);
+},{}]},{},[5]);

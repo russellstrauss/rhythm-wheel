@@ -14,29 +14,14 @@ module.exports = function() {
 	var tracks = [];
 	var rhythmCount = 0;
 	var scope;
-	
-	var presets = {
-		rapBeat: {
-			beat: []
-		},
-		
-		bossaNova: {
-			beat: []
-		}
-	};
-	
-	presets.rapBeat.beat.push([null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null]);
-	presets.rapBeat.beat.push(['kick', null, null, null, null, null, null, 'kick', 'kick', null, null, null, null, null, 'kick', null]);
-	presets.rapBeat.beat.push(['hh', null, 'hh', null, 'hh', null, 'hh', 'hh', 'hh', null, null, null, 'hh', null, 'hh', null]);
-	presets.rapBeat.beat.push([null, null, null, null, null, null, null, null, null, null, 'hho', null, null, null, null, null]);
-	
-	var preset = presets.rapBeat;
+
+	var preset = beats.rap;
 	
 	var drums = new Tone.Players({
-		snare: './assets/audio/505/snare.[mp3|ogg]',
-		kick: './assets/audio/505/kick.[mp3|ogg]',
-		hh: './assets/audio/505/hh.[mp3|ogg]',
-		hho: './assets/audio/505/hho.[mp3|ogg]',
+		snare: './assets/audio/505/snare.mp3',
+		kick: './assets/audio/505/kick.mp3',
+		hh: './assets/audio/505/hh.mp3',
+		hho: './assets/audio/505/hho.mp3',
 		bongoLow: './assets/audio/jazz/MTBongoLow.wav',
 		bongoHigh: './assets/audio/jazz/MTBongoHigh.wav',
 		congaLow: './assets/audio/jazz/MTCongaLow.wav',
@@ -90,8 +75,7 @@ module.exports = function() {
 				innerRadius: 1,
 				outerRadius: 5,
 				beats: 16,
-				tracks: 4,
-				bpm: 120
+				tracks: preset.beat.length
 			}
 		},
 		
@@ -136,7 +120,11 @@ module.exports = function() {
 			
 			let self = this;
 			
-			Tone.Transport.bpm.value = this.settings.rhythmWheel.bpm;
+			let bpm = 120;
+			if (preset) {
+				bpm = preset.bpm;
+			}
+			Tone.Transport.bpm.value = bpm;
 			document.querySelector('#bpm').value = Tone.Transport.bpm.value.toString();
 			Tone.Transport.timeSignature = [2, 4];
 			

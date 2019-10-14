@@ -13,7 +13,7 @@
     "@babel/preset-env": "^7.0.0",
     "babelify": "^9.0.0",
     "browser-sync": "^2.18.13",
-    "browserify": "^14.4.0",
+    "browserify": "^16.5.0",
     "gulp": "^3.9.1",
     "gulp-babel": "^8.0.0",
     "gulp-concat": "^2.6.1",
@@ -26,6 +26,6 @@
     "jshint-stylish": "^2.2.1",
     "node-notifier": "^5.2.1",
     "three": "^0.107.0",
-    "vinyl-source-stream": "^1.1.0"
+    "vinyl-source-stream": "^2.0.0"
   }
 }
