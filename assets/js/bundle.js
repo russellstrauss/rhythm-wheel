@@ -62,7 +62,9 @@ module.exports = function () {
   var tracks = [];
   var rhythmCount = 0;
   var scope;
-  var preset = beats.empty;
+  var preset = beats.bossaNova;
+  var wheelLength = 32;
+  if (preset.beat[0]) wheelLength = preset.beat[0].length;
   return {
     settings: {
       defaultCameraLocation: {
@@ -102,7 +104,7 @@ module.exports = function () {
       rhythmWheel: {
         innerRadius: 1,
         outerRadius: 5,
-        beats: 16,
+        beats: wheelLength,
         tracks: preset.instruments.length
       }
     },

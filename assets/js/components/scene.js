@@ -15,8 +15,9 @@ module.exports = function() {
 	var rhythmCount = 0;
 	var scope;
 
-	var preset = beats.empty;
-	
+	var preset = beats.bossaNova;
+	var wheelLength = 32;
+	if (preset.beat[0]) wheelLength = preset.beat[0].length;
 	
 	return {
 		
@@ -58,7 +59,7 @@ module.exports = function() {
 			rhythmWheel: {
 				innerRadius: 1,
 				outerRadius: 5,
-				beats: 16,
+				beats: wheelLength,
 				tracks: preset.instruments.length
 			}
 		},
