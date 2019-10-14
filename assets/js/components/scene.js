@@ -15,24 +15,8 @@ module.exports = function() {
 	var rhythmCount = 0;
 	var scope;
 
-	var preset = beats.rap;
+	var preset = beats.empty;
 	
-	var drums = new Tone.Players({
-		snare: './assets/audio/505/snare.mp3',
-		kick: './assets/audio/505/kick.mp3',
-		hh: './assets/audio/505/hh.mp3',
-		hho: './assets/audio/505/hho.mp3',
-		bongoLow: './assets/audio/jazz/MTBongoLow.wav',
-		bongoHigh: './assets/audio/jazz/MTBongoHigh.wav',
-		congaLow: './assets/audio/jazz/MTCongaLow.wav',
-		congaHigh: './assets/audio/jazz/MTCongaHigh.wav',
-		congaMuteHigh: './assets/audio/jazz/MTCongaMutHi.wav',
-		cowbell: './assets/audio/jazz/cowbell.wav',
-		ride: './assets/audio/jazz/ride5.wav',
-		snareRim: './assets/audio/jazz/snare-rim.wav'
-	},{
-		volume: 5
-	}).toMaster();
 	
 	return {
 		
@@ -75,7 +59,7 @@ module.exports = function() {
 				innerRadius: 1,
 				outerRadius: 5,
 				beats: 16,
-				tracks: preset.beat.length
+				tracks: preset.instruments.length
 			}
 		},
 		
@@ -135,15 +119,13 @@ module.exports = function() {
 				}
 			}
 			
-			if (preset) {
-				tracks = preset.beat;
+			if (preset.beat.length) tracks = preset.beat;
+			
+			for (let track = 0; track < tracks.length; track++) {
 				
-				for (let track = 0; track < tracks.length; track++) {
+				for (let beat = 0; beat < tracks[track].length; beat++) {
 					
-					for (let beat = 0; beat < tracks[track].length; beat++) {
-						
-						if (tracks[track][beat]) this.setFaceColorByNotePosition(beat, track);
-					}
+					if (tracks[track][beat]) this.setFaceColorByNotePosition(beat, track);
 				}
 			}
 	
@@ -157,9 +139,9 @@ module.exports = function() {
 				let beat = rhythmCount % scope.settings.rhythmWheel.beats;
 
 				for (let i = 0; i < scope.settings.rhythmWheel.tracks; i++) {
-
+					
 					if (tracks[i][beat] !== null) {
-						drums.get(tracks[i][beat]).start(time, 0);
+						preset.instruments[i].start(time, 0);
 					}
 				}
 				rhythmCount++;
@@ -278,8 +260,7 @@ module.exports = function() {
 			}
 			rhythmWheelMesh.geometry.colorsNeedUpdate = true;
 			
-			console.log(Object.keys(drums._players)[trackIndex]);
-			if (tracks[trackIndex][beatIndex] === null) tracks[trackIndex][beatIndex] = Object.keys(drums._players)[trackIndex]; // get an instrument for each track row
+			if (tracks[trackIndex][beatIndex] === null) tracks[trackIndex][beatIndex] = Object.keys(beats.allInstruments._players)[trackIndex]; // get an instrument for each track row
 			else tracks[trackIndex][beatIndex] = null;
 		},
 		

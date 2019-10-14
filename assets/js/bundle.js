@@ -1,16 +1,38 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 (function () {
+  var _ref;
+
+  var player = new Tone.Players((_ref = {
+    kick: './assets/audio/505/kick.mp3',
+    cowbell: './assets/audio/jazz/cowbell.wav',
+    ride: './assets/audio/jazz/ride5.wav',
+    snareRim: './assets/audio/jazz/snare-rim.wav',
+    snare: './assets/audio/505/snare.mp3'
+  }, _defineProperty(_ref, "kick", './assets/audio/505/kick.mp3'), _defineProperty(_ref, "hh", './assets/audio/505/hh.mp3'), _defineProperty(_ref, "hho", './assets/audio/505/hho.mp3'), _defineProperty(_ref, "bongoLow", './assets/audio/jazz/MTBongoLow.wav'), _defineProperty(_ref, "bongoHigh", './assets/audio/jazz/MTBongoHigh.wav'), _defineProperty(_ref, "congaLow", './assets/audio/jazz/MTCongaLow.wav'), _defineProperty(_ref, "congaHigh", './assets/audio/jazz/MTCongaHigh.wav'), _defineProperty(_ref, "congaMuteHigh", './assets/audio/jazz/MTCongaMutHi.wav'), _ref), {
+    volume: 5
+  }).toMaster();
+
   window.beats = function () {
     return {
+      allInstruments: player,
+      empty: {
+        beat: [],
+        bpm: 100,
+        instruments: [player.get('snare'), player.get('kick'), player.get('hh'), player.get('hho'), player.get('bongoLow'), player.get('bongoHigh'), player.get('congaLow'), player.get('congaHigh'), player.get('congaMuteHigh')]
+      },
       rap: {
         beat: [[null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null], ['kick', null, null, null, null, null, null, 'kick', 'kick', null, null, null, null, null, 'kick', null], ['hh', null, 'hh', null, 'hh', null, 'hh', 'hh', 'hh', null, null, null, 'hh', null, 'hh', null], [null, null, null, null, null, null, null, null, null, null, 'hho', null, null, null, null, null]],
-        bpm: 100
+        bpm: 100,
+        instruments: [player.get('snare'), player.get('kick'), player.get('hh'), player.get('hho')]
       },
-      test: {
-        beat: [['ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride'], ['kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick'], ['cowbell', null, null, 'cowbell', null, null, 'cowbell', null, null, null, 'cowbell', null, null, 'cowbell', null, null]],
-        bpm: 80
+      bossaNova: {
+        beat: [['ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride'], ['kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick'], ['snareRim', null, null, 'snareRim', null, null, 'snareRim', null, null, null, 'snareRim', null, null, 'snareRim', null, null], [null, 'cowbell', null, null, null, null, null, null, null, null, null, null, null, null, null, null], ['hh', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]],
+        bpm: 80,
+        instruments: [player.get('ride'), player.get('kick'), player.get('snareRim'), player.get('cowbell'), player.get('hh')]
       }
     };
   }();
@@ -40,23 +62,7 @@ module.exports = function () {
   var tracks = [];
   var rhythmCount = 0;
   var scope;
-  var preset = beats.rap;
-  var drums = new Tone.Players({
-    snare: './assets/audio/505/snare.mp3',
-    kick: './assets/audio/505/kick.mp3',
-    hh: './assets/audio/505/hh.mp3',
-    hho: './assets/audio/505/hho.mp3',
-    bongoLow: './assets/audio/jazz/MTBongoLow.wav',
-    bongoHigh: './assets/audio/jazz/MTBongoHigh.wav',
-    congaLow: './assets/audio/jazz/MTCongaLow.wav',
-    congaHigh: './assets/audio/jazz/MTCongaHigh.wav',
-    congaMuteHigh: './assets/audio/jazz/MTCongaMutHi.wav',
-    cowbell: './assets/audio/jazz/cowbell.wav',
-    ride: './assets/audio/jazz/ride5.wav',
-    snareRim: './assets/audio/jazz/snare-rim.wav'
-  }, {
-    volume: 5
-  }).toMaster();
+  var preset = beats.empty;
   return {
     settings: {
       defaultCameraLocation: {
@@ -97,7 +103,7 @@ module.exports = function () {
         innerRadius: 1,
         outerRadius: 5,
         beats: 16,
-        tracks: preset.beat.length
+        tracks: preset.instruments.length
       }
     },
     init: function init() {
@@ -151,13 +157,11 @@ module.exports = function () {
         }
       }
 
-      if (preset) {
-        tracks = preset.beat;
+      if (preset.beat.length) tracks = preset.beat;
 
-        for (var track = 0; track < tracks.length; track++) {
-          for (var beat = 0; beat < tracks[track].length; beat++) {
-            if (tracks[track][beat]) this.setFaceColorByNotePosition(beat, track);
-          }
+      for (var track = 0; track < tracks.length; track++) {
+        for (var beat = 0; beat < tracks[track].length; beat++) {
+          if (tracks[track][beat]) this.setFaceColorByNotePosition(beat, track);
         }
       }
 
@@ -170,7 +174,7 @@ module.exports = function () {
 
         for (var _i = 0; _i < scope.settings.rhythmWheel.tracks; _i++) {
           if (tracks[_i][beat] !== null) {
-            drums.get(tracks[_i][beat]).start(time, 0);
+            preset.instruments[_i].start(time, 0);
           }
         }
 
@@ -275,8 +279,7 @@ module.exports = function () {
       }
 
       rhythmWheelMesh.geometry.colorsNeedUpdate = true;
-      console.log(Object.keys(drums._players)[trackIndex]);
-      if (tracks[trackIndex][beatIndex] === null) tracks[trackIndex][beatIndex] = Object.keys(drums._players)[trackIndex]; // get an instrument for each track row
+      if (tracks[trackIndex][beatIndex] === null) tracks[trackIndex][beatIndex] = Object.keys(beats.allInstruments._players)[trackIndex]; // get an instrument for each track row
       else tracks[trackIndex][beatIndex] = null;
     },
     setFaceColorByIndex: function setFaceColorByIndex(mesh, faceIndex, color) {
