@@ -367,6 +367,7 @@ module.exports = function () {
       this.setKeys();
     },
     bindEvents: function bindEvents() {
+      var enter = 13;
       var inputSteppers = document.querySelectorAll('.input-stepper');
       inputSteppers.forEach(function (inputStepper) {
         var input = inputStepper.querySelector('input');
@@ -387,6 +388,24 @@ module.exports = function () {
       playToggle.addEventListener('click', function () {
         playToggle.classList.toggle('active');
         Tone.Transport.toggle();
+      });
+      var bpmInput = document.querySelector('#bpm');
+      var timeout; // give half second of user input before rapidly changing tempo
+
+      bpmInput.addEventListener('keyup', function (event) {
+        if (parseInt(bpmInput.value) > 39) {
+          if (event.keyCode === enter) {
+            clearTimeout(timeout);
+            Tone.Transport.bpm.value = parseInt(bpmInput.value);
+          } else {
+            timeout = setTimeout(function () {
+              Tone.Transport.bpm.value = parseInt(bpmInput.value);
+            }, 500);
+          }
+        }
+      });
+      bpmInput.addEventListener('keydown', function () {
+        clearTimeout(timeout);
       });
     },
     setKeys: function setKeys() {

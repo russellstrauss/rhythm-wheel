@@ -13,6 +13,8 @@ module.exports = function() {
 		
 		bindEvents: function() {
 			
+			let enter = 13;
+			
 			let inputSteppers = document.querySelectorAll('.input-stepper');
 			inputSteppers.forEach(function(inputStepper) {
 				
@@ -37,6 +39,29 @@ module.exports = function() {
 			playToggle.addEventListener('click', function() {
 				playToggle.classList.toggle('active');
 				Tone.Transport.toggle();
+			});
+			
+			let bpmInput = document.querySelector('#bpm');
+			let timeout; // give half second of user input before rapidly changing tempo
+			bpmInput.addEventListener('keyup', function(event) {
+				
+				if (parseInt(bpmInput.value) > 39) {
+					
+					if (event.keyCode === enter) {
+						clearTimeout(timeout);
+						Tone.Transport.bpm.value = parseInt(bpmInput.value);
+					}
+					else {
+						
+						timeout = setTimeout(function() {
+							Tone.Transport.bpm.value = parseInt(bpmInput.value);
+						}, 500)
+					}
+				}
+			});
+			
+			bpmInput.addEventListener('keydown', function() {
+				clearTimeout(timeout);
 			});
 		},
 		
