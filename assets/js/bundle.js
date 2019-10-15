@@ -28,7 +28,7 @@
         bpm: 100,
         instruments: defaultInstruments
       },
-      rap: {
+      basic: {
         beat: [[null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null], ['kick', null, null, null, null, null, null, 'kick', 'kick', null, null, null, null, null, 'kick', null], ['hh', null, 'hh', null, 'hh', null, 'hh', 'hh', 'hh', null, null, null, 'hh', null, 'hh', null], [null, null, null, null, null, null, null, null, null, null, 'hho', null, null, null, null, null]],
         bpm: 100,
         instruments: [player.get('snare'), player.get('kick'), player.get('hh'), player.get('hho')]
@@ -42,6 +42,11 @@
         beat: [['kick', null, 'kick', null, null, null, null, null, null, null, 'kick', null, null, 'kick', null, null], [null, null, null, null, 'snare', null, null, 'snare', null, 'snare', null, 'snare', 'snare', null, null, 'snare'], ['hh', 'hh', 'hh', 'hh', 'hh', 'hh', 'hh', null, 'hh', 'hh', 'hh', 'hh', 'hh', null, 'hh', 'hh'], [null, null, null, null, null, null, null, 'hho', null, null, null, null, null, 'hho', null, null], ['cowbell', null, 'cowbell', null, null, 'cowbell', null, 'cowbell', null, 'cowbell', null, 'cowbell', null, null, 'cowbell', null]],
         bpm: 80,
         instruments: [player.get('kick'), player.get('snare'), player.get('hh'), player.get('hho'), player.get('cowbell')]
+      },
+      lowrider: {
+        beat: [['cowbell', null, null, null, 'cowbell', null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null], ['kick', null, null, null, null, null, null, null, 'kick', null, null, null, null, null, null, null, 'kick', null, null, null, null, null, null, null, 'kick', null, null, null, null, null, null, null], [null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null]],
+        bpm: 140,
+        instruments: [player.get('cowbell'), player.get('kick'), player.get('snare')]
       }
     };
   }();
@@ -72,7 +77,7 @@ module.exports = function () {
   var rhythmCount = 0;
   var scope;
   var loop;
-  var preset = beats.empty;
+  var preset = beats.lowrider;
   var wheelLength = 16;
   if (preset.beat[0]) wheelLength = preset.beat[0].length;
   return {
@@ -199,7 +204,7 @@ module.exports = function () {
     addGeometries: function addGeometries() {
       var self = this;
       floor = gfx.addFloor(this.settings.floorSize, scene, this.settings.colors.worldColor, this.settings.colors.gridColor);
-      var rhythmWheel = new THREE.RingGeometry(this.settings.rhythmWheel.innerRadius, this.settings.rhythmWheel.outerRadius, this.settings.rhythmWheel.beats, this.settings.rhythmWheel.tracks);
+      var rhythmWheel = new THREE.RingGeometry(self.settings.rhythmWheel.innerRadius, self.settings.rhythmWheel.outerRadius, self.settings.rhythmWheel.beats, self.settings.rhythmWheel.tracks);
       rhythmWheel.rotateX(-Math.PI / 2);
       rhythmWheel.rotateY(Math.PI / 2);
       rhythmWheel.translate(0, this.settings.zBufferOffset, 0);
@@ -270,6 +275,7 @@ module.exports = function () {
       Tone.Transport.cancel(0);
       rhythmCount = 0;
       self.settings.rhythmWheel.tracks = preset.beat.length;
+      if (preset.beat[0]) self.settings.rhythmWheel.beats = preset.beat[0].length;
       targetList = [];
 
       while (scene.children.length > 0) {

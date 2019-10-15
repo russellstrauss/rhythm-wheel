@@ -16,7 +16,7 @@ module.exports = function() {
 	var scope;
 	var loop;
 
-	var preset = beats.empty;
+	var preset = beats.lowrider;
 	var wheelLength = 16;
 	if (preset.beat[0]) wheelLength = preset.beat[0].length;
 	
@@ -159,7 +159,7 @@ module.exports = function() {
 			
 			floor = gfx.addFloor(this.settings.floorSize, scene, this.settings.colors.worldColor, this.settings.colors.gridColor);
 			
-			let rhythmWheel = new THREE.RingGeometry(this.settings.rhythmWheel.innerRadius, this.settings.rhythmWheel.outerRadius, this.settings.rhythmWheel.beats, this.settings.rhythmWheel.tracks);
+			let rhythmWheel = new THREE.RingGeometry(self.settings.rhythmWheel.innerRadius, self.settings.rhythmWheel.outerRadius, self.settings.rhythmWheel.beats, self.settings.rhythmWheel.tracks);
 			rhythmWheel.rotateX(-Math.PI/2);
 			rhythmWheel.rotateY(Math.PI/2);
 			rhythmWheel.translate(0, this.settings.zBufferOffset, 0);
@@ -241,6 +241,7 @@ module.exports = function() {
 			Tone.Transport.cancel(0);
 			rhythmCount = 0;
 			self.settings.rhythmWheel.tracks = preset.beat.length;
+			if (preset.beat[0]) self.settings.rhythmWheel.beats = preset.beat[0].length;
 			targetList = [];
 			
 			while(scene.children.length > 0){ 

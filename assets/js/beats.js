@@ -46,7 +46,7 @@
 				instruments: defaultInstruments
 			},
 			
-			rap: {
+			basic: {
 				beat: [
 					[null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null],
 					['kick', null, null, null, null, null, null, 'kick', 'kick', null, null, null, null, null, 'kick', null],
@@ -93,6 +93,20 @@
 					player.get('hh'),
 					player.get('hho'),
 					player.get('cowbell')
+				]
+			},
+			
+			lowrider: {
+				beat: [
+					['cowbell', null, null, null, 'cowbell', null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null],
+					['kick', null, null, null, null, null, null, null, 'kick', null, null, null, null, null, null, null, 'kick', null, null, null, null, null, null, null, 'kick', null, null, null, null, null, null, null],
+					[null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null]
+				],
+				bpm: 140,
+				instruments: [
+					player.get('cowbell'),
+					player.get('kick'),
+					player.get('snare')
 				]
 			}
 		};
