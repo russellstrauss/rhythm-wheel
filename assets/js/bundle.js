@@ -26,7 +26,7 @@
     tomHi: './assets/audio/jazz/DR220Tom_Hi.wav',
     kick: './assets/audio/505/kick.mp3'
   }, {
-    volume: -3
+    volume: -5
   }).toMaster();
   var defaultInstruments = [player.get('cowbell'), player.get('snare'), soft.get('kick'), player.get('hh'), player.get('hho'), player.get('bongoLow'), player.get('bongoHigh'), player.get('congaLow'), player.get('congaHigh'), player.get('congaMuteHigh'), soft.get('ride')]; //[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
 
@@ -85,6 +85,16 @@
         beat: [['ride', null, 'ride', null, 'ride', 'ride', null, 'ride', null, 'ride', null, 'ride'], ['hh', null, null, 'hh', null, null, 'hh', null, null, 'hh', null, null], ['kick', null, null, null, null, null, null, null, null, null, null, 'kick'], [null, null, 'rim', null, null, null, null, 'rim', null, null, null, null], [null, null, null, null, null, null, null, null, null, null, 'tomLo', 'tomLo'], [null, null, null, null, null, 'tomHi', null, null, null, null, null, null]],
         bpm: 90,
         instruments: [soft.get('ride'), player.get('hh'), soft.get('tomLo'), soft.get('tomHi'), soft.get('kick'), player.get('rim')]
+      },
+      sikyi: {
+        beat: [['ride', null, 'ride', 'ride', null, null, 'ride', null, 'ride', null, 'ride', 'ride', null, null, 'ride', null], [null, null, null, null, null, null, 'hh', null, null, null, 'hh', null, null, null, 'hh', null], ['kick', null, null, null, 'kick', null, null, null, 'kick', null, null, null, 'kick', null, null, null], [null, 'tomLo', null, 'tomLo', null, null, null, null, null, null, 'tomLo', 'tomLo', null, null, null, null], [null, null, null, null, null, null, 'tomHi', 'tomHi', null, null, null, null, null, null, 'tomHi', 'tomHi']],
+        bpm: 130,
+        instruments: [soft.get('ride'), player.get('hh'), soft.get('kick'), soft.get('tomLo'), soft.get('tomHi')]
+      },
+      sikyi2: {
+        beat: [['ride', null, 'ride', 'ride', null, null, 'ride', null, 'ride', null, 'ride', 'ride', null, null, 'ride', null], [null, null, null, null, null, null, 'hh', null, null, null, 'hh', null, null, null, 'hh', null], ['kick', null, null, null, 'kick', null, null, null, 'kick', null, null, null, 'kick', null, null, null], [null, 'tomLo', null, 'tomLo', null, null, null, null, null, null, null, null, null, null, 'tomLo', 'tomLo'], [null, null, null, null, null, null, 'tomHi', null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null, 'rim', null, null, null, null]],
+        bpm: 130,
+        instruments: [soft.get('ride'), player.get('hh'), soft.get('kick'), soft.get('tomLo'), soft.get('tomHi'), player.get('rim')]
       }
     };
   }();
