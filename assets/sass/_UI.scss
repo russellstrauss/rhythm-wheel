@@ -1,15 +1,46 @@
+$buttonWidth: 175px;
+
+@mixin hover-state {
+	text-transform: lowercase;
+	opacity: .75;
+	cursor: pointer;
+	
+	&:hover {
+		opacity: 1;
+	}
+}
+
 .presets {
 	position: fixed;
 	top: 20px;
 	left: 20px;
 	
 	select {
+		@include hover-state;
+		width: $buttonWidth;
 		padding: 10px;
+		border: 1px solid rgb(169, 169, 169);
 		
 		option {
-			font-size: 16px;
-			
+			margin: 10px 5px;
 		}
+	}
+}
+
+.clear-notes {
+	@include hover-state;
+	width: $buttonWidth;
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	padding: 10px;
+	background: white;
+	border: 1px solid rgb(169, 169, 169);
+	cursor: pointer;
+	opacity: .75;
+	
+	&:hover {
+		opacity: 1;
 	}
 }
 

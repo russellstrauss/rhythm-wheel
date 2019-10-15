@@ -248,7 +248,7 @@ module.exports = function() {
 				self.reset();
 			});
 			
-			let clearButton = document.querySelector('#clear');
+			let clearButton = document.querySelector('.clear-notes');
 			if (clearButton) clearButton.addEventListener('click', function() {
 				
 				self.clearAllNotes();
@@ -338,6 +338,7 @@ module.exports = function() {
 			}
 			rhythmWheelMesh.geometry.colorsNeedUpdate = true;
 			
+			// Throwing error here after clearing all notes, then clicking a note again
 			if (tracks[trackIndex][beatIndex] === null) tracks[trackIndex][beatIndex] = Object.keys(beats.allInstruments._players)[trackIndex]; // get an instrument for each track row
 			else tracks[trackIndex][beatIndex] = null;
 		},
