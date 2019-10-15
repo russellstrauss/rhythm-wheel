@@ -67,7 +67,7 @@ module.exports = function () {
   var rhythmCount = 0;
   var scope;
   var loop;
-  var preset = beats.rap;
+  var preset = beats.empty;
   var wheelLength = 16;
   if (preset.beat[0]) wheelLength = preset.beat[0].length;
   return {
@@ -374,13 +374,15 @@ module.exports = function () {
         var centerRotation = Math.PI / self.settings.rhythmWheel.beats;
         var totalRotation = placementRotation + centerRotation;
         var result = transform.clone().applyAxisAngle(axis, totalRotation);
-        result.setLength(result.length() * (1 + self.settings.font.fontStyle.size / 8));
-        var arrowHelper = new THREE.ArrowHelper(result.clone().normalize(), new THREE.Vector3(0, 2 * self.settings.zBufferOffset, 0), this.settings.rhythmWheel.outerRadius, black);
-        var labelPoint = gfx.movePoint(new THREE.Vector3(0, 0, 0), result);
+        var labelPoint = void 0;
 
         if (i % 2 === 1) {
+          result.setLength(result.length() * (1 + self.settings.font.fontStyle.size / 4));
+          labelPoint = gfx.movePoint(new THREE.Vector3(0, 0, 0), result);
           self.labelPoint(labelPoint, Math.floor((i + 2) / 2).toString(), scene, black);
         } else {
+          result.setLength(result.length() * (1 + self.settings.font.fontStyle.size / 8));
+          labelPoint = gfx.movePoint(new THREE.Vector3(0, 0, 0), result);
           self.labelPoint(labelPoint, '&', scene, black, self.settings.smallFont);
         }
       }
