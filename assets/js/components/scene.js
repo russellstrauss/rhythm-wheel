@@ -101,6 +101,16 @@ module.exports = function() {
 			animate();
 		},
 		
+		initEmptyTracks: function() {
+			
+			for (let i = 0; i < this.settings.rhythmWheel.tracks; i++) { // init empty beats
+				tracks.push([]);
+				for (let j = 0; j < this.settings.rhythmWheel.beats; j++) {
+					tracks[i].push(null);
+				}
+			}
+		},
+		
 		setUpRhythm: function() {
 			
 			let self = this;
@@ -110,15 +120,10 @@ module.exports = function() {
 				bpm = preset.bpm;
 			}
 			Tone.Transport.bpm.value = bpm;
-			document.querySelector('#bpm').value = Tone.Transport.bpm.value.toString();
+			document.querySelector('#bpm').value = preset.bpm.toString();
 			Tone.Transport.timeSignature = [2, 4];
 			
-			for (let i = 0; i < self.settings.rhythmWheel.tracks; i++) { // init empty beats
-				tracks.push([]);
-				for (let j = 0; j < self.settings.rhythmWheel.beats; j++) {
-					tracks[i].push(null);
-				}
-			}
+			self.initEmptyTracks();
 			
 			if (typeof preset.beat[0] !== 'undefined') tracks = preset.beat;
 			
@@ -133,7 +138,7 @@ module.exports = function() {
 			loop = new Tone.Loop(function(time) {
 				triggerBeats(time);
 			}, '16n');
-			loop.start();
+			loop.start(0);
 			
 			scope = self;
 			function triggerBeats(time) {
@@ -262,6 +267,8 @@ module.exports = function() {
 			preset.beats = [];
 			tracks = [];
 			
+			self.initEmptyTracks();
+			
 			for (let i = 0; i < self.settings.rhythmWheel.beats; i++) {
 				
 				preset.beats.push([]);
@@ -339,6 +346,7 @@ module.exports = function() {
 			rhythmWheelMesh.geometry.colorsNeedUpdate = true;
 			
 			// Throwing error here after clearing all notes, then clicking a note again
+			console.log(tracks);
 			if (tracks[trackIndex][beatIndex] === null) tracks[trackIndex][beatIndex] = Object.keys(beats.allInstruments._players)[trackIndex]; // get an instrument for each track row
 			else tracks[trackIndex][beatIndex] = null;
 		},

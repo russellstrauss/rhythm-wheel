@@ -8,15 +8,16 @@
     snare: './assets/audio/505/snare.mp3',
     hh: './assets/audio/505/hh.mp3',
     hho: './assets/audio/505/hho.mp3',
-    bongoLow: './assets/audio/jazz/MTBongoLow.wav',
-    bongoHigh: './assets/audio/jazz/MTBongoHigh.wav',
-    congaLow: './assets/audio/jazz/MTCongaLow.wav',
-    congaHigh: './assets/audio/jazz/MTCongaHigh.wav',
+    bongoLo: './assets/audio/jazz/MTBongoLow.wav',
+    bongoHi: './assets/audio/jazz/MTBongoHigh.wav',
+    congaLo: './assets/audio/jazz/MTCongaLow.wav',
+    congaHi: './assets/audio/jazz/MTCongaHigh.wav',
     congaMuteHigh: './assets/audio/jazz/MTCongaMutHi.wav',
     brush1: './assets/audio/jazz/R8Brush01.wav',
     brush2: './assets/audio/jazz/R8Brush02.wav',
     brush3: './assets/audio/jazz/R8Brush04.wav',
-    rim: './assets/audio/jazz/snare-rim.wav'
+    rim: './assets/audio/jazz/snare-rim.wav',
+    bellHi: './assets/audio/jazz/hi-bell.wav'
   }, {
     volume: 5
   }).toMaster();
@@ -28,7 +29,7 @@
   }, {
     volume: -5
   }).toMaster();
-  var defaultInstruments = [player.get('cowbell'), player.get('snare'), soft.get('kick'), player.get('hh'), player.get('hho'), player.get('bongoLow'), player.get('bongoHigh'), player.get('congaLow'), player.get('congaHigh'), player.get('congaMuteHigh'), soft.get('ride')]; //[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+  var defaultInstruments = [player.get('cowbell'), player.get('snare'), soft.get('kick'), player.get('hh'), player.get('hho'), player.get('bongoLo'), player.get('bongoHi'), player.get('congaLo'), player.get('congaHi'), player.get('congaMuteHigh'), soft.get('ride')]; //[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
 
   window.beats = function () {
     return {
@@ -46,7 +47,7 @@
       bossaNova: {
         beat: [['ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride'], ['kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick'], ['clave', null, null, 'clave', null, null, 'clave', null, null, null, 'clave', null, null, 'clave', null, null]],
         bpm: 80,
-        instruments: [soft.get('ride'), soft.get('kick'), player.get('clave'), player.get('cowbell'), player.get('hh')]
+        instruments: [soft.get('ride'), soft.get('kick'), player.get('clave')]
       },
       funkyCowbell: {
         beat: [['kick', null, 'kick', null, null, null, null, null, null, null, 'kick', null, null, 'kick', null, null], [null, null, null, null, 'snare', null, null, 'snare', null, 'snare', null, 'snare', 'snare', null, null, 'snare'], ['hh', 'hh', 'hh', 'hh', 'hh', 'hh', 'hh', null, 'hh', 'hh', 'hh', 'hh', 'hh', null, 'hh', 'hh'], [null, null, null, null, null, null, null, 'hho', null, null, null, null, null, 'hho', null, null], ['cowbell', null, 'cowbell', null, null, 'cowbell', null, 'cowbell', null, 'cowbell', null, 'cowbell', null, null, 'cowbell', null]],
@@ -95,9 +96,51 @@
         beat: [['ride', null, 'ride', 'ride', null, null, 'ride', null, 'ride', null, 'ride', 'ride', null, null, 'ride', null], [null, null, null, null, null, null, 'hh', null, null, null, 'hh', null, null, null, 'hh', null], ['kick', null, null, null, 'kick', null, null, null, 'kick', null, null, null, 'kick', null, null, null], [null, 'tomLo', null, 'tomLo', null, null, null, null, null, null, null, null, null, null, 'tomLo', 'tomLo'], [null, null, null, null, null, null, 'tomHi', null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null, 'rim', null, null, null, null]],
         bpm: 130,
         instruments: [soft.get('ride'), player.get('hh'), soft.get('kick'), soft.get('tomLo'), soft.get('tomHi'), player.get('rim')]
+      },
+      billieJean: {
+        beat: [['kick', null, null, null, null, null, null, null, 'kick', null, null, null, null, null, null, null], [null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null], ['hh', null, 'hh', null, 'hh', null, 'hh', null, 'hh', null, 'hh', null, 'hh', null, 'hh', null]],
+        bpm: 115,
+        instruments: [player.get('snare'), soft.get('kick'), player.get('hh')]
+      },
+      rumba: {
+        beat: [['kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick'], ['rim', null, null, 'rim', null, null, null, 'rim', null, null, 'rim', null, 'rim', null, null, null], ['ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride']],
+        bpm: 100,
+        instruments: [soft.get('kick'), player.get('rim'), soft.get('ride')]
+      },
+      gahu: {
+        beat: [['kick', null, null, null, 'kick', null, null, null, 'kick', null, null, null, 'kick', null, 'kick', null], [null, null, 'rim', 'rim', null, null, 'rim', 'rim', null, null, 'rim', 'rim', null, null, 'rim', 'rim'], ['bellHi', null, null, null, 'bellHi', null, 'bellHi', null, null, null, 'bellHi', null, 'bellHi', null, null, null]],
+        bpm: 100,
+        instruments: [soft.get('kick'), player.get('rim'), player.get('bellHi')]
+      },
+      souskous: {
+        beat: [['kick', null, null, null, 'kick', null, null, null, 'kick', null, null, null, 'kick', null, 'kick', null], ['rim', null, null, 'rim', null, null, 'rim', null, 'rim', null, null, 'rim', null, null, 'rim', null], ['bellHi', null, null, 'bellHi', null, null, 'bellHi', null, null, 'bellHi', 'bellHi', null, null, null, null, null]],
+        bpm: 120,
+        instruments: [soft.get('kick'), player.get('rim'), player.get('bellHi')]
+      },
+      shiko: {
+        beat: [['kick', null, null, null, 'kick', null, 'kick', null, 'kick', null, null, null, 'kick', null, 'kick', null], [null, null, 'rim', 'rim', null, null, 'rim', 'rim', null, null, 'rim', 'rim', null, null, 'rim', 'rim'], ['bellHi', null, null, null, 'bellHi', null, 'bellHi', null, null, null, 'bellHi', null, 'bellHi', null, null, null]],
+        bpm: 120,
+        instruments: [soft.get('kick'), player.get('rim'), player.get('bellHi')] //,
+        // apache: {
+        // 	beat: [
+        // 		// ['bongoHi', null, null, 'bongoHi', 'bongoHi', null, null, 'bongoHi', null, 'bongoHi', null, 'bongoHi', 'bongoHi', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+        // 		// [null, null, null, null, null, null, 'bongoLo', null, null, null, null, null, null, 'bongoLo', 'bongoLo', 'bongoLo', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+        // 		[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 'bongoHi', null, null, 'bongoHi', 'bongoHi', null, null, 'bongoHi', null, 'bongoHi', null, 'bongoHi', 'bongoHi', null, null, null],
+        // 		[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 'bongoLo', null, null, null, null, null, null, 'bongoLo', 'bongoLo', 'bongoLo'],
+        // 		['bellHi', null, null, null, null, null, null, null, 'bellHi', null, null, null, 'bellHi', null, null, null, 'bellHi', null, null, null, null, null, null, null, 'bellHi', null, null, null, 'bellHi', null, null, null, 'bellHi', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+        // 	],
+        // 	bpm: 108,
+        // 	instruments: [
+        // 		player.get('bongoHi'),
+        // 		player.get('bongoLo'),
+        // 		player.get('bellHi')
+        // 	]
+        // }
+
       }
     };
-  }();
+  }(); //[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+
 
   module.exports = window.beats;
 })();
@@ -201,6 +244,16 @@ module.exports = function () {
 
       animate();
     },
+    initEmptyTracks: function initEmptyTracks() {
+      for (var i = 0; i < this.settings.rhythmWheel.tracks; i++) {
+        // init empty beats
+        tracks.push([]);
+
+        for (var j = 0; j < this.settings.rhythmWheel.beats; j++) {
+          tracks[i].push(null);
+        }
+      }
+    },
     setUpRhythm: function setUpRhythm() {
       var self = this;
       var bpm = 120;
@@ -210,18 +263,9 @@ module.exports = function () {
       }
 
       Tone.Transport.bpm.value = bpm;
-      document.querySelector('#bpm').value = Tone.Transport.bpm.value.toString();
+      document.querySelector('#bpm').value = preset.bpm.toString();
       Tone.Transport.timeSignature = [2, 4];
-
-      for (var i = 0; i < self.settings.rhythmWheel.tracks; i++) {
-        // init empty beats
-        tracks.push([]);
-
-        for (var j = 0; j < self.settings.rhythmWheel.beats; j++) {
-          tracks[i].push(null);
-        }
-      }
-
+      self.initEmptyTracks();
       if (typeof preset.beat[0] !== 'undefined') tracks = preset.beat;
 
       for (var track = 0; track < tracks.length; track++) {
@@ -233,18 +277,18 @@ module.exports = function () {
       loop = new Tone.Loop(function (time) {
         triggerBeats(time);
       }, '16n');
-      loop.start();
+      loop.start(0);
       scope = self;
 
       function triggerBeats(time) {
         timeCursor.rotation.y += -2 * Math.PI / scope.settings.rhythmWheel.beats;
         var beat = rhythmCount % scope.settings.rhythmWheel.beats;
 
-        for (var _i = 0; _i < scope.settings.rhythmWheel.tracks; _i++) {
-          if (tracks[_i]) {
+        for (var i = 0; i < scope.settings.rhythmWheel.tracks; i++) {
+          if (tracks[i]) {
             // an instrument added but no notes for that instrument in preset.beat[]
-            if (tracks[_i][beat] !== null) {
-              preset.instruments[_i].start(time, 0);
+            if (tracks[i][beat] !== null) {
+              preset.instruments[i].start(time, 0);
             }
           }
         }
@@ -340,6 +384,7 @@ module.exports = function () {
       self.reset();
       preset.beats = [];
       tracks = [];
+      self.initEmptyTracks();
 
       for (var i = 0; i < self.settings.rhythmWheel.beats; i++) {
         preset.beats.push([]);
@@ -406,6 +451,7 @@ module.exports = function () {
 
       rhythmWheelMesh.geometry.colorsNeedUpdate = true; // Throwing error here after clearing all notes, then clicking a note again
 
+      console.log(tracks);
       if (tracks[trackIndex][beatIndex] === null) tracks[trackIndex][beatIndex] = Object.keys(beats.allInstruments._players)[trackIndex]; // get an instrument for each track row
       else tracks[trackIndex][beatIndex] = null;
     },
@@ -542,7 +588,7 @@ module.exports = function () {
     },
     setKeys: function setKeys() {
       document.addEventListener('keyup', function (event) {
-        var space = 32; //alert(event.keyCode);
+        var space = 32;
 
         if (event.keyCode === space) {
           Tone.Transport.toggle();

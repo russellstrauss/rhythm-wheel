@@ -7,15 +7,16 @@
 			snare: './assets/audio/505/snare.mp3',
 			hh: './assets/audio/505/hh.mp3',
 			hho: './assets/audio/505/hho.mp3',
-			bongoLow: './assets/audio/jazz/MTBongoLow.wav',
-			bongoHigh: './assets/audio/jazz/MTBongoHigh.wav',
-			congaLow: './assets/audio/jazz/MTCongaLow.wav',
-			congaHigh: './assets/audio/jazz/MTCongaHigh.wav',
+			bongoLo: './assets/audio/jazz/MTBongoLow.wav',
+			bongoHi: './assets/audio/jazz/MTBongoHigh.wav',
+			congaLo: './assets/audio/jazz/MTCongaLow.wav',
+			congaHi: './assets/audio/jazz/MTCongaHigh.wav',
 			congaMuteHigh: './assets/audio/jazz/MTCongaMutHi.wav',
 			brush1: './assets/audio/jazz/R8Brush01.wav',
 			brush2: './assets/audio/jazz/R8Brush02.wav',
 			brush3: './assets/audio/jazz/R8Brush04.wav',
-			rim: './assets/audio/jazz/snare-rim.wav'
+			rim: './assets/audio/jazz/snare-rim.wav',
+			bellHi: './assets/audio/jazz/hi-bell.wav'
 		},
 		{
 			volume: 5
@@ -40,14 +41,14 @@
 		soft.get('kick'),
 		player.get('hh'),
 		player.get('hho'),
-		player.get('bongoLow'),
-		player.get('bongoHigh'),
-		player.get('congaLow'),
-		player.get('congaHigh'),
+		player.get('bongoLo'),
+		player.get('bongoHi'),
+		player.get('congaLo'),
+		player.get('congaHi'),
 		player.get('congaMuteHigh'),
 		soft.get('ride')
 	];
-	
+
 	//[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
 	
 	window.beats = (function() {
@@ -88,9 +89,7 @@
 				instruments: [
 					soft.get('ride'),
 					soft.get('kick'),
-					player.get('clave'),
-					player.get('cowbell'),
-					player.get('hh')
+					player.get('clave')
 				]
 			},
 			
@@ -198,9 +197,98 @@
 					soft.get('tomHi'),
 					player.get('rim')
 				]
-			}
+			},
+			
+			billieJean: {
+				beat: [
+					['kick', null, null, null, null, null, null, null, 'kick', null, null, null, null, null, null, null],
+					[null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null],
+					['hh', null, 'hh', null, 'hh', null, 'hh', null, 'hh', null, 'hh', null, 'hh', null, 'hh', null]
+				],
+				bpm: 115,
+				instruments: [
+					player.get('snare'),
+					soft.get('kick'),
+					player.get('hh')
+				]
+			},
+			
+			rumba: {
+				beat: [
+					['kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick'],
+					['rim', null, null, 'rim', null, null, null, 'rim', null, null, 'rim', null, 'rim', null, null, null],
+					['ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride']
+				],
+				bpm: 100,
+				instruments: [
+					soft.get('kick'),
+					player.get('rim'),
+					soft.get('ride')
+				]
+			},
+			
+			gahu: {
+				beat: [
+					['kick', null, null, null, 'kick', null, null, null, 'kick', null, null, null, 'kick', null, 'kick', null],
+					[null, null, 'rim', 'rim', null, null, 'rim', 'rim', null, null, 'rim', 'rim', null, null, 'rim', 'rim'],
+					['bellHi', null, null, null, 'bellHi', null, 'bellHi', null, null, null, 'bellHi', null, 'bellHi', null, null, null]
+				],
+				bpm: 100,
+				instruments: [
+					soft.get('kick'),
+					player.get('rim'),
+					player.get('bellHi')
+				]
+			},
+			
+			souskous: {
+				beat: [
+					['kick', null, null, null, 'kick', null, null, null, 'kick', null, null, null, 'kick', null, 'kick', null],
+					['rim', null, null, 'rim', null, null, 'rim', null, 'rim', null, null, 'rim', null, null, 'rim', null],
+					['bellHi', null, null, 'bellHi', null, null, 'bellHi', null, null, 'bellHi', 'bellHi', null, null, null, null, null]
+				],
+				bpm: 120,
+				instruments: [
+					soft.get('kick'),
+					player.get('rim'),
+					player.get('bellHi')
+				]
+			},
+			
+			shiko: {
+				beat: [
+					['kick', null, null, null, 'kick', null, 'kick', null, 'kick', null, null, null, 'kick', null, 'kick', null],
+					[null, null, 'rim', 'rim', null, null, 'rim', 'rim', null, null, 'rim', 'rim', null, null, 'rim', 'rim'],
+					['bellHi', null, null, null, 'bellHi', null, 'bellHi', null, null, null, 'bellHi', null, 'bellHi', null, null, null]
+				],
+				bpm: 120,
+				instruments: [
+					soft.get('kick'),
+					player.get('rim'),
+					player.get('bellHi')
+				]
+			}//,
+			
+			// apache: {
+			// 	beat: [
+			// 		// ['bongoHi', null, null, 'bongoHi', 'bongoHi', null, null, 'bongoHi', null, 'bongoHi', null, 'bongoHi', 'bongoHi', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+			// 		// [null, null, null, null, null, null, 'bongoLo', null, null, null, null, null, null, 'bongoLo', 'bongoLo', 'bongoLo', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+					
+			// 		[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 'bongoHi', null, null, 'bongoHi', 'bongoHi', null, null, 'bongoHi', null, 'bongoHi', null, 'bongoHi', 'bongoHi', null, null, null],
+			// 		[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 'bongoLo', null, null, null, null, null, null, 'bongoLo', 'bongoLo', 'bongoLo'],
+			// 		['bellHi', null, null, null, null, null, null, null, 'bellHi', null, null, null, 'bellHi', null, null, null, 'bellHi', null, null, null, null, null, null, null, 'bellHi', null, null, null, 'bellHi', null, null, null, 'bellHi', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+			// 	],
+			// 	bpm: 108,
+			// 	instruments: [
+			// 		player.get('bongoHi'),
+			// 		player.get('bongoLo'),
+			// 		player.get('bellHi')
+			// 	]
+			// }
 		};
 	})();
+	
+	//[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
 	
 	module.exports = window.beats;
 })();

@@ -1,7 +1,6 @@
 $buttonWidth: 175px;
 
 @mixin hover-state {
-	text-transform: lowercase;
 	opacity: .75;
 	cursor: pointer;
 	
@@ -17,7 +16,6 @@ $buttonWidth: 175px;
 	
 	select {
 		@include hover-state;
-		width: $buttonWidth;
 		padding: 10px;
 		border: 1px solid rgb(169, 169, 169);
 		

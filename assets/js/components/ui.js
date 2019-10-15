@@ -37,6 +37,7 @@ module.exports = function() {
 			
 			let playToggle = document.querySelector('.play-toggle');
 			playToggle.addEventListener('click', function() {
+				
 				playToggle.classList.toggle('active');
 				Tone.Transport.toggle();
 			});
@@ -55,7 +56,7 @@ module.exports = function() {
 						
 						timeout = setTimeout(function() {
 							Tone.Transport.bpm.value = parseInt(bpmInput.value);
-						}, 500)
+						}, 500);
 					}
 				}
 			});
@@ -70,8 +71,6 @@ module.exports = function() {
 			document.addEventListener('keyup', function(event) {
 				
 				let space = 32;
-				
-				//alert(event.keyCode);
 				
 				if (event.keyCode === space) {
 					Tone.Transport.toggle();
