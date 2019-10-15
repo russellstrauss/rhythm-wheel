@@ -6,17 +6,18 @@ module.exports = function() {
 	var wireframeMaterial = new THREE.MeshBasicMaterial({ wireframe: true, color: new THREE.Color('black'), opacity: 0.25, transparent: true });
 	var distinctColors = [new THREE.Color('#2F72CA'), new THREE.Color('#A82F2F'), new THREE.Color('#18995B'), new THREE.Color('#F2B233'), new THREE.Color('#f58231'), new THREE.Color('#911eb4'), new THREE.Color('#46f0f0'), new THREE.Color('#f032e6'), new THREE.Color('#bcf60c'), new THREE.Color('#fabebe'), new THREE.Color('#008080'), new THREE.Color('#e6beff'), new THREE.Color('#9a6324'), new THREE.Color('#fffac8'), new THREE.Color('#800000'), new THREE.Color('#aaffd3'), new THREE.Color('#808000'), new THREE.Color('#ffd8b1'), new THREE.Color('#000075'), new THREE.Color('#808080'), new THREE.Color('#ffffff'), new THREE.Color('#000000')];
 	
-	var black = new THREE.Color('black');
+	var black = new THREE.Color('black'), white = new THREE.Color('white');
 	var timeCursor;
 	var playing = false;
 	var targetList = [];
-	var rhythmWheelMesh;
+	var rhythmWheelMesh, wireframeMesh;
 	var tracks = [];
 	var rhythmCount = 0;
 	var scope;
+	var loop;
 
-	var preset = beats.bossaNova;
-	var wheelLength = 32;
+	var preset = beats.empty;
+	var wheelLength = 64;
 	if (preset.beat[0]) wheelLength = preset.beat[0].length;
 	
 	return {
@@ -77,7 +78,6 @@ module.exports = function() {
 			scene = gfx.setUpScene(scene);
 			renderer = gfx.setUpRenderer(renderer);
 			camera = gfx.setUpCamera(camera);
-			floor = gfx.addFloor(this.settings.floorSize, scene, this.settings.colors.worldColor, this.settings.colors.gridColor);
 			//controls = gfx.enableControls(controls, renderer, camera);
 			gfx.resizeRendererOnWindowResize(renderer, camera);
 			self.setUpButtons();
@@ -120,19 +120,22 @@ module.exports = function() {
 				}
 			}
 			
-			if (preset.beat.length) tracks = preset.beat;
+			if (typeof preset.beat[0] !== 'undefined') tracks = preset.beat;
 			
 			for (let track = 0; track < tracks.length; track++) {
 				
 				for (let beat = 0; beat < tracks[track].length; beat++) {
 					
-					if (tracks[track][beat]) this.setFaceColorByNotePosition(beat, track);
+					if (tracks[track][beat]) this.setNoteOn(beat, track);
 				}
 			}
-	
-			scope = self;
-			Tone.Transport.scheduleRepeat(triggerBeats, '16n');
+
+			loop = new Tone.Loop(function(time) {
+				triggerBeats(time);
+			}, '16n');
+			loop.start();
 			
+			scope = self;
 			function triggerBeats(time) {
 				
 				timeCursor.rotation.y += -2*Math.PI/scope.settings.rhythmWheel.beats;
@@ -141,8 +144,11 @@ module.exports = function() {
 
 				for (let i = 0; i < scope.settings.rhythmWheel.tracks; i++) {
 					
-					if (tracks[i][beat] !== null) {
-						preset.instruments[i].start(time, 0);
+					if (tracks[i]) { // an instrument added but no notes for that instrument in preset.beat[]
+						
+						if (tracks[i][beat] !== null) {
+							preset.instruments[i].start(time, 0);
+						}
 					}
 				}
 				rhythmCount++;
@@ -153,7 +159,9 @@ module.exports = function() {
 			
 			let self = this;
 			
-			let rhythmWheel = new THREE.RingGeometry(this.settings.rhythmWheel.innerRadius, this.settings.rhythmWheel.outerRadius, this.settings.rhythmWheel.beats, this.settings.rhythmWheel.tracks);
+			floor = gfx.addFloor(this.settings.floorSize, scene, this.settings.colors.worldColor, this.settings.colors.gridColor);
+			
+			let rhythmWheel = new THREE.RingGeometry(self.settings.rhythmWheel.innerRadius, self.settings.rhythmWheel.outerRadius, self.settings.rhythmWheel.beats, self.settings.rhythmWheel.tracks);
 			rhythmWheel.rotateX(-Math.PI/2);
 			rhythmWheel.rotateY(Math.PI/2);
 			rhythmWheel.translate(0, this.settings.zBufferOffset, 0);
@@ -164,7 +172,7 @@ module.exports = function() {
 			});
 			rhythmWheelMesh = new THREE.Mesh(rhythmWheel, faceColorMaterial);
 			
-			let wireframeMesh = new THREE.Mesh(rhythmWheel, wireframeMaterial);
+			wireframeMesh = new THREE.Mesh(rhythmWheel, wireframeMaterial);
 			wireframeMesh.position.y += this.settings.zBufferOffset * 2;
 			targetList.push(rhythmWheelMesh);
 			scene.add(rhythmWheelMesh);
@@ -177,7 +185,7 @@ module.exports = function() {
 			scene.add(timeCursor);
 		},
 		
-		setFaceColorByNotePosition: function(beatIndex, trackIndex) {
+		setNoteOn: function(beatIndex, trackIndex) {
 			
 			let track = trackIndex + 1;
 			beatIndex = beatIndex % this.settings.rhythmWheel.beats;
@@ -188,6 +196,19 @@ module.exports = function() {
 			this.setFaceColorByIndex(rhythmWheelMesh, faceIndex - 1, distinctColors[trackIndex]);
 			rhythmWheelMesh.geometry.faces[faceIndex].selected = true;
 			rhythmWheelMesh.geometry.faces[faceIndex - 1].selected = true;
+		},
+		
+		setNoteOff: function(beatIndex, trackIndex) {
+			
+			let track = trackIndex + 1;
+			beatIndex = beatIndex % this.settings.rhythmWheel.beats;
+			let facesPerRow = this.settings.rhythmWheel.beats * 2;
+			let faceIndex = (facesPerRow * track - 1) - (beatIndex * 2);
+
+			this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, white);
+			this.setFaceColorByIndex(rhythmWheelMesh, faceIndex - 1, white);
+			rhythmWheelMesh.geometry.faces[faceIndex].selected = false;
+			rhythmWheelMesh.geometry.faces[faceIndex - 1].selected = false;
 		},
 
 		enableControls: function() {
@@ -218,6 +239,62 @@ module.exports = function() {
 				
 				self.intersects(event);
 			});
+			
+			let presetSelector = document.querySelector('#presets');
+			if (presetSelector) presetSelector.addEventListener('change', function() {
+				
+				preset = beats[presetSelector.value];
+				tracks = [];
+				self.reset();
+			});
+			
+			let clearButton = document.querySelector('#clear');
+			if (clearButton) clearButton.addEventListener('click', function() {
+				
+				self.clearAllNotes();
+			});
+		},
+		
+		clearAllNotes: function() {
+			
+			let self = this;
+			self.reset();
+			preset.beats = [];
+			tracks = [];
+			
+			for (let i = 0; i < self.settings.rhythmWheel.beats; i++) {
+				
+				preset.beats.push([]);
+				
+				for (let j = 0; j < self.settings.rhythmWheel.tracks; j++) {
+					
+					preset.beats[i].push(null);
+					self.setNoteOff(i, j);
+				}
+			}
+		},
+		
+		reset: function() {
+			
+			let self = this;
+			
+			Tone.Transport.stop();
+			Tone.Transport.cancel(0);
+			rhythmCount = 0;
+			self.settings.rhythmWheel.tracks = preset.instruments.length;
+			if (preset.beat[0]) self.settings.rhythmWheel.beats = preset.beat[0].length;
+			targetList = [];
+			
+			while(scene.children.length > 0){ 
+				scene.remove(scene.children[0]); 
+			}
+			
+			self.addGeometries();
+			self.addLabels();
+			self.setUpRhythm();
+			
+			let playToggle = document.querySelector('.play-toggle');
+			playToggle.classList.remove('active');
 		},
 		
 		intersects: function(event) {
@@ -237,7 +314,7 @@ module.exports = function() {
 			
 			let beatIndex = (this.settings.rhythmWheel.beats - 1) - Math.floor(faceIndex / 2) % this.settings.rhythmWheel.beats;
 			let trackIndex = Math.floor(faceIndex / (this.settings.rhythmWheel.beats * 2));
-			
+
 			let setColor;
 			if (rhythmWheelMesh.geometry.faces[faceIndex].selected === true) {
 				setColor = new THREE.Color('white');
@@ -337,15 +414,21 @@ module.exports = function() {
 				let totalRotation = placementRotation + centerRotation;
 				let result = transform.clone().applyAxisAngle(axis, totalRotation);
 				
-				
-				result.setLength(result.length() * (1 + self.settings.font.fontStyle.size / 8));
-				var arrowHelper = new THREE.ArrowHelper(result.clone().normalize(), new THREE.Vector3(0, 2 * self.settings.zBufferOffset, 0), this.settings.rhythmWheel.outerRadius, black);
-				
-				let labelPoint = gfx.movePoint(new THREE.Vector3(0, 0, 0), result);
+				let labelPoint;
 				if (i % 2 === 1) {
-					self.labelPoint(labelPoint, Math.floor((i + 2)/2).toString(), scene, black);
+					result.setLength(result.length() * (1 + self.settings.font.fontStyle.size / 4));
+					labelPoint = gfx.movePoint(new THREE.Vector3(0, 0, 0), result);
+					if (self.settings.rhythmWheel.beats < 32) {
+						
+						self.labelPoint(labelPoint, Math.floor((i + 2)/2).toString(), scene, black);
+					}
+					else {
+						self.labelPoint(labelPoint, Math.floor((i + 2)/2).toString(), scene, black, self.settings.smallFont);
+					}
 				}
-				else {
+				else if (self.settings.rhythmWheel.beats <= 31) {
+					result.setLength(result.length() * (1 + self.settings.font.fontStyle.size / 8));
+					labelPoint = gfx.movePoint(new THREE.Vector3(0, 0, 0), result);
 					self.labelPoint(labelPoint, '&', scene, black, self.settings.smallFont);
 				}
 			}

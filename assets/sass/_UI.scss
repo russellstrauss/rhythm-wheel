@@ -1,35 +1,15 @@
-.color-1-picker {
-	
-	&.dg.ac {
-		right: auto;
-	}
-}
-
-.color-display {
-	border: 1px solid black;
-	height: 60px;
-	width: 250px;
+.presets {
 	position: fixed;
 	top: 20px;
-	left: 50%;
-	transform: translateX(-50%);
-	background-color: rgba(255, 255, 255, .5);
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: space-between;
-	align-content: center;
-	padding: 20px;
+	left: 20px;
 	
-	#color1, #color2, #color3 {
-		height: 50px;
-		width: 50px;
-		padding: 8px;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		text-align: center;
-		color: rgba(255, 255, 255, .5);
-		font-size: 22px;
+	select {
+		padding: 10px;
+		
+		option {
+			font-size: 16px;
+			
+		}
 	}
 }
 

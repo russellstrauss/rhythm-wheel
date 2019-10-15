@@ -1,38 +1,60 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 (function () {
-  var _ref;
-
-  var player = new Tone.Players((_ref = {
+  var player = new Tone.Players({
     kick: './assets/audio/505/kick.mp3',
     cowbell: './assets/audio/jazz/cowbell.wav',
     ride: './assets/audio/jazz/ride5.wav',
-    snareRim: './assets/audio/jazz/snare-rim.wav',
-    snare: './assets/audio/505/snare.mp3'
-  }, _defineProperty(_ref, "kick", './assets/audio/505/kick.mp3'), _defineProperty(_ref, "hh", './assets/audio/505/hh.mp3'), _defineProperty(_ref, "hho", './assets/audio/505/hho.mp3'), _defineProperty(_ref, "bongoLow", './assets/audio/jazz/MTBongoLow.wav'), _defineProperty(_ref, "bongoHigh", './assets/audio/jazz/MTBongoHigh.wav'), _defineProperty(_ref, "congaLow", './assets/audio/jazz/MTCongaLow.wav'), _defineProperty(_ref, "congaHigh", './assets/audio/jazz/MTCongaHigh.wav'), _defineProperty(_ref, "congaMuteHigh", './assets/audio/jazz/MTCongaMutHi.wav'), _ref), {
+    snareRim: './assets/audio/jazz/glockenspiel.wav',
+    snare: './assets/audio/505/snare.mp3',
+    hh: './assets/audio/505/hh.mp3',
+    hho: './assets/audio/505/hho.mp3',
+    bongoLow: './assets/audio/jazz/MTBongoLow.wav',
+    bongoHigh: './assets/audio/jazz/MTBongoHigh.wav',
+    congaLow: './assets/audio/jazz/MTCongaLow.wav',
+    congaHigh: './assets/audio/jazz/MTCongaHigh.wav',
+    congaMuteHigh: './assets/audio/jazz/MTCongaMutHi.wav',
+    brush1: './assets/audio/jazz/R8Brush01.wav',
+    brush2: './assets/audio/jazz/R8Brush02.wav',
+    brush3: './assets/audio/jazz/R8Brush04.wav'
+  }, {
     volume: 5
   }).toMaster();
+  var defaultInstruments = [player.get('cowbell'), player.get('snare'), player.get('kick'), player.get('hh'), player.get('hho'), player.get('bongoLow'), player.get('bongoHigh'), player.get('congaLow'), player.get('congaHigh'), player.get('congaMuteHigh')]; //[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
 
   window.beats = function () {
     return {
       allInstruments: player,
       empty: {
-        beat: [],
+        beat: new Array(defaultInstruments.length),
         bpm: 100,
-        instruments: [player.get('snare'), player.get('kick'), player.get('hh'), player.get('hho'), player.get('bongoLow'), player.get('bongoHigh'), player.get('congaLow'), player.get('congaHigh'), player.get('congaMuteHigh')]
+        instruments: defaultInstruments
       },
-      rap: {
+      basic: {
         beat: [[null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null], ['kick', null, null, null, null, null, null, 'kick', 'kick', null, null, null, null, null, 'kick', null], ['hh', null, 'hh', null, 'hh', null, 'hh', 'hh', 'hh', null, null, null, 'hh', null, 'hh', null], [null, null, null, null, null, null, null, null, null, null, 'hho', null, null, null, null, null]],
         bpm: 100,
         instruments: [player.get('snare'), player.get('kick'), player.get('hh'), player.get('hho')]
       },
       bossaNova: {
-        beat: [['ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride'], ['kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick'], ['snareRim', null, null, 'snareRim', null, null, 'snareRim', null, null, null, 'snareRim', null, null, 'snareRim', null, null], [null, 'cowbell', null, null, null, null, null, null, null, null, null, null, null, null, null, null], ['hh', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]],
+        beat: [['ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride'], ['kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick'], ['snareRim', null, null, 'snareRim', null, null, 'snareRim', null, null, null, 'snareRim', null, null, 'snareRim', null, null]],
         bpm: 80,
         instruments: [player.get('ride'), player.get('kick'), player.get('snareRim'), player.get('cowbell'), player.get('hh')]
+      },
+      funkyCowbell: {
+        beat: [['kick', null, 'kick', null, null, null, null, null, null, null, 'kick', null, null, 'kick', null, null], [null, null, null, null, 'snare', null, null, 'snare', null, 'snare', null, 'snare', 'snare', null, null, 'snare'], ['hh', 'hh', 'hh', 'hh', 'hh', 'hh', 'hh', null, 'hh', 'hh', 'hh', 'hh', 'hh', null, 'hh', 'hh'], [null, null, null, null, null, null, null, 'hho', null, null, null, null, null, 'hho', null, null], ['cowbell', null, 'cowbell', null, null, 'cowbell', null, 'cowbell', null, 'cowbell', null, 'cowbell', null, null, 'cowbell', null]],
+        bpm: 80,
+        instruments: [player.get('kick'), player.get('snare'), player.get('hh'), player.get('hho'), player.get('cowbell')]
+      },
+      lowrider: {
+        beat: [['cowbell', null, null, null, 'cowbell', null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null], ['kick', null, null, null, null, null, null, null, 'kick', null, null, null, null, null, null, null, 'kick', null, null, null, null, null, null, null, 'kick', null, null, null, null, null, null, null], [null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null], ['hh', null, 'hh', null, 'hh', null, null, null, 'hh', null, 'hh', null, 'hh', null, null, null, 'hh', null, 'hh', null, 'hh', null, null, null, 'hh', null, 'hh', null, 'hh', null, null, null], [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]],
+        bpm: 140,
+        instruments: [player.get('cowbell'), player.get('kick'), player.get('snare'), player.get('hh'), player.get('brush1'), player.get('brush2')]
+      },
+      yyz: {
+        beat: [['cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, null, null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, null, null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null]],
+        bpm: 215,
+        instruments: [player.get('cowbell')]
       }
     };
   }();
@@ -54,16 +76,18 @@ module.exports = function () {
     transparent: true
   });
   var distinctColors = [new THREE.Color('#2F72CA'), new THREE.Color('#A82F2F'), new THREE.Color('#18995B'), new THREE.Color('#F2B233'), new THREE.Color('#f58231'), new THREE.Color('#911eb4'), new THREE.Color('#46f0f0'), new THREE.Color('#f032e6'), new THREE.Color('#bcf60c'), new THREE.Color('#fabebe'), new THREE.Color('#008080'), new THREE.Color('#e6beff'), new THREE.Color('#9a6324'), new THREE.Color('#fffac8'), new THREE.Color('#800000'), new THREE.Color('#aaffd3'), new THREE.Color('#808000'), new THREE.Color('#ffd8b1'), new THREE.Color('#000075'), new THREE.Color('#808080'), new THREE.Color('#ffffff'), new THREE.Color('#000000')];
-  var black = new THREE.Color('black');
+  var black = new THREE.Color('black'),
+      white = new THREE.Color('white');
   var timeCursor;
   var playing = false;
   var targetList = [];
-  var rhythmWheelMesh;
+  var rhythmWheelMesh, wireframeMesh;
   var tracks = [];
   var rhythmCount = 0;
   var scope;
-  var preset = beats.bossaNova;
-  var wheelLength = 32;
+  var loop;
+  var preset = beats.empty;
+  var wheelLength = 64;
   if (preset.beat[0]) wheelLength = preset.beat[0].length;
   return {
     settings: {
@@ -116,8 +140,7 @@ module.exports = function () {
       var self = this;
       scene = gfx.setUpScene(scene);
       renderer = gfx.setUpRenderer(renderer);
-      camera = gfx.setUpCamera(camera);
-      floor = gfx.addFloor(this.settings.floorSize, scene, this.settings.colors.worldColor, this.settings.colors.gridColor); //controls = gfx.enableControls(controls, renderer, camera);
+      camera = gfx.setUpCamera(camera); //controls = gfx.enableControls(controls, renderer, camera);
 
       gfx.resizeRendererOnWindowResize(renderer, camera);
       self.setUpButtons();
@@ -159,24 +182,30 @@ module.exports = function () {
         }
       }
 
-      if (preset.beat.length) tracks = preset.beat;
+      if (typeof preset.beat[0] !== 'undefined') tracks = preset.beat;
 
       for (var track = 0; track < tracks.length; track++) {
         for (var beat = 0; beat < tracks[track].length; beat++) {
-          if (tracks[track][beat]) this.setFaceColorByNotePosition(beat, track);
+          if (tracks[track][beat]) this.setNoteOn(beat, track);
         }
       }
 
+      loop = new Tone.Loop(function (time) {
+        triggerBeats(time);
+      }, '16n');
+      loop.start();
       scope = self;
-      Tone.Transport.scheduleRepeat(triggerBeats, '16n');
 
       function triggerBeats(time) {
         timeCursor.rotation.y += -2 * Math.PI / scope.settings.rhythmWheel.beats;
         var beat = rhythmCount % scope.settings.rhythmWheel.beats;
 
         for (var _i = 0; _i < scope.settings.rhythmWheel.tracks; _i++) {
-          if (tracks[_i][beat] !== null) {
-            preset.instruments[_i].start(time, 0);
+          if (tracks[_i]) {
+            // an instrument added but no notes for that instrument in preset.beat[]
+            if (tracks[_i][beat] !== null) {
+              preset.instruments[_i].start(time, 0);
+            }
           }
         }
 
@@ -185,7 +214,8 @@ module.exports = function () {
     },
     addGeometries: function addGeometries() {
       var self = this;
-      var rhythmWheel = new THREE.RingGeometry(this.settings.rhythmWheel.innerRadius, this.settings.rhythmWheel.outerRadius, this.settings.rhythmWheel.beats, this.settings.rhythmWheel.tracks);
+      floor = gfx.addFloor(this.settings.floorSize, scene, this.settings.colors.worldColor, this.settings.colors.gridColor);
+      var rhythmWheel = new THREE.RingGeometry(self.settings.rhythmWheel.innerRadius, self.settings.rhythmWheel.outerRadius, self.settings.rhythmWheel.beats, self.settings.rhythmWheel.tracks);
       rhythmWheel.rotateX(-Math.PI / 2);
       rhythmWheel.rotateY(Math.PI / 2);
       rhythmWheel.translate(0, this.settings.zBufferOffset, 0);
@@ -194,7 +224,7 @@ module.exports = function () {
         vertexColors: THREE.FaceColors
       });
       rhythmWheelMesh = new THREE.Mesh(rhythmWheel, faceColorMaterial);
-      var wireframeMesh = new THREE.Mesh(rhythmWheel, wireframeMaterial);
+      wireframeMesh = new THREE.Mesh(rhythmWheel, wireframeMaterial);
       wireframeMesh.position.y += this.settings.zBufferOffset * 2;
       targetList.push(rhythmWheelMesh);
       scene.add(rhythmWheelMesh);
@@ -209,7 +239,7 @@ module.exports = function () {
       timeCursor = new THREE.Mesh(geometry, material);
       scene.add(timeCursor);
     },
-    setFaceColorByNotePosition: function setFaceColorByNotePosition(beatIndex, trackIndex) {
+    setNoteOn: function setNoteOn(beatIndex, trackIndex) {
       var track = trackIndex + 1;
       beatIndex = beatIndex % this.settings.rhythmWheel.beats;
       var facesPerRow = this.settings.rhythmWheel.beats * 2;
@@ -218,6 +248,16 @@ module.exports = function () {
       this.setFaceColorByIndex(rhythmWheelMesh, faceIndex - 1, distinctColors[trackIndex]);
       rhythmWheelMesh.geometry.faces[faceIndex].selected = true;
       rhythmWheelMesh.geometry.faces[faceIndex - 1].selected = true;
+    },
+    setNoteOff: function setNoteOff(beatIndex, trackIndex) {
+      var track = trackIndex + 1;
+      beatIndex = beatIndex % this.settings.rhythmWheel.beats;
+      var facesPerRow = this.settings.rhythmWheel.beats * 2;
+      var faceIndex = facesPerRow * track - 1 - beatIndex * 2;
+      this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, white);
+      this.setFaceColorByIndex(rhythmWheelMesh, faceIndex - 1, white);
+      rhythmWheelMesh.geometry.faces[faceIndex].selected = false;
+      rhythmWheelMesh.geometry.faces[faceIndex - 1].selected = false;
     },
     enableControls: function enableControls() {
       controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -244,6 +284,50 @@ module.exports = function () {
       document.querySelector('canvas').addEventListener('click', function (event) {
         self.intersects(event);
       });
+      var presetSelector = document.querySelector('#presets');
+      if (presetSelector) presetSelector.addEventListener('change', function () {
+        preset = beats[presetSelector.value];
+        tracks = [];
+        self.reset();
+      });
+      var clearButton = document.querySelector('#clear');
+      if (clearButton) clearButton.addEventListener('click', function () {
+        self.clearAllNotes();
+      });
+    },
+    clearAllNotes: function clearAllNotes() {
+      var self = this;
+      self.reset();
+      preset.beats = [];
+      tracks = [];
+
+      for (var i = 0; i < self.settings.rhythmWheel.beats; i++) {
+        preset.beats.push([]);
+
+        for (var j = 0; j < self.settings.rhythmWheel.tracks; j++) {
+          preset.beats[i].push(null);
+          self.setNoteOff(i, j);
+        }
+      }
+    },
+    reset: function reset() {
+      var self = this;
+      Tone.Transport.stop();
+      Tone.Transport.cancel(0);
+      rhythmCount = 0;
+      self.settings.rhythmWheel.tracks = preset.instruments.length;
+      if (preset.beat[0]) self.settings.rhythmWheel.beats = preset.beat[0].length;
+      targetList = [];
+
+      while (scene.children.length > 0) {
+        scene.remove(scene.children[0]);
+      }
+
+      self.addGeometries();
+      self.addLabels();
+      self.setUpRhythm();
+      var playToggle = document.querySelector('.play-toggle');
+      playToggle.classList.remove('active');
     },
     intersects: function intersects(event) {
       var self = this;
@@ -342,13 +426,20 @@ module.exports = function () {
         var centerRotation = Math.PI / self.settings.rhythmWheel.beats;
         var totalRotation = placementRotation + centerRotation;
         var result = transform.clone().applyAxisAngle(axis, totalRotation);
-        result.setLength(result.length() * (1 + self.settings.font.fontStyle.size / 8));
-        var arrowHelper = new THREE.ArrowHelper(result.clone().normalize(), new THREE.Vector3(0, 2 * self.settings.zBufferOffset, 0), this.settings.rhythmWheel.outerRadius, black);
-        var labelPoint = gfx.movePoint(new THREE.Vector3(0, 0, 0), result);
+        var labelPoint = void 0;
 
         if (i % 2 === 1) {
-          self.labelPoint(labelPoint, Math.floor((i + 2) / 2).toString(), scene, black);
-        } else {
+          result.setLength(result.length() * (1 + self.settings.font.fontStyle.size / 4));
+          labelPoint = gfx.movePoint(new THREE.Vector3(0, 0, 0), result);
+
+          if (self.settings.rhythmWheel.beats < 32) {
+            self.labelPoint(labelPoint, Math.floor((i + 2) / 2).toString(), scene, black);
+          } else {
+            self.labelPoint(labelPoint, Math.floor((i + 2) / 2).toString(), scene, black, self.settings.smallFont);
+          }
+        } else if (self.settings.rhythmWheel.beats <= 31) {
+          result.setLength(result.length() * (1 + self.settings.font.fontStyle.size / 8));
+          labelPoint = gfx.movePoint(new THREE.Vector3(0, 0, 0), result);
           self.labelPoint(labelPoint, '&', scene, black, self.settings.smallFont);
         }
       }

@@ -12,11 +12,18 @@
 <body>
 	
 	<div class="presets">
-		<select name="presets">
-			<option value="rap">Basic Rap</option>
+		<select name="presets" id="presets">
+			<option value="" disabled selected>Classic Beat Presets</option>
+			<option value="empty">Clear All</option>
+			<option value="basic">Basic</option>
 			<option value="bossaNova">Bossa Nova</option>
+			<option value="funkyCowbell">Funky Cowbell</option>
+			<option value="lowrider">Lowrider</option>
+			<option value="yyz">YYZ</option>
 		</select>
 	</div>
+	
+	<button id="clear">Clear All</button>
 	
 	<div id="message"></div>
 	<!-- <div id="legend">		
