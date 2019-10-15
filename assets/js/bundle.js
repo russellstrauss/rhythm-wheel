@@ -1,18 +1,21 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 (function () {
-  var _ref;
-
-  var player = new Tone.Players((_ref = {
+  var player = new Tone.Players({
     kick: './assets/audio/505/kick.mp3',
     cowbell: './assets/audio/jazz/cowbell.wav',
     ride: './assets/audio/jazz/ride5.wav',
     snareRim: './assets/audio/jazz/snare-rim.wav',
-    snare: './assets/audio/505/snare.mp3'
-  }, _defineProperty(_ref, "kick", './assets/audio/505/kick.mp3'), _defineProperty(_ref, "hh", './assets/audio/505/hh.mp3'), _defineProperty(_ref, "hho", './assets/audio/505/hho.mp3'), _defineProperty(_ref, "bongoLow", './assets/audio/jazz/MTBongoLow.wav'), _defineProperty(_ref, "bongoHigh", './assets/audio/jazz/MTBongoHigh.wav'), _defineProperty(_ref, "congaLow", './assets/audio/jazz/MTCongaLow.wav'), _defineProperty(_ref, "congaHigh", './assets/audio/jazz/MTCongaHigh.wav'), _defineProperty(_ref, "congaMuteHigh", './assets/audio/jazz/MTCongaMutHi.wav'), _ref), {
+    snare: './assets/audio/505/snare.mp3',
+    hh: './assets/audio/505/hh.mp3',
+    hho: './assets/audio/505/hho.mp3',
+    bongoLow: './assets/audio/jazz/MTBongoLow.wav',
+    bongoHigh: './assets/audio/jazz/MTBongoHigh.wav',
+    congaLow: './assets/audio/jazz/MTCongaLow.wav',
+    congaHigh: './assets/audio/jazz/MTCongaHigh.wav',
+    congaMuteHigh: './assets/audio/jazz/MTCongaMutHi.wav'
+  }, {
     volume: 5
   }).toMaster();
   var defaultInstruments = [player.get('snare'), player.get('kick'), player.get('hh'), player.get('hho'), player.get('bongoLow'), player.get('bongoHigh'), player.get('congaLow'), player.get('congaHigh'), player.get('congaMuteHigh')];
@@ -63,6 +66,7 @@ module.exports = function () {
   var tracks = [];
   var rhythmCount = 0;
   var scope;
+  var loop;
   var preset = beats.rap;
   var wheelLength = 16;
   if (preset.beat[0]) wheelLength = preset.beat[0].length;
@@ -168,11 +172,13 @@ module.exports = function () {
         }
       }
 
+      loop = new Tone.Loop(function (time) {
+        triggerBeats(time);
+      }, '16n');
+      loop.start();
       scope = self;
-      Tone.Transport.scheduleRepeat(triggerBeats, '16n');
 
       function triggerBeats(time) {
-        console.log(time);
         timeCursor.rotation.y += -2 * Math.PI / scope.settings.rhythmWheel.beats;
         var beat = rhythmCount % scope.settings.rhythmWheel.beats;
 
@@ -248,22 +254,28 @@ module.exports = function () {
         self.intersects(event);
       });
       var presetSelector = document.querySelector('#presets');
-      presetSelector.addEventListener('change', function () {
-        Tone.Transport.stop();
-        Tone.Transport.seconds = 0;
-        Tone.Transport.cancel(0);
-        console.log(Tone.time);
+      if (presetSelector) presetSelector.addEventListener('change', function () {
         preset = beats[presetSelector.value];
-        self.settings.rhythmWheel.tracks = preset.beat.length;
-
-        while (scene.children.length > 0) {
-          scene.remove(scene.children[0]);
-        }
-
-        self.addGeometries();
-        self.addLabels();
-        self.setUpRhythm();
+        self.reset();
       });
+    },
+    reset: function reset() {
+      var self = this;
+      Tone.Transport.stop();
+      Tone.Transport.cancel(0);
+      rhythmCount = 0;
+      self.settings.rhythmWheel.tracks = preset.beat.length;
+      targetList = [];
+
+      while (scene.children.length > 0) {
+        scene.remove(scene.children[0]);
+      }
+
+      self.addGeometries();
+      self.addLabels();
+      self.setUpRhythm();
+      var playToggle = document.querySelector('.play-toggle');
+      playToggle.classList.remove('active');
     },
     intersects: function intersects(event) {
       var self = this;

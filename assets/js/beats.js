@@ -7,7 +7,6 @@
 			ride: './assets/audio/jazz/ride5.wav',
 			snareRim: './assets/audio/jazz/snare-rim.wav',
 			snare: './assets/audio/505/snare.mp3',
-			kick: './assets/audio/505/kick.mp3',
 			hh: './assets/audio/505/hh.mp3',
 			hho: './assets/audio/505/hho.mp3',
 			bongoLow: './assets/audio/jazz/MTBongoLow.wav',

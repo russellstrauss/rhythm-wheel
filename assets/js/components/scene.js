@@ -14,6 +14,7 @@ module.exports = function() {
 	var tracks = [];
 	var rhythmCount = 0;
 	var scope;
+	var loop;
 
 	var preset = beats.rap;
 	var wheelLength = 16;
@@ -129,13 +130,14 @@ module.exports = function() {
 					if (tracks[track][beat]) this.setFaceColorByNotePosition(beat, track);
 				}
 			}
-	
-			scope = self;
-			Tone.Transport.scheduleRepeat(triggerBeats, '16n');
+
+			loop = new Tone.Loop(function(time) {
+				triggerBeats(time);
+			}, '16n');
+			loop.start();
 			
+			scope = self;
 			function triggerBeats(time) {
-				
-				console.log(time);
 				
 				timeCursor.rotation.y += -2*Math.PI/scope.settings.rhythmWheel.beats;
 				
@@ -224,22 +226,33 @@ module.exports = function() {
 			});
 			
 			let presetSelector = document.querySelector('#presets');
-			presetSelector.addEventListener('change', function() {
+			if (presetSelector) presetSelector.addEventListener('change', function() {
 				
-				Tone.Transport.stop();
-				Tone.Transport.seconds = 0;
-				Tone.Transport.cancel(0);
-				console.log(Tone.time);
 				preset = beats[presetSelector.value];
-				self.settings.rhythmWheel.tracks = preset.beat.length;
-				
-				while(scene.children.length > 0){ 
-					scene.remove(scene.children[0]); 
-				}
-				self.addGeometries();
-				self.addLabels();
-				self.setUpRhythm();	
+				self.reset();
 			});
+		},
+		
+		reset: function() {
+			
+			let self = this;
+			
+			Tone.Transport.stop();
+			Tone.Transport.cancel(0);
+			rhythmCount = 0;
+			self.settings.rhythmWheel.tracks = preset.beat.length;
+			targetList = [];
+			
+			while(scene.children.length > 0){ 
+				scene.remove(scene.children[0]); 
+			}
+			
+			self.addGeometries();
+			self.addLabels();
+			self.setUpRhythm();
+			
+			let playToggle = document.querySelector('.play-toggle');
+			playToggle.classList.remove('active');
 		},
 		
 		intersects: function(event) {
@@ -259,7 +272,7 @@ module.exports = function() {
 			
 			let beatIndex = (this.settings.rhythmWheel.beats - 1) - Math.floor(faceIndex / 2) % this.settings.rhythmWheel.beats;
 			let trackIndex = Math.floor(faceIndex / (this.settings.rhythmWheel.beats * 2));
-			
+
 			let setColor;
 			if (rhythmWheelMesh.geometry.faces[faceIndex].selected === true) {
 				setColor = new THREE.Color('white');
@@ -267,6 +280,7 @@ module.exports = function() {
 			else {
 				setColor = distinctColors[trackIndex];
 			}
+			
 			
 			let evenFace = (faceIndex % 2 === 0);
 			if (evenFace) {
