@@ -6,7 +6,7 @@
     kick: './assets/audio/505/kick.mp3',
     cowbell: './assets/audio/jazz/cowbell.wav',
     ride: './assets/audio/jazz/ride5.wav',
-    snareRim: './assets/audio/jazz/snare-rim.wav',
+    snareRim: './assets/audio/jazz/glockenspiel.wav',
     snare: './assets/audio/505/snare.mp3',
     hh: './assets/audio/505/hh.mp3',
     hho: './assets/audio/505/hho.mp3',
@@ -14,11 +14,14 @@
     bongoHigh: './assets/audio/jazz/MTBongoHigh.wav',
     congaLow: './assets/audio/jazz/MTCongaLow.wav',
     congaHigh: './assets/audio/jazz/MTCongaHigh.wav',
-    congaMuteHigh: './assets/audio/jazz/MTCongaMutHi.wav'
+    congaMuteHigh: './assets/audio/jazz/MTCongaMutHi.wav',
+    brush1: './assets/audio/jazz/R8Brush01.wav',
+    brush2: './assets/audio/jazz/R8Brush02.wav',
+    brush3: './assets/audio/jazz/R8Brush04.wav'
   }, {
     volume: 5
   }).toMaster();
-  var defaultInstruments = [player.get('snare'), player.get('kick'), player.get('hh'), player.get('hho'), player.get('bongoLow'), player.get('bongoHigh'), player.get('congaLow'), player.get('congaHigh'), player.get('congaMuteHigh')]; //[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+  var defaultInstruments = [player.get('cowbell'), player.get('snare'), player.get('kick'), player.get('hh'), player.get('hho'), player.get('bongoLow'), player.get('bongoHigh'), player.get('congaLow'), player.get('congaHigh'), player.get('congaMuteHigh')]; //[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
 
   window.beats = function () {
     return {
@@ -44,9 +47,14 @@
         instruments: [player.get('kick'), player.get('snare'), player.get('hh'), player.get('hho'), player.get('cowbell')]
       },
       lowrider: {
-        beat: [['cowbell', null, null, null, 'cowbell', null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null], ['kick', null, null, null, null, null, null, null, 'kick', null, null, null, null, null, null, null, 'kick', null, null, null, null, null, null, null, 'kick', null, null, null, null, null, null, null], [null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null]],
+        beat: [['cowbell', null, null, null, 'cowbell', null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null], ['kick', null, null, null, null, null, null, null, 'kick', null, null, null, null, null, null, null, 'kick', null, null, null, null, null, null, null, 'kick', null, null, null, null, null, null, null], [null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null], ['hh', null, 'hh', null, 'hh', null, null, null, 'hh', null, 'hh', null, 'hh', null, null, null, 'hh', null, 'hh', null, 'hh', null, null, null, 'hh', null, 'hh', null, 'hh', null, null, null]],
         bpm: 140,
-        instruments: [player.get('cowbell'), player.get('kick'), player.get('snare')]
+        instruments: [player.get('cowbell'), player.get('kick'), player.get('snare'), player.get('hh'), player.get('brush2'), player.get('brush3')]
+      },
+      yyz: {
+        beat: [['cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, null, null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, null, null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null]],
+        bpm: 215,
+        instruments: [player.get('cowbell')]
       }
     };
   }();
@@ -77,8 +85,8 @@ module.exports = function () {
   var rhythmCount = 0;
   var scope;
   var loop;
-  var preset = beats.lowrider;
-  var wheelLength = 16;
+  var preset = beats.empty;
+  var wheelLength = 64;
   if (preset.beat[0]) wheelLength = preset.beat[0].length;
   return {
     settings: {
@@ -120,7 +128,7 @@ module.exports = function () {
         innerRadius: 1,
         outerRadius: 5,
         beats: wheelLength,
-        tracks: preset.beat.length
+        tracks: preset.instruments.length
       }
     },
     init: function init() {
@@ -193,8 +201,11 @@ module.exports = function () {
         var beat = rhythmCount % scope.settings.rhythmWheel.beats;
 
         for (var _i = 0; _i < scope.settings.rhythmWheel.tracks; _i++) {
-          if (tracks[_i][beat] !== null) {
-            preset.instruments[_i].start(time, 0);
+          if (tracks[_i]) {
+            // an instrument added but no notes for that instrument in preset.beat[]
+            if (tracks[_i][beat] !== null) {
+              preset.instruments[_i].start(time, 0);
+            }
           }
         }
 
@@ -274,7 +285,7 @@ module.exports = function () {
       Tone.Transport.stop();
       Tone.Transport.cancel(0);
       rhythmCount = 0;
-      self.settings.rhythmWheel.tracks = preset.beat.length;
+      self.settings.rhythmWheel.tracks = preset.instruments.length;
       if (preset.beat[0]) self.settings.rhythmWheel.beats = preset.beat[0].length;
       targetList = [];
 
@@ -390,8 +401,13 @@ module.exports = function () {
         if (i % 2 === 1) {
           result.setLength(result.length() * (1 + self.settings.font.fontStyle.size / 4));
           labelPoint = gfx.movePoint(new THREE.Vector3(0, 0, 0), result);
-          self.labelPoint(labelPoint, Math.floor((i + 2) / 2).toString(), scene, black);
-        } else {
+
+          if (self.settings.rhythmWheel.beats < 32) {
+            self.labelPoint(labelPoint, Math.floor((i + 2) / 2).toString(), scene, black);
+          } else {
+            self.labelPoint(labelPoint, Math.floor((i + 2) / 2).toString(), scene, black, self.settings.smallFont);
+          }
+        } else if (self.settings.rhythmWheel.beats <= 31) {
           result.setLength(result.length() * (1 + self.settings.font.fontStyle.size / 8));
           labelPoint = gfx.movePoint(new THREE.Vector3(0, 0, 0), result);
           self.labelPoint(labelPoint, '&', scene, black, self.settings.smallFont);

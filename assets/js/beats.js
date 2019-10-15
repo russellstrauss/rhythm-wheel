@@ -5,7 +5,7 @@
 			kick: './assets/audio/505/kick.mp3',
 			cowbell: './assets/audio/jazz/cowbell.wav',
 			ride: './assets/audio/jazz/ride5.wav',
-			snareRim: './assets/audio/jazz/snare-rim.wav',
+			snareRim: './assets/audio/jazz/glockenspiel.wav',
 			snare: './assets/audio/505/snare.mp3',
 			hh: './assets/audio/505/hh.mp3',
 			hho: './assets/audio/505/hho.mp3',
@@ -13,7 +13,10 @@
 			bongoHigh: './assets/audio/jazz/MTBongoHigh.wav',
 			congaLow: './assets/audio/jazz/MTCongaLow.wav',
 			congaHigh: './assets/audio/jazz/MTCongaHigh.wav',
-			congaMuteHigh: './assets/audio/jazz/MTCongaMutHi.wav'
+			congaMuteHigh: './assets/audio/jazz/MTCongaMutHi.wav',
+			brush1: './assets/audio/jazz/R8Brush01.wav',
+			brush2: './assets/audio/jazz/R8Brush02.wav',
+			brush3: './assets/audio/jazz/R8Brush04.wav'
 		},
 		{
 			volume: 5
@@ -21,6 +24,7 @@
 	).toMaster();
 	
 	var defaultInstruments = [
+		player.get('cowbell'),
 		player.get('snare'),
 		player.get('kick'),
 		player.get('hh'),
@@ -100,13 +104,27 @@
 				beat: [
 					['cowbell', null, null, null, 'cowbell', null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null],
 					['kick', null, null, null, null, null, null, null, 'kick', null, null, null, null, null, null, null, 'kick', null, null, null, null, null, null, null, 'kick', null, null, null, null, null, null, null],
-					[null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null]
+					[null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null],
+					['hh', null, 'hh', null, 'hh', null, null, null, 'hh', null, 'hh', null, 'hh', null, null, null, 'hh', null, 'hh', null, 'hh', null, null, null, 'hh', null, 'hh', null, 'hh', null, null, null]
 				],
 				bpm: 140,
 				instruments: [
 					player.get('cowbell'),
 					player.get('kick'),
-					player.get('snare')
+					player.get('snare'),
+					player.get('hh'),
+					player.get('brush2'),
+					player.get('brush3')
+				]
+			},
+			
+			yyz: {
+				beat: [
+					['cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, null, null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, null, null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null]
+				],
+				bpm: 215,
+				instruments: [
+					player.get('cowbell')
 				]
 			}
 		};

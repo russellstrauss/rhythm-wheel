@@ -16,8 +16,8 @@ module.exports = function() {
 	var scope;
 	var loop;
 
-	var preset = beats.lowrider;
-	var wheelLength = 16;
+	var preset = beats.empty;
+	var wheelLength = 64;
 	if (preset.beat[0]) wheelLength = preset.beat[0].length;
 	
 	return {
@@ -61,7 +61,7 @@ module.exports = function() {
 				innerRadius: 1,
 				outerRadius: 5,
 				beats: wheelLength,
-				tracks: preset.beat.length
+				tracks: preset.instruments.length
 			}
 		},
 		
@@ -145,9 +145,13 @@ module.exports = function() {
 
 				for (let i = 0; i < scope.settings.rhythmWheel.tracks; i++) {
 					
-					if (tracks[i][beat] !== null) {
-						preset.instruments[i].start(time, 0);
+					if (tracks[i]) { // an instrument added but no notes for that instrument in preset.beat[]
+						
+						if (tracks[i][beat] !== null) {
+							preset.instruments[i].start(time, 0);
+						}
 					}
+					
 				}
 				rhythmCount++;
 			}
@@ -240,7 +244,7 @@ module.exports = function() {
 			Tone.Transport.stop();
 			Tone.Transport.cancel(0);
 			rhythmCount = 0;
-			self.settings.rhythmWheel.tracks = preset.beat.length;
+			self.settings.rhythmWheel.tracks = preset.instruments.length;
 			if (preset.beat[0]) self.settings.rhythmWheel.beats = preset.beat[0].length;
 			targetList = [];
 			
@@ -380,9 +384,15 @@ module.exports = function() {
 				if (i % 2 === 1) {
 					result.setLength(result.length() * (1 + self.settings.font.fontStyle.size / 4));
 					labelPoint = gfx.movePoint(new THREE.Vector3(0, 0, 0), result);
-					self.labelPoint(labelPoint, Math.floor((i + 2)/2).toString(), scene, black);
+					if (self.settings.rhythmWheel.beats < 32) {
+						
+						self.labelPoint(labelPoint, Math.floor((i + 2)/2).toString(), scene, black);
+					}
+					else {
+						self.labelPoint(labelPoint, Math.floor((i + 2)/2).toString(), scene, black, self.settings.smallFont);
+					}
 				}
-				else {
+				else if (self.settings.rhythmWheel.beats <= 31) {
 					result.setLength(result.length() * (1 + self.settings.font.fontStyle.size / 8));
 					labelPoint = gfx.movePoint(new THREE.Vector3(0, 0, 0), result);
 					self.labelPoint(labelPoint, '&', scene, black, self.settings.smallFont);
