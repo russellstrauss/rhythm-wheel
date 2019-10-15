@@ -47,9 +47,9 @@
         instruments: [player.get('kick'), player.get('snare'), player.get('hh'), player.get('hho'), player.get('cowbell')]
       },
       lowrider: {
-        beat: [['cowbell', null, null, null, 'cowbell', null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null], ['kick', null, null, null, null, null, null, null, 'kick', null, null, null, null, null, null, null, 'kick', null, null, null, null, null, null, null, 'kick', null, null, null, null, null, null, null], [null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null], ['hh', null, 'hh', null, 'hh', null, null, null, 'hh', null, 'hh', null, 'hh', null, null, null, 'hh', null, 'hh', null, 'hh', null, null, null, 'hh', null, 'hh', null, 'hh', null, null, null]],
+        beat: [['cowbell', null, null, null, 'cowbell', null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null], ['kick', null, null, null, null, null, null, null, 'kick', null, null, null, null, null, null, null, 'kick', null, null, null, null, null, null, null, 'kick', null, null, null, null, null, null, null], [null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null], ['hh', null, 'hh', null, 'hh', null, null, null, 'hh', null, 'hh', null, 'hh', null, null, null, 'hh', null, 'hh', null, 'hh', null, null, null, 'hh', null, 'hh', null, 'hh', null, null, null], [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]],
         bpm: 140,
-        instruments: [player.get('cowbell'), player.get('kick'), player.get('snare'), player.get('hh'), player.get('brush2'), player.get('brush3')]
+        instruments: [player.get('cowbell'), player.get('kick'), player.get('snare'), player.get('hh'), player.get('brush1'), player.get('brush2')]
       },
       yyz: {
         beat: [['cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, null, null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, null, null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null, null, null, 'cowbell', null, null, null, 'cowbell', null, 'cowbell', null]],
@@ -76,7 +76,8 @@ module.exports = function () {
     transparent: true
   });
   var distinctColors = [new THREE.Color('#2F72CA'), new THREE.Color('#A82F2F'), new THREE.Color('#18995B'), new THREE.Color('#F2B233'), new THREE.Color('#f58231'), new THREE.Color('#911eb4'), new THREE.Color('#46f0f0'), new THREE.Color('#f032e6'), new THREE.Color('#bcf60c'), new THREE.Color('#fabebe'), new THREE.Color('#008080'), new THREE.Color('#e6beff'), new THREE.Color('#9a6324'), new THREE.Color('#fffac8'), new THREE.Color('#800000'), new THREE.Color('#aaffd3'), new THREE.Color('#808000'), new THREE.Color('#ffd8b1'), new THREE.Color('#000075'), new THREE.Color('#808080'), new THREE.Color('#ffffff'), new THREE.Color('#000000')];
-  var black = new THREE.Color('black');
+  var black = new THREE.Color('black'),
+      white = new THREE.Color('white');
   var timeCursor;
   var playing = false;
   var targetList = [];
@@ -171,7 +172,6 @@ module.exports = function () {
       Tone.Transport.bpm.value = bpm;
       document.querySelector('#bpm').value = Tone.Transport.bpm.value.toString();
       Tone.Transport.timeSignature = [2, 4];
-      tracks = [];
 
       for (var i = 0; i < self.settings.rhythmWheel.tracks; i++) {
         // init empty beats
@@ -186,7 +186,7 @@ module.exports = function () {
 
       for (var track = 0; track < tracks.length; track++) {
         for (var beat = 0; beat < tracks[track].length; beat++) {
-          if (tracks[track][beat]) this.setFaceColorByNotePosition(beat, track);
+          if (tracks[track][beat]) this.setNoteOn(beat, track);
         }
       }
 
@@ -239,7 +239,7 @@ module.exports = function () {
       timeCursor = new THREE.Mesh(geometry, material);
       scene.add(timeCursor);
     },
-    setFaceColorByNotePosition: function setFaceColorByNotePosition(beatIndex, trackIndex) {
+    setNoteOn: function setNoteOn(beatIndex, trackIndex) {
       var track = trackIndex + 1;
       beatIndex = beatIndex % this.settings.rhythmWheel.beats;
       var facesPerRow = this.settings.rhythmWheel.beats * 2;
@@ -248,6 +248,16 @@ module.exports = function () {
       this.setFaceColorByIndex(rhythmWheelMesh, faceIndex - 1, distinctColors[trackIndex]);
       rhythmWheelMesh.geometry.faces[faceIndex].selected = true;
       rhythmWheelMesh.geometry.faces[faceIndex - 1].selected = true;
+    },
+    setNoteOff: function setNoteOff(beatIndex, trackIndex) {
+      var track = trackIndex + 1;
+      beatIndex = beatIndex % this.settings.rhythmWheel.beats;
+      var facesPerRow = this.settings.rhythmWheel.beats * 2;
+      var faceIndex = facesPerRow * track - 1 - beatIndex * 2;
+      this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, white);
+      this.setFaceColorByIndex(rhythmWheelMesh, faceIndex - 1, white);
+      rhythmWheelMesh.geometry.faces[faceIndex].selected = false;
+      rhythmWheelMesh.geometry.faces[faceIndex - 1].selected = false;
     },
     enableControls: function enableControls() {
       controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -277,8 +287,28 @@ module.exports = function () {
       var presetSelector = document.querySelector('#presets');
       if (presetSelector) presetSelector.addEventListener('change', function () {
         preset = beats[presetSelector.value];
+        tracks = [];
         self.reset();
       });
+      var clearButton = document.querySelector('#clear');
+      if (clearButton) clearButton.addEventListener('click', function () {
+        self.clearAllNotes();
+      });
+    },
+    clearAllNotes: function clearAllNotes() {
+      var self = this;
+      self.reset();
+      preset.beats = [];
+      tracks = [];
+
+      for (var i = 0; i < self.settings.rhythmWheel.beats; i++) {
+        preset.beats.push([]);
+
+        for (var j = 0; j < self.settings.rhythmWheel.tracks; j++) {
+          preset.beats[i].push(null);
+          self.setNoteOff(i, j);
+        }
+      }
     },
     reset: function reset() {
       var self = this;

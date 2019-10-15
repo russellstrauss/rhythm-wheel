@@ -6,7 +6,7 @@ module.exports = function() {
 	var wireframeMaterial = new THREE.MeshBasicMaterial({ wireframe: true, color: new THREE.Color('black'), opacity: 0.25, transparent: true });
 	var distinctColors = [new THREE.Color('#2F72CA'), new THREE.Color('#A82F2F'), new THREE.Color('#18995B'), new THREE.Color('#F2B233'), new THREE.Color('#f58231'), new THREE.Color('#911eb4'), new THREE.Color('#46f0f0'), new THREE.Color('#f032e6'), new THREE.Color('#bcf60c'), new THREE.Color('#fabebe'), new THREE.Color('#008080'), new THREE.Color('#e6beff'), new THREE.Color('#9a6324'), new THREE.Color('#fffac8'), new THREE.Color('#800000'), new THREE.Color('#aaffd3'), new THREE.Color('#808000'), new THREE.Color('#ffd8b1'), new THREE.Color('#000075'), new THREE.Color('#808080'), new THREE.Color('#ffffff'), new THREE.Color('#000000')];
 	
-	var black = new THREE.Color('black');
+	var black = new THREE.Color('black'), white = new THREE.Color('white');
 	var timeCursor;
 	var playing = false;
 	var targetList = [];
@@ -113,7 +113,6 @@ module.exports = function() {
 			document.querySelector('#bpm').value = Tone.Transport.bpm.value.toString();
 			Tone.Transport.timeSignature = [2, 4];
 			
-			tracks = [];
 			for (let i = 0; i < self.settings.rhythmWheel.tracks; i++) { // init empty beats
 				tracks.push([]);
 				for (let j = 0; j < self.settings.rhythmWheel.beats; j++) {
@@ -127,7 +126,7 @@ module.exports = function() {
 				
 				for (let beat = 0; beat < tracks[track].length; beat++) {
 					
-					if (tracks[track][beat]) this.setFaceColorByNotePosition(beat, track);
+					if (tracks[track][beat]) this.setNoteOn(beat, track);
 				}
 			}
 
@@ -151,7 +150,6 @@ module.exports = function() {
 							preset.instruments[i].start(time, 0);
 						}
 					}
-					
 				}
 				rhythmCount++;
 			}
@@ -187,7 +185,7 @@ module.exports = function() {
 			scene.add(timeCursor);
 		},
 		
-		setFaceColorByNotePosition: function(beatIndex, trackIndex) {
+		setNoteOn: function(beatIndex, trackIndex) {
 			
 			let track = trackIndex + 1;
 			beatIndex = beatIndex % this.settings.rhythmWheel.beats;
@@ -198,6 +196,19 @@ module.exports = function() {
 			this.setFaceColorByIndex(rhythmWheelMesh, faceIndex - 1, distinctColors[trackIndex]);
 			rhythmWheelMesh.geometry.faces[faceIndex].selected = true;
 			rhythmWheelMesh.geometry.faces[faceIndex - 1].selected = true;
+		},
+		
+		setNoteOff: function(beatIndex, trackIndex) {
+			
+			let track = trackIndex + 1;
+			beatIndex = beatIndex % this.settings.rhythmWheel.beats;
+			let facesPerRow = this.settings.rhythmWheel.beats * 2;
+			let faceIndex = (facesPerRow * track - 1) - (beatIndex * 2);
+
+			this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, white);
+			this.setFaceColorByIndex(rhythmWheelMesh, faceIndex - 1, white);
+			rhythmWheelMesh.geometry.faces[faceIndex].selected = false;
+			rhythmWheelMesh.geometry.faces[faceIndex - 1].selected = false;
 		},
 
 		enableControls: function() {
@@ -233,8 +244,34 @@ module.exports = function() {
 			if (presetSelector) presetSelector.addEventListener('change', function() {
 				
 				preset = beats[presetSelector.value];
+				tracks = [];
 				self.reset();
 			});
+			
+			let clearButton = document.querySelector('#clear');
+			if (clearButton) clearButton.addEventListener('click', function() {
+				
+				self.clearAllNotes();
+			});
+		},
+		
+		clearAllNotes: function() {
+			
+			let self = this;
+			self.reset();
+			preset.beats = [];
+			tracks = [];
+			
+			for (let i = 0; i < self.settings.rhythmWheel.beats; i++) {
+				
+				preset.beats.push([]);
+				
+				for (let j = 0; j < self.settings.rhythmWheel.tracks; j++) {
+					
+					preset.beats[i].push(null);
+					self.setNoteOff(i, j);
+				}
+			}
 		},
 		
 		reset: function() {
@@ -285,7 +322,6 @@ module.exports = function() {
 			else {
 				setColor = distinctColors[trackIndex];
 			}
-			
 			
 			let evenFace = (faceIndex % 2 === 0);
 			if (evenFace) {
@@ -377,8 +413,6 @@ module.exports = function() {
 				let centerRotation = Math.PI / self.settings.rhythmWheel.beats;
 				let totalRotation = placementRotation + centerRotation;
 				let result = transform.clone().applyAxisAngle(axis, totalRotation);
-				
-				
 				
 				let labelPoint;
 				if (i % 2 === 1) {
