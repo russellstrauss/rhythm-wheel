@@ -373,7 +373,9 @@ module.exports = function () {
       rhythmWheel.translate(0, this.settings.zBufferOffset, 0);
       var faceColorMaterial = new THREE.MeshBasicMaterial({
         color: new THREE.Color('white'),
-        vertexColors: THREE.FaceColors
+        vertexColors: THREE.FaceColors,
+        transparent: true,
+        opacity: 1
       });
       rhythmWheelMesh = new THREE.Mesh(rhythmWheel, faceColorMaterial);
       wireframeMesh = new THREE.Mesh(rhythmWheel, wireframeMaterial);
@@ -582,6 +584,7 @@ module.exports = function () {
     },
     setFaceColorByIndex: function setFaceColorByIndex(mesh, faceIndex, color) {
       mesh.geometry.faces[faceIndex].color.setRGB(color.r, color.g, color.b);
+      console.log(mesh.geometry.faces[faceIndex]);
       mesh.geometry.colorsNeedUpdate = true;
     },
     loadFont: function loadFont() {

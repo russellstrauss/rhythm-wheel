@@ -173,7 +173,9 @@ module.exports = function() {
 			
 			let faceColorMaterial = new THREE.MeshBasicMaterial({
 				color: new THREE.Color('white'),
-				vertexColors: THREE.FaceColors
+				vertexColors: THREE.FaceColors,
+				transparent: true,
+				opacity: 1
 			});
 			rhythmWheelMesh = new THREE.Mesh(rhythmWheel, faceColorMaterial);
 			
@@ -422,6 +424,8 @@ module.exports = function() {
 		
 		setFaceColorByIndex: function(mesh, faceIndex, color) {
 			mesh.geometry.faces[faceIndex].color.setRGB(color.r, color.g, color.b);
+			
+			console.log(mesh.geometry.faces[faceIndex]);
 			mesh.geometry.colorsNeedUpdate = true;
 		},
 		
