@@ -35,6 +35,24 @@
 		}
 	).toMaster();
 	
+	player.get('cowbell').displayName = 'Cowbell';
+	player.get('clave').displayName = 'Clave';
+	player.get('rim').displayName = 'Snare Rim';
+	player.get('cowbell').displayName = 'Cowbell';
+	player.get('bellHi').displayName = 'Bell';
+	soft.get('tomLo').displayName = 'Tom Low';
+	soft.get('tomHi').displayName = 'Tom High';
+	player.get('snare').displayName = 'Snare';
+	soft.get('kick').displayName = 'Kick';
+	player.get('hh').displayName = 'Hi-hat Closed';
+	player.get('hho').displayName = 'Hi-hat Off';
+	player.get('bongoLo').displayName = 'Bongo Low';
+	player.get('bongoHi').displayName = 'Bongo High';
+	player.get('congaLo').displayName = 'Conga Low';
+	player.get('congaHi').displayName = 'Conga High';
+	player.get('congaMuteHigh').displayName = 'Conga Mute High';
+	soft.get('ride').displayName = 'Ride Bell';
+	
 	var defaultInstruments = [
 		player.get('cowbell'),
 		player.get('snare'),
