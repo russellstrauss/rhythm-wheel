@@ -16,34 +16,27 @@
 			brush2: './assets/audio/jazz/R8Brush02.wav',
 			brush3: './assets/audio/jazz/R8Brush04.wav',
 			rim: './assets/audio/jazz/snare-rim.wav',
-			bellHi: './assets/audio/jazz/hi-bell.wav'
-		},
-		{
-			volume: 5
-		}
-	).toMaster();
-	
-	var soft = new Tone.Players(
-		{
+			bellHi: './assets/audio/jazz/hi-bell.wav',
 			ride: './assets/audio/jazz/ride-bell.wav',
 			tomLo: './assets/audio/jazz/DR220Tom_Lo.wav',
 			tomHi: './assets/audio/jazz/DR220Tom_Hi.wav',
 			kick: './assets/audio/505/kick.mp3'
 		},
 		{
-			volume: -5
+			volume: 5
 		}
 	).toMaster();
 	
+	// Set display names for UI
 	player.get('cowbell').displayName = 'Cowbell';
 	player.get('clave').displayName = 'Clave';
 	player.get('rim').displayName = 'Snare Rim';
 	player.get('cowbell').displayName = 'Cowbell';
 	player.get('bellHi').displayName = 'Bell';
-	soft.get('tomLo').displayName = 'Tom Low';
-	soft.get('tomHi').displayName = 'Tom High';
+	player.get('tomLo').displayName = 'Tom Low';
+	player.get('tomHi').displayName = 'Tom High';
 	player.get('snare').displayName = 'Snare';
-	soft.get('kick').displayName = 'Kick';
+	player.get('kick').displayName = 'Kick';
 	player.get('hh').displayName = 'Hi-hat Closed';
 	player.get('hho').displayName = 'Hi-hat Off';
 	player.get('bongoLo').displayName = 'Bongo Low';
@@ -51,12 +44,19 @@
 	player.get('congaLo').displayName = 'Conga Low';
 	player.get('congaHi').displayName = 'Conga High';
 	player.get('congaMuteHigh').displayName = 'Conga Mute High';
-	soft.get('ride').displayName = 'Ride Bell';
+	player.get('ride').displayName = 'Ride Bell';
+	
+	// Set volume to equalize instrument volumes
+	player.get('cowbell').volume.value = 0;
+	player.get('ride').volume.value = -8;
+	player.get('tomLo').volume.value = -12;
+	player.get('tomHi').volume.value = -12;
+	player.get('kick').volume.value = -8;
 	
 	var defaultInstruments = [
 		player.get('cowbell'),
 		player.get('snare'),
-		soft.get('kick'),
+		player.get('kick'),
 		player.get('hh'),
 		player.get('hho'),
 		player.get('bongoLo'),
@@ -64,7 +64,7 @@
 		player.get('congaLo'),
 		player.get('congaHi'),
 		player.get('congaMuteHigh'),
-		soft.get('ride')
+		player.get('ride')
 	];
 	
 	var bongos = [
@@ -100,7 +100,7 @@
 					length: 16,
 					bpm: 115,
 					instruments: [
-						soft.get('kick'),
+						player.get('kick'),
 						player.get('snare'),
 						player.get('hh'),
 						player.get('hho')
@@ -127,7 +127,7 @@
 				length: 16,
 				bpm: 100,
 				instruments: [
-					soft.get('kick'),
+					player.get('kick'),
 					player.get('snare'),
 					player.get('hh'),
 					player.get('hho')
@@ -143,8 +143,8 @@
 				length: 16,
 				bpm: 80,
 				instruments: [
-					soft.get('ride'),
-					soft.get('kick'),
+					player.get('ride'),
+					player.get('kick'),
 					player.get('clave')
 				]
 			},
@@ -160,7 +160,7 @@
 				length: 16,
 				bpm: 80,
 				instruments: [
-					soft.get('kick'),
+					player.get('kick'),
 					player.get('snare'),
 					player.get('hh'),
 					player.get('hho'),
@@ -210,11 +210,11 @@
 				length: 12,
 				bpm: 90,
 				instruments: [
-					soft.get('ride'),
+					player.get('ride'),
 					player.get('hh'),
-					soft.get('tomLo'),
-					soft.get('tomHi'),
-					soft.get('kick'),
+					player.get('tomLo'),
+					player.get('tomHi'),
+					player.get('kick'),
 					player.get('rim')
 				]
 			},
@@ -230,11 +230,11 @@
 				length: 16,
 				bpm: 130,
 				instruments: [
-					soft.get('ride'),
+					player.get('ride'),
 					player.get('hh'),
-					soft.get('kick'),
-					soft.get('tomLo'),
-					soft.get('tomHi')
+					player.get('kick'),
+					player.get('tomLo'),
+					player.get('tomHi')
 				]
 			},
 			
@@ -250,11 +250,11 @@
 				length: 16,
 				bpm: 130,
 				instruments: [
-					soft.get('ride'),
+					player.get('ride'),
 					player.get('hh'),
-					soft.get('kick'),
-					soft.get('tomLo'),
-					soft.get('tomHi'),
+					player.get('kick'),
+					player.get('tomLo'),
+					player.get('tomHi'),
 					player.get('rim')
 				]
 			},
@@ -269,7 +269,7 @@
 				bpm: 115,
 				instruments: [
 					player.get('snare'),
-					soft.get('kick'),
+					player.get('kick'),
 					player.get('hh')
 				]
 			},
@@ -283,9 +283,9 @@
 				length: 16,
 				bpm: 90,
 				instruments: [
-					soft.get('kick'),
+					player.get('kick'),
 					player.get('rim'),
-					soft.get('ride')
+					player.get('ride')
 				]
 			},
 			
@@ -298,7 +298,7 @@
 				length: 16,
 				bpm: 100,
 				instruments: [
-					soft.get('kick'),
+					player.get('kick'),
 					player.get('rim'),
 					player.get('bellHi')
 				]
@@ -313,7 +313,7 @@
 				length: 16,
 				bpm: 120,
 				instruments: [
-					soft.get('kick'),
+					player.get('kick'),
 					player.get('rim'),
 					player.get('bellHi')
 				]
@@ -328,7 +328,7 @@
 				length: 16,
 				bpm: 120,
 				instruments: [
-					soft.get('kick'),
+					player.get('kick'),
 					player.get('rim'),
 					player.get('bellHi')
 				]
