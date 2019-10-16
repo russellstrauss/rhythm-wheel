@@ -4,10 +4,24 @@ module.exports = function() {
 	var raycaster = new THREE.Raycaster();
 	var mouse = new THREE.Vector2();
 	var wireframeMaterial = new THREE.MeshBasicMaterial({ wireframe: true, color: new THREE.Color('black'), opacity: 0.25, transparent: true });
-	var distinctColors = [new THREE.Color('#2F72CA'), new THREE.Color('#A82F2F'), new THREE.Color('#18995B'), new THREE.Color('#F2B233'), new THREE.Color('#f58231'), new THREE.Color('#543459'), new THREE.Color('#6EC2ED'), new THREE.Color('#E84A5F'), new THREE.Color('#bcf60c'), new THREE.Color('#fabebe'), new THREE.Color('#008080'), new THREE.Color('#e6beff'), new THREE.Color('#9a6324'), new THREE.Color('#fffac8'), new THREE.Color('#800000'), new THREE.Color('#aaffd3'), new THREE.Color('#808000'), new THREE.Color('#ffd8b1'), new THREE.Color('#000075'), new THREE.Color('#808080'), new THREE.Color('#ffffff'), new THREE.Color('#000000')];
-	var textColors = ['white', 'white', 'white', 'black', 'black', 'white', 'black', 'white', 'black', 'black', 'white'];
+	var distinctColors = [
+		new THREE.Color('#2F72CA'),
+		new THREE.Color('#A82F2F'),
+		new THREE.Color('#18995B'),
+		new THREE.Color('#F2B233'), 
+		new THREE.Color('#543459'), 
+		new THREE.Color('#f58231'), 
+		new THREE.Color('#6EC2ED'), 
+		new THREE.Color('#B898B9'), 
+		new THREE.Color('#BA2B06'), 
+		new THREE.Color('#123546'),
+		new THREE.Color('#D5638A') 
+
+		
+	];
+	var textColors = ['white', 'white', 'white', 'black', 'white', 'black', 'black', 'black', 'white', 'white', 'white'];
 	
-	var black = new THREE.Color('black'), white = new THREE.Color('white');
+	var black = new THREE.Color('black');
 	var timeCursor;
 	var playing = false;
 	var targetList = [];
@@ -171,13 +185,21 @@ module.exports = function() {
 			rhythmWheel.rotateY(Math.PI/2);
 			rhythmWheel.translate(0, this.settings.zBufferOffset, 0);
 			
-			let faceColorMaterial = new THREE.MeshBasicMaterial({
+			let solidFaceMaterial = new THREE.MeshBasicMaterial({
+				color: new THREE.Color('white'),
+				vertexColors: THREE.FaceColors,
+				transparent: false
+			});
+			let translucentFaceMaterial = new THREE.MeshBasicMaterial({
 				color: new THREE.Color('white'),
 				vertexColors: THREE.FaceColors,
 				transparent: true,
-				opacity: 1
+				opacity: 0.14
 			});
-			rhythmWheelMesh = new THREE.Mesh(rhythmWheel, faceColorMaterial);
+			
+			let materials = [translucentFaceMaterial, solidFaceMaterial];
+			rhythmWheelMesh = new THREE.Mesh(rhythmWheel, materials);
+			self.setEmptyFaceColors();
 			
 			wireframeMesh = new THREE.Mesh(rhythmWheel, wireframeMaterial);
 			wireframeMesh.position.y += this.settings.zBufferOffset * 2;
@@ -192,6 +214,16 @@ module.exports = function() {
 			scene.add(timeCursor);
 		},
 		
+		setEmptyFaceColors: function() {
+			
+			let self = this;
+			rhythmWheelMesh.geometry.faces.forEach(function (face, i) { // set default color tracks
+				let trackIndex = Math.floor(i / (self.settings.rhythmWheel.beats * 2));
+				face.materialIndex = 0;
+				face.color = distinctColors[trackIndex];
+			});
+		},
+		
 		setNoteOn: function(beatIndex, trackIndex) {
 			
 			let track = trackIndex + 1;
@@ -199,8 +231,8 @@ module.exports = function() {
 			let facesPerRow = this.settings.rhythmWheel.beats * 2;
 			let faceIndex = (facesPerRow * track - 1) - (beatIndex * 2);
 
-			this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, distinctColors[trackIndex]);
-			this.setFaceColorByIndex(rhythmWheelMesh, faceIndex - 1, distinctColors[trackIndex]);
+			this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, distinctColors[trackIndex], 1);
+			this.setFaceColorByIndex(rhythmWheelMesh, faceIndex - 1, distinctColors[trackIndex], 1);
 			rhythmWheelMesh.geometry.faces[faceIndex].selected = true;
 			rhythmWheelMesh.geometry.faces[faceIndex - 1].selected = true;
 		},
@@ -212,8 +244,8 @@ module.exports = function() {
 			let facesPerRow = this.settings.rhythmWheel.beats * 2;
 			let faceIndex = (facesPerRow * track - 1) - (beatIndex * 2);
 
-			this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, white);
-			this.setFaceColorByIndex(rhythmWheelMesh, faceIndex - 1, white);
+			this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, distinctColors[trackIndex], 1);
+			this.setFaceColorByIndex(rhythmWheelMesh, faceIndex - 1, distinctColors[trackIndex], 1);
 			rhythmWheelMesh.geometry.faces[faceIndex].selected = false;
 			rhythmWheelMesh.geometry.faces[faceIndex - 1].selected = false;
 		},
@@ -330,6 +362,8 @@ module.exports = function() {
 					self.setNoteOff(i, j);
 				}
 			}
+			
+			self.setEmptyFaceColors();
 		},
 		
 		reset: function() {
@@ -395,38 +429,38 @@ module.exports = function() {
 			let beatIndex = (this.settings.rhythmWheel.beats - 1) - Math.floor(faceIndex / 2) % this.settings.rhythmWheel.beats;
 			let trackIndex = Math.floor(faceIndex / (this.settings.rhythmWheel.beats * 2));
 
-			let setColor;
+			let setMaterial = 1;
 			if (rhythmWheelMesh.geometry.faces[faceIndex].selected === true) {
-				setColor = new THREE.Color('white');
+				setMaterial = 0;
 			}
 			else {
-				setColor = distinctColors[trackIndex];
+				setMaterial = 1;
 			}
 			
 			let evenFace = (faceIndex % 2 === 0);
 			if (evenFace) {
-				this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, setColor);
-				this.setFaceColorByIndex(rhythmWheelMesh, faceIndex + 1, setColor);
+				this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, distinctColors[trackIndex], setMaterial);
+				this.setFaceColorByIndex(rhythmWheelMesh, faceIndex + 1, distinctColors[trackIndex], setMaterial);
 				rhythmWheelMesh.geometry.faces[faceIndex].selected = !rhythmWheelMesh.geometry.faces[faceIndex].selected;
 				rhythmWheelMesh.geometry.faces[faceIndex + 1].selected = !rhythmWheelMesh.geometry.faces[faceIndex + 1].selected;
 			}
 			else {
-				this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, setColor);
-				this.setFaceColorByIndex(rhythmWheelMesh, faceIndex - 1, setColor);
+				this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, distinctColors[trackIndex], setMaterial);
+				this.setFaceColorByIndex(rhythmWheelMesh, faceIndex - 1, distinctColors[trackIndex], setMaterial);
 				rhythmWheelMesh.geometry.faces[faceIndex].selected = !rhythmWheelMesh.geometry.faces[faceIndex].selected;
 				rhythmWheelMesh.geometry.faces[faceIndex - 1].selected = !rhythmWheelMesh.geometry.faces[faceIndex - 1].selected;
 			}
-			rhythmWheelMesh.geometry.colorsNeedUpdate = true;
 			
 			if (tracks[trackIndex][beatIndex] === null) tracks[trackIndex][beatIndex] = Object.keys(beats.allInstruments._players)[trackIndex]; // get an instrument for each track row
 			else tracks[trackIndex][beatIndex] = null;
 		},
 		
-		setFaceColorByIndex: function(mesh, faceIndex, color) {
+		setFaceColorByIndex: function(mesh, faceIndex, color, materialIndex) {
+			mesh.geometry.faces[faceIndex].materialIndex = materialIndex;
 			mesh.geometry.faces[faceIndex].color.setRGB(color.r, color.g, color.b);
 			
-			console.log(mesh.geometry.faces[faceIndex]);
-			mesh.geometry.colorsNeedUpdate = true;
+			rhythmWheelMesh.geometry.colorsNeedUpdate = true;
+			rhythmWheelMesh.geometry.groupsNeedUpdate = true;
 		},
 		
 		loadFont: function() {
