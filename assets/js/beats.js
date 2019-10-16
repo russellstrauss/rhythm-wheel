@@ -48,6 +48,14 @@
 		player.get('congaMuteHigh'),
 		soft.get('ride')
 	];
+	
+	var bongos = [
+		player.get('bongoLo'),
+		player.get('bongoHi'),
+		player.get('congaLo'),
+		player.get('congaHi'),
+		player.get('congaMuteHigh')
+	];
 
 	//[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
 	
@@ -57,8 +65,36 @@
 			
 			allInstruments: player,
 			
+			instrumentSets: {
+				bongos: {
+					length: 16,
+					bpm: 120,
+					instruments: [
+						player.get('bongoLo'),
+						player.get('bongoHi'),
+						player.get('congaLo'),
+						player.get('congaHi'),
+						player.get('congaMuteHigh')
+					]
+				},
+				
+				rockDrumSet: {
+					length: 16,
+					bpm: 115,
+					instruments: [
+						player.get('snare'),
+						soft.get('kick'),
+						player.get('hh'),
+						player.get('hho')
+					]
+				}
+				
+				
+			},
+			
 			empty: {
 				beat: new Array(defaultInstruments.length),
+				length: 16,
 				bpm: 100,
 				instruments: defaultInstruments
 			},
@@ -70,6 +106,7 @@
 					['hh', null, 'hh', null, 'hh', null, 'hh', 'hh', 'hh', null, null, null, 'hh', null, 'hh', null],
 					[null, null, null, null, null, null, null, null, null, null, 'hho', null, null, null, null, null]
 				],
+				length: 16,
 				bpm: 100,
 				instruments: [
 					player.get('snare'),
@@ -85,6 +122,7 @@
 					['kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick'],
 					['clave', null, null, 'clave', null, null, 'clave', null, null, null, 'clave', null, null, 'clave', null, null]
 				],
+				length: 16,
 				bpm: 80,
 				instruments: [
 					soft.get('ride'),
@@ -101,6 +139,7 @@
 					[null, null, null, null, null, null, null, 'hho', null, null, null, null, null, 'hho', null, null],
 					['cowbell', null, 'cowbell', null, null, 'cowbell', null, 'cowbell', null, 'cowbell', null, 'cowbell', null, null, 'cowbell', null]
 				],
+				length: 16,
 				bpm: 80,
 				instruments: [
 					soft.get('kick'),
@@ -150,6 +189,7 @@
 					[null, null, null, null, null, null, null, null, null, null, 'tomLo', 'tomLo'],
 					[null, null, null, null, null, 'tomHi', null, null, null, null, null, null]
 				],
+				length: 12,
 				bpm: 90,
 				instruments: [
 					soft.get('ride'),
@@ -169,6 +209,7 @@
 					[null, 'tomLo', null, 'tomLo', null, null, null, null, null, null, 'tomLo', 'tomLo', null, null, null, null],
 					[null, null, null, null, null, null, 'tomHi', 'tomHi', null, null, null, null, null, null, 'tomHi', 'tomHi']
 				],
+				length: 16,
 				bpm: 130,
 				instruments: [
 					soft.get('ride'),
@@ -188,6 +229,7 @@
 					[null, null, null, null, null, null, 'tomHi', null, null, null, null, null, null, null, null, null],
 					[null, null, null, null, null, null, null, null, null, null, null, 'rim', null, null, null, null]
 				],
+				length: 16,
 				bpm: 130,
 				instruments: [
 					soft.get('ride'),
@@ -205,6 +247,7 @@
 					[null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null],
 					['hh', null, 'hh', null, 'hh', null, 'hh', null, 'hh', null, 'hh', null, 'hh', null, 'hh', null]
 				],
+				length: 16,
 				bpm: 115,
 				instruments: [
 					player.get('snare'),
@@ -219,7 +262,8 @@
 					['rim', null, null, 'rim', null, null, null, 'rim', null, null, 'rim', null, 'rim', null, null, null],
 					['ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride']
 				],
-				bpm: 100,
+				length: 16,
+				bpm: 90,
 				instruments: [
 					soft.get('kick'),
 					player.get('rim'),
@@ -233,6 +277,7 @@
 					[null, null, 'rim', 'rim', null, null, 'rim', 'rim', null, null, 'rim', 'rim', null, null, 'rim', 'rim'],
 					['bellHi', null, null, null, 'bellHi', null, 'bellHi', null, null, null, 'bellHi', null, 'bellHi', null, null, null]
 				],
+				length: 16,
 				bpm: 100,
 				instruments: [
 					soft.get('kick'),
@@ -247,6 +292,7 @@
 					['rim', null, null, 'rim', null, null, 'rim', null, 'rim', null, null, 'rim', null, null, 'rim', null],
 					['bellHi', null, null, 'bellHi', null, null, 'bellHi', null, null, 'bellHi', 'bellHi', null, null, null, null, null]
 				],
+				length: 16,
 				bpm: 120,
 				instruments: [
 					soft.get('kick'),
@@ -261,6 +307,7 @@
 					[null, null, 'rim', 'rim', null, null, 'rim', 'rim', null, null, 'rim', 'rim', null, null, 'rim', 'rim'],
 					['bellHi', null, null, null, 'bellHi', null, 'bellHi', null, null, null, 'bellHi', null, 'bellHi', null, null, null]
 				],
+				length: 16,
 				bpm: 120,
 				instruments: [
 					soft.get('kick'),

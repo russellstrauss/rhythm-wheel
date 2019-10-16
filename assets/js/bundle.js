@@ -29,28 +29,45 @@
   }, {
     volume: -5
   }).toMaster();
-  var defaultInstruments = [player.get('cowbell'), player.get('snare'), soft.get('kick'), player.get('hh'), player.get('hho'), player.get('bongoLo'), player.get('bongoHi'), player.get('congaLo'), player.get('congaHi'), player.get('congaMuteHigh'), soft.get('ride')]; //[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+  var defaultInstruments = [player.get('cowbell'), player.get('snare'), soft.get('kick'), player.get('hh'), player.get('hho'), player.get('bongoLo'), player.get('bongoHi'), player.get('congaLo'), player.get('congaHi'), player.get('congaMuteHigh'), soft.get('ride')];
+  var bongos = [player.get('bongoLo'), player.get('bongoHi'), player.get('congaLo'), player.get('congaHi'), player.get('congaMuteHigh')]; //[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
 
   window.beats = function () {
     return {
       allInstruments: player,
+      instrumentSets: {
+        bongos: {
+          length: 16,
+          bpm: 120,
+          instruments: [player.get('bongoLo'), player.get('bongoHi'), player.get('congaLo'), player.get('congaHi'), player.get('congaMuteHigh')]
+        },
+        rockDrumSet: {
+          length: 16,
+          bpm: 115,
+          instruments: [player.get('snare'), soft.get('kick'), player.get('hh'), player.get('hho')]
+        }
+      },
       empty: {
         beat: new Array(defaultInstruments.length),
+        length: 16,
         bpm: 100,
         instruments: defaultInstruments
       },
       basic: {
         beat: [[null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null], ['kick', null, null, null, null, null, null, 'kick', 'kick', null, null, null, null, null, 'kick', null], ['hh', null, 'hh', null, 'hh', null, 'hh', 'hh', 'hh', null, null, null, 'hh', null, 'hh', null], [null, null, null, null, null, null, null, null, null, null, 'hho', null, null, null, null, null]],
+        length: 16,
         bpm: 100,
         instruments: [player.get('snare'), soft.get('kick'), player.get('hh'), player.get('hho')]
       },
       bossaNova: {
         beat: [['ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride'], ['kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick'], ['clave', null, null, 'clave', null, null, 'clave', null, null, null, 'clave', null, null, 'clave', null, null]],
+        length: 16,
         bpm: 80,
         instruments: [soft.get('ride'), soft.get('kick'), player.get('clave')]
       },
       funkyCowbell: {
         beat: [['kick', null, 'kick', null, null, null, null, null, null, null, 'kick', null, null, 'kick', null, null], [null, null, null, null, 'snare', null, null, 'snare', null, 'snare', null, 'snare', 'snare', null, null, 'snare'], ['hh', 'hh', 'hh', 'hh', 'hh', 'hh', 'hh', null, 'hh', 'hh', 'hh', 'hh', 'hh', null, 'hh', 'hh'], [null, null, null, null, null, null, null, 'hho', null, null, null, null, null, 'hho', null, null], ['cowbell', null, 'cowbell', null, null, 'cowbell', null, 'cowbell', null, 'cowbell', null, 'cowbell', null, null, 'cowbell', null]],
+        length: 16,
         bpm: 80,
         instruments: [soft.get('kick'), player.get('snare'), player.get('hh'), player.get('hho'), player.get('cowbell')]
       },
@@ -84,41 +101,49 @@
       // }
       bembe: {
         beat: [['ride', null, 'ride', null, 'ride', 'ride', null, 'ride', null, 'ride', null, 'ride'], ['hh', null, null, 'hh', null, null, 'hh', null, null, 'hh', null, null], ['kick', null, null, null, null, null, null, null, null, null, null, 'kick'], [null, null, 'rim', null, null, null, null, 'rim', null, null, null, null], [null, null, null, null, null, null, null, null, null, null, 'tomLo', 'tomLo'], [null, null, null, null, null, 'tomHi', null, null, null, null, null, null]],
+        length: 12,
         bpm: 90,
         instruments: [soft.get('ride'), player.get('hh'), soft.get('tomLo'), soft.get('tomHi'), soft.get('kick'), player.get('rim')]
       },
       sikyi: {
         beat: [['ride', null, 'ride', 'ride', null, null, 'ride', null, 'ride', null, 'ride', 'ride', null, null, 'ride', null], [null, null, null, null, null, null, 'hh', null, null, null, 'hh', null, null, null, 'hh', null], ['kick', null, null, null, 'kick', null, null, null, 'kick', null, null, null, 'kick', null, null, null], [null, 'tomLo', null, 'tomLo', null, null, null, null, null, null, 'tomLo', 'tomLo', null, null, null, null], [null, null, null, null, null, null, 'tomHi', 'tomHi', null, null, null, null, null, null, 'tomHi', 'tomHi']],
+        length: 16,
         bpm: 130,
         instruments: [soft.get('ride'), player.get('hh'), soft.get('kick'), soft.get('tomLo'), soft.get('tomHi')]
       },
       sikyi2: {
         beat: [['ride', null, 'ride', 'ride', null, null, 'ride', null, 'ride', null, 'ride', 'ride', null, null, 'ride', null], [null, null, null, null, null, null, 'hh', null, null, null, 'hh', null, null, null, 'hh', null], ['kick', null, null, null, 'kick', null, null, null, 'kick', null, null, null, 'kick', null, null, null], [null, 'tomLo', null, 'tomLo', null, null, null, null, null, null, null, null, null, null, 'tomLo', 'tomLo'], [null, null, null, null, null, null, 'tomHi', null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null, 'rim', null, null, null, null]],
+        length: 16,
         bpm: 130,
         instruments: [soft.get('ride'), player.get('hh'), soft.get('kick'), soft.get('tomLo'), soft.get('tomHi'), player.get('rim')]
       },
       billieJean: {
         beat: [['kick', null, null, null, null, null, null, null, 'kick', null, null, null, null, null, null, null], [null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null], ['hh', null, 'hh', null, 'hh', null, 'hh', null, 'hh', null, 'hh', null, 'hh', null, 'hh', null]],
+        length: 16,
         bpm: 115,
         instruments: [player.get('snare'), soft.get('kick'), player.get('hh')]
       },
       rumba: {
         beat: [['kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick'], ['rim', null, null, 'rim', null, null, null, 'rim', null, null, 'rim', null, 'rim', null, null, null], ['ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride']],
-        bpm: 100,
+        length: 16,
+        bpm: 90,
         instruments: [soft.get('kick'), player.get('rim'), soft.get('ride')]
       },
       gahu: {
         beat: [['kick', null, null, null, 'kick', null, null, null, 'kick', null, null, null, 'kick', null, 'kick', null], [null, null, 'rim', 'rim', null, null, 'rim', 'rim', null, null, 'rim', 'rim', null, null, 'rim', 'rim'], ['bellHi', null, null, null, 'bellHi', null, 'bellHi', null, null, null, 'bellHi', null, 'bellHi', null, null, null]],
+        length: 16,
         bpm: 100,
         instruments: [soft.get('kick'), player.get('rim'), player.get('bellHi')]
       },
       souskous: {
         beat: [['kick', null, null, null, 'kick', null, null, null, 'kick', null, null, null, 'kick', null, 'kick', null], ['rim', null, null, 'rim', null, null, 'rim', null, 'rim', null, null, 'rim', null, null, 'rim', null], ['bellHi', null, null, 'bellHi', null, null, 'bellHi', null, null, 'bellHi', 'bellHi', null, null, null, null, null]],
+        length: 16,
         bpm: 120,
         instruments: [soft.get('kick'), player.get('rim'), player.get('bellHi')]
       },
       shiko: {
         beat: [['kick', null, null, null, 'kick', null, 'kick', null, 'kick', null, null, null, 'kick', null, 'kick', null], [null, null, 'rim', 'rim', null, null, 'rim', 'rim', null, null, 'rim', 'rim', null, null, 'rim', 'rim'], ['bellHi', null, null, null, 'bellHi', null, 'bellHi', null, null, null, 'bellHi', null, 'bellHi', null, null, null]],
+        length: 16,
         bpm: 120,
         instruments: [soft.get('kick'), player.get('rim'), player.get('bellHi')] //,
         // apache: {
@@ -170,8 +195,6 @@ module.exports = function () {
   var scope;
   var loop;
   var preset = beats.empty;
-  var wheelLength = 64;
-  if (preset.beat[0]) wheelLength = preset.beat[0].length;
   return {
     settings: {
       defaultCameraLocation: {
@@ -211,7 +234,7 @@ module.exports = function () {
       rhythmWheel: {
         innerRadius: 1,
         outerRadius: 5,
-        beats: wheelLength,
+        beats: preset.length,
         tracks: preset.instruments.length
       }
     },
@@ -368,10 +391,19 @@ module.exports = function () {
       document.querySelector('canvas').addEventListener('click', function (event) {
         self.intersects(event);
       });
-      var presetSelector = document.querySelector('#presets');
+      var presetSelector = document.querySelector('.presets');
       if (presetSelector) presetSelector.addEventListener('change', function () {
         preset = beats[presetSelector.value];
         tracks = [];
+        self.reset();
+      });
+      var instrumentSelector = document.querySelector('.instrument-selection');
+      if (instrumentSelector) instrumentSelector.addEventListener('change', function () {
+        self.clearAllNotes();
+        preset = beats['empty'];
+        preset.bpm = beats.instrumentSets[instrumentSelector.value].bpm;
+        preset.instruments = beats.instrumentSets[instrumentSelector.value].instruments;
+        self.settings.rhythmWheel.beats = beats.instrumentSets[instrumentSelector.value].length;
         self.reset();
       });
       var clearButton = document.querySelector('.clear-notes');
@@ -401,7 +433,7 @@ module.exports = function () {
       Tone.Transport.cancel(0);
       rhythmCount = 0;
       self.settings.rhythmWheel.tracks = preset.instruments.length;
-      if (preset.beat[0]) self.settings.rhythmWheel.beats = preset.beat[0].length;
+      self.settings.rhythmWheel.beats = preset.length;
       targetList = [];
 
       while (scene.children.length > 0) {
@@ -449,9 +481,7 @@ module.exports = function () {
         rhythmWheelMesh.geometry.faces[faceIndex - 1].selected = !rhythmWheelMesh.geometry.faces[faceIndex - 1].selected;
       }
 
-      rhythmWheelMesh.geometry.colorsNeedUpdate = true; // Throwing error here after clearing all notes, then clicking a note again
-
-      console.log(tracks);
+      rhythmWheelMesh.geometry.colorsNeedUpdate = true;
       if (tracks[trackIndex][beatIndex] === null) tracks[trackIndex][beatIndex] = Object.keys(beats.allInstruments._players)[trackIndex]; // get an instrument for each track row
       else tracks[trackIndex][beatIndex] = null;
     },

@@ -17,8 +17,6 @@ module.exports = function() {
 	var loop;
 
 	var preset = beats.empty;
-	var wheelLength = 64;
-	if (preset.beat[0]) wheelLength = preset.beat[0].length;
 	
 	return {
 		
@@ -60,7 +58,7 @@ module.exports = function() {
 			rhythmWheel: {
 				innerRadius: 1,
 				outerRadius: 5,
-				beats: wheelLength,
+				beats: preset.length,
 				tracks: preset.instruments.length
 			}
 		},
@@ -245,11 +243,22 @@ module.exports = function() {
 				self.intersects(event);
 			});
 			
-			let presetSelector = document.querySelector('#presets');
+			let presetSelector = document.querySelector('.presets');
 			if (presetSelector) presetSelector.addEventListener('change', function() {
 				
 				preset = beats[presetSelector.value];
 				tracks = [];
+				self.reset();
+			});
+			
+			let instrumentSelector = document.querySelector('.instrument-selection');
+			if (instrumentSelector) instrumentSelector.addEventListener('change', function() {
+				
+				self.clearAllNotes();
+				preset = beats['empty'];
+				preset.bpm = beats.instrumentSets[instrumentSelector.value].bpm
+				preset.instruments = beats.instrumentSets[instrumentSelector.value].instruments;
+				self.settings.rhythmWheel.beats = beats.instrumentSets[instrumentSelector.value].length;
 				self.reset();
 			});
 			
@@ -289,7 +298,7 @@ module.exports = function() {
 			Tone.Transport.cancel(0);
 			rhythmCount = 0;
 			self.settings.rhythmWheel.tracks = preset.instruments.length;
-			if (preset.beat[0]) self.settings.rhythmWheel.beats = preset.beat[0].length;
+			self.settings.rhythmWheel.beats = preset.length;
 			targetList = [];
 			
 			while(scene.children.length > 0){ 
@@ -345,8 +354,6 @@ module.exports = function() {
 			}
 			rhythmWheelMesh.geometry.colorsNeedUpdate = true;
 			
-			// Throwing error here after clearing all notes, then clicking a note again
-			console.log(tracks);
 			if (tracks[trackIndex][beatIndex] === null) tracks[trackIndex][beatIndex] = Object.keys(beats.allInstruments._players)[trackIndex]; // get an instrument for each track row
 			else tracks[trackIndex][beatIndex] = null;
 		},

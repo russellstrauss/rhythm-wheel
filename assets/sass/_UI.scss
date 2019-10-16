@@ -9,19 +9,26 @@ $buttonWidth: 175px;
 	}
 }
 
-.presets {
+.play-selection {
 	position: fixed;
 	top: 20px;
 	left: 20px;
 	
 	select {
+		display: block;
 		@include hover-state;
 		padding: 10px;
 		border: 1px solid rgb(169, 169, 169);
+		margin: 0 0 10px 0;
+		width: 100%;
 		
 		option {
 			margin: 10px 5px;
 		}
+	}
+	
+	.instrument-selection {
+		
 	}
 }
 
