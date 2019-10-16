@@ -11,19 +11,45 @@
 </head>
 <body>
 	
-	<div class="presets">
-		<select name="presets" id="presets">
-			<option value="" disabled selected>Classic Beat Presets</option>
-			<option value="empty">Clear All</option>
-			<option value="basic">Basic</option>
-			<option value="bossaNova">Bossa Nova</option>
-			<option value="funkyCowbell">Funky Cowbell</option>
-			<option value="lowrider">Lowrider</option>
-			<option value="yyz">YYZ</option>
+	<div class="play-selection">
+		
+		<select class="instrument-selection">
+			<option value="" disabled selected>Load Instrument Set</option>
+			<option value="rockDrumSet">Drum Kit</option>
+			<option value="bongos">Bongos</option>
+			<option value="parade">Street Parade</option>
 		</select>
+		
+		<select class="presets" name="presets">
+			<option value="" disabled selected>Load Rhythm</option>
+			<optgroup label="Africa">
+					<option value="souskous">Souskous (Congo, Africa)</option>
+					<option value="gahu">Gahu (Ghana, Africa)</option>
+					<option value="sikyi">Sikyi (Ghana, Africa)</option>
+					<option value="sikyi2">Sikyi Variation</option>
+					<option value="shiko">Shiko (Nigeria, Africa)</option>
+			</optgroup>
+			<optgroup label="Carribean">
+				<option value="bembe">Bemb&eacute; (Cuba & Africa)</option>
+				<option value="rumba">Rumba (Cuba)</option>
+			</optgroup>
+			<optgroup label="North America">
+				<option value="basic">Basic Rock</option>
+				<option value="billieJean">Billie Jean</option>
+				<option value="funkyCowbell">Funky Cowbell</option>
+				<!-- <option value="lowrider">Lowrider</option>
+				<option value="yyz">YYZ</option> -->
+				<!-- <option value="apache">Jump On It</option> -->
+			</optgroup>
+			<optgroup label="South America">
+				<option value="bossaNova">Bossa Nova (Brazil, South America)</option>
+			</optgroup>
+		</select>
+		
+		<ul class="instrument-names"></ul>
 	</div>
 	
-	<button id="clear">Clear All</button>
+	<button class="clear-notes">Clear All</button>
 	
 	<div id="message"></div>
 	<!-- <div id="legend">		
@@ -83,6 +109,17 @@
 				</div>
 				<label for="bpm">BPM</label>
 			</div>
+		</div>
+		
+		<div class="control">
+			<div class="input-stepper">
+				<div class="input-items">	
+					<button type="button" class="decrease">–</button>
+					<input type="number" id="wheelLength" name="wheelLength" min="8" max="64" step="1" value="16">
+					<button type="button" class="increase">+</button>
+				</div>
+				<label for="wheelLength">Length</label>
+			</div>	
 		</div>
 		
 	</div>

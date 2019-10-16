@@ -4,7 +4,8 @@ module.exports = function() {
 	var raycaster = new THREE.Raycaster();
 	var mouse = new THREE.Vector2();
 	var wireframeMaterial = new THREE.MeshBasicMaterial({ wireframe: true, color: new THREE.Color('black'), opacity: 0.25, transparent: true });
-	var distinctColors = [new THREE.Color('#2F72CA'), new THREE.Color('#A82F2F'), new THREE.Color('#18995B'), new THREE.Color('#F2B233'), new THREE.Color('#f58231'), new THREE.Color('#911eb4'), new THREE.Color('#46f0f0'), new THREE.Color('#f032e6'), new THREE.Color('#bcf60c'), new THREE.Color('#fabebe'), new THREE.Color('#008080'), new THREE.Color('#e6beff'), new THREE.Color('#9a6324'), new THREE.Color('#fffac8'), new THREE.Color('#800000'), new THREE.Color('#aaffd3'), new THREE.Color('#808000'), new THREE.Color('#ffd8b1'), new THREE.Color('#000075'), new THREE.Color('#808080'), new THREE.Color('#ffffff'), new THREE.Color('#000000')];
+	var distinctColors = [new THREE.Color('#2F72CA'), new THREE.Color('#A82F2F'), new THREE.Color('#18995B'), new THREE.Color('#F2B233'), new THREE.Color('#f58231'), new THREE.Color('#543459'), new THREE.Color('#6EC2ED'), new THREE.Color('#E84A5F'), new THREE.Color('#bcf60c'), new THREE.Color('#fabebe'), new THREE.Color('#008080'), new THREE.Color('#e6beff'), new THREE.Color('#9a6324'), new THREE.Color('#fffac8'), new THREE.Color('#800000'), new THREE.Color('#aaffd3'), new THREE.Color('#808000'), new THREE.Color('#ffd8b1'), new THREE.Color('#000075'), new THREE.Color('#808080'), new THREE.Color('#ffffff'), new THREE.Color('#000000')];
+	var textColors = ['white', 'white', 'white', 'black', 'black', 'white', 'black', 'white', 'black', 'black', 'white'];
 	
 	var black = new THREE.Color('black'), white = new THREE.Color('white');
 	var timeCursor;
@@ -17,8 +18,6 @@ module.exports = function() {
 	var loop;
 
 	var preset = beats.empty;
-	var wheelLength = 64;
-	if (preset.beat[0]) wheelLength = preset.beat[0].length;
 	
 	return {
 		
@@ -58,9 +57,9 @@ module.exports = function() {
 			},
 			floorSize: 100,
 			rhythmWheel: {
-				innerRadius: 1,
+				innerRadius: utils.mobile() ? .5 : 1,
 				outerRadius: 5,
-				beats: wheelLength,
+				beats: preset.length,
 				tracks: preset.instruments.length
 			}
 		},
@@ -80,7 +79,7 @@ module.exports = function() {
 			camera = gfx.setUpCamera(camera);
 			//controls = gfx.enableControls(controls, renderer, camera);
 			gfx.resizeRendererOnWindowResize(renderer, camera);
-			self.setUpButtons();
+			self.bindUIEvents();
 			gfx.setUpLights(scene);
 			gfx.setCameraLocation(camera, self.settings.defaultCameraLocation);
 			if (utils.mobile()) gfx.setCameraLocation(camera, new THREE.Vector3(self.settings.defaultCameraLocation.x, self.settings.defaultCameraLocation.y + 5, self.settings.defaultCameraLocation.z));
@@ -101,6 +100,16 @@ module.exports = function() {
 			animate();
 		},
 		
+		initEmptyTracks: function() {
+			
+			for (let i = 0; i < this.settings.rhythmWheel.tracks; i++) { // init empty beats
+				tracks.push([]);
+				for (let j = 0; j < this.settings.rhythmWheel.beats; j++) {
+					tracks[i].push(null);
+				}
+			}
+		},
+		
 		setUpRhythm: function() {
 			
 			let self = this;
@@ -110,15 +119,11 @@ module.exports = function() {
 				bpm = preset.bpm;
 			}
 			Tone.Transport.bpm.value = bpm;
-			document.querySelector('#bpm').value = Tone.Transport.bpm.value.toString();
+			document.querySelector('#bpm').value = preset.bpm.toString();
+			document.querySelector('#wheelLength').value = self.settings.rhythmWheel.beats.toString();
 			Tone.Transport.timeSignature = [2, 4];
 			
-			for (let i = 0; i < self.settings.rhythmWheel.tracks; i++) { // init empty beats
-				tracks.push([]);
-				for (let j = 0; j < self.settings.rhythmWheel.beats; j++) {
-					tracks[i].push(null);
-				}
-			}
+			self.initEmptyTracks();
 			
 			if (typeof preset.beat[0] !== 'undefined') tracks = preset.beat;
 			
@@ -133,7 +138,7 @@ module.exports = function() {
 			loop = new Tone.Loop(function(time) {
 				triggerBeats(time);
 			}, '16n');
-			loop.start();
+			loop.start(0);
 			
 			scope = self;
 			function triggerBeats(time) {
@@ -168,7 +173,9 @@ module.exports = function() {
 			
 			let faceColorMaterial = new THREE.MeshBasicMaterial({
 				color: new THREE.Color('white'),
-				vertexColors: THREE.FaceColors
+				vertexColors: THREE.FaceColors,
+				transparent: true,
+				opacity: 1
 			});
 			rhythmWheelMesh = new THREE.Mesh(rhythmWheel, faceColorMaterial);
 			
@@ -223,7 +230,7 @@ module.exports = function() {
 			controls.maxPolarAngle = Math.PI / 2;
 		},
 		
-		setUpButtons: function() {
+		bindUIEvents: function() {
 			
 			let self = this;
 			let message = document.getElementById('message');
@@ -240,18 +247,67 @@ module.exports = function() {
 				self.intersects(event);
 			});
 			
-			let presetSelector = document.querySelector('#presets');
+			let wheelLengthInput = document.querySelector('#wheelLength');
+			let instrumentSelector = document.querySelector('.instrument-selection');
+			let presetSelector = document.querySelector('.presets');
+			
 			if (presetSelector) presetSelector.addEventListener('change', function() {
 				
+				instrumentSelector.selectedIndex = 0;
+				wheelLengthInput.parentElement.parentElement.style.display = 'none';
 				preset = beats[presetSelector.value];
 				tracks = [];
+				self.settings.rhythmWheel.tracks = preset.instruments.length;
+				self.settings.rhythmWheel.beats = preset.length;
 				self.reset();
 			});
 			
-			let clearButton = document.querySelector('#clear');
+			if (instrumentSelector) instrumentSelector.addEventListener('change', function() {
+				
+				presetSelector.selectedIndex = 0;
+				wheelLengthInput.parentElement.parentElement.style.display = 'block';
+				self.clearAllNotes();
+				preset = beats['empty'];
+				preset.bpm = beats.instrumentSets[instrumentSelector.value].bpm
+				preset.instruments = beats.instrumentSets[instrumentSelector.value].instruments;
+				self.settings.rhythmWheel.tracks = beats.instrumentSets[instrumentSelector.value].instruments.length;
+				self.settings.rhythmWheel.beats = beats.instrumentSets[instrumentSelector.value].length;
+				self.reset();
+			});
+			
+			let clearButton = document.querySelector('.clear-notes');
 			if (clearButton) clearButton.addEventListener('click', function() {
 				
 				self.clearAllNotes();
+			});
+			
+			let inputSteppers = document.querySelectorAll('.input-stepper');
+			inputSteppers.forEach(function(inputStepper) {
+
+				let input = inputStepper.querySelector('input');
+				if (input.getAttribute('id') === 'wheelLength') {
+					
+					let increase = inputStepper.querySelector('.increase');
+					if (increase) increase.addEventListener('click', function() {
+						let max = parseInt(input.getAttribute('max'));
+						if (input.value < max) {	
+							input.value = parseInt(input.value) + 1;
+							
+							self.increaseWheel();
+						}
+					});
+					
+					let decrease = inputStepper.querySelector('.decrease');
+					if (decrease) decrease.addEventListener('click', function() {
+						let min = parseInt(input.getAttribute('min'));
+						if (input.value > min) {
+							input.value = parseInt(input.value) - 1;
+							
+							self.decreaseWheel();
+						}
+					});
+				}
+				
 			});
 		},
 		
@@ -261,6 +317,8 @@ module.exports = function() {
 			self.reset();
 			preset.beats = [];
 			tracks = [];
+			
+			self.initEmptyTracks();
 			
 			for (let i = 0; i < self.settings.rhythmWheel.beats; i++) {
 				
@@ -281,8 +339,6 @@ module.exports = function() {
 			Tone.Transport.stop();
 			Tone.Transport.cancel(0);
 			rhythmCount = 0;
-			self.settings.rhythmWheel.tracks = preset.instruments.length;
-			if (preset.beat[0]) self.settings.rhythmWheel.beats = preset.beat[0].length;
 			targetList = [];
 			
 			while(scene.children.length > 0){ 
@@ -295,6 +351,30 @@ module.exports = function() {
 			
 			let playToggle = document.querySelector('.play-toggle');
 			playToggle.classList.remove('active');
+		},
+		
+		increaseWheel: function() {
+			
+			let self = this;
+			self.settings.rhythmWheel.beats += 1;
+			
+			preset.beat.forEach(function(track) {
+				track.push(null);
+			});
+			self.reset();
+			self.clearAllNotes();
+		},
+		
+		decreaseWheel: function() {
+			
+			let self = this;
+			self.settings.rhythmWheel.beats -= 1;
+			self.clearAllNotes();
+			preset.beat.forEach(function(track) {
+				track.pop(null);
+			});
+			self.reset();
+			self.clearAllNotes();
 		},
 		
 		intersects: function(event) {
@@ -346,6 +426,8 @@ module.exports = function() {
 		
 		setFaceColorByIndex: function(mesh, faceIndex, color) {
 			mesh.geometry.faces[faceIndex].color.setRGB(color.r, color.g, color.b);
+			
+			console.log(mesh.geometry.faces[faceIndex]);
 			mesh.geometry.colorsNeedUpdate = true;
 		},
 		
@@ -407,6 +489,16 @@ module.exports = function() {
 			
 			let self = this;
 			let transform = new THREE.Vector3(0, 0, -this.settings.rhythmWheel.outerRadius);
+			
+			let instrumentNames = document.querySelector('.instrument-names');
+			instrumentNames.innerHTML = '';
+			preset.instruments.forEach(function(instrument, i) {
+				let instrumentElement = document.createElement('li');
+				instrumentElement.innerHTML = instrument.displayName;
+				instrumentElement.style.backgroundColor = '#' + distinctColors[i].getHexString();
+				instrumentElement.style.color = textColors[i];
+				instrumentNames.appendChild(instrumentElement);
+			});
 			
 			for (let i = 0; i < self.settings.rhythmWheel.beats; i++) {
 				
