@@ -2,8 +2,6 @@
 	
 	var player = new Tone.Players(
 		{
-			cowbell: './assets/audio/jazz/cowbell.wav',
-			clave: './assets/audio/jazz/clave.wav',
 			snare: './assets/audio/505/snare.mp3',
 			hh: './assets/audio/505/hh.mp3',
 			hho: './assets/audio/505/hho.mp3',
@@ -16,11 +14,23 @@
 			brush2: './assets/audio/jazz/R8Brush02.wav',
 			brush3: './assets/audio/jazz/R8Brush04.wav',
 			rim: './assets/audio/jazz/snare-rim.wav',
-			bellHi: './assets/audio/jazz/hi-bell.wav',
 			ride: './assets/audio/jazz/ride-bell.wav',
 			tomLo: './assets/audio/jazz/DR220Tom_Lo.wav',
 			tomHi: './assets/audio/jazz/DR220Tom_Hi.wav',
-			kick: './assets/audio/505/kick.mp3'
+			kick: './assets/audio/505/kick.mp3',
+			
+			cowbell: './assets/audio/jazz/cowbell.wav',
+			bellHi: './assets/audio/jazz/hi-bell.wav',
+			clave: './assets/audio/jazz/clave.wav',
+			rakeLo: './assets/audio/jazz/rakeHigh.wav',
+			rakeHi: './assets/audio/jazz/rakeLow.wav',
+			clap: './assets/audio/jazz/RX21Clap.wav',
+			shakerLo: './assets/audio/jazz/shakerLow.wav',
+			shakerHi: './assets/audio/jazz/shakerHigh.wav',
+			timbale: './assets/audio/jazz/timbale.wav',
+			streetDrumLo: './assets/audio/jazz/streetDrumLo.wav',
+			streetDrumHi: './assets/audio/jazz/streetDrumHi.wav',
+			clap: './assets/audio/jazz/RX21Clap.wav'
 		},
 		{
 			volume: 5
@@ -45,34 +55,31 @@
 	player.get('congaHi').displayName = 'Conga High';
 	player.get('congaMuteHigh').displayName = 'Conga Mute High';
 	player.get('ride').displayName = 'Ride Bell';
+	player.get('rakeLo').displayName = 'Gü&uuml;iro Low';
+	player.get('rakeHi').displayName = 'Gü&uuml;iro High';
+	player.get('clap').displayName = 'Clap';
+	player.get('shakerLo').displayName = 'Shaker Low';
+	player.get('shakerHi').displayName = 'Shaker High';
+	player.get('timbale').displayName = 'Timabale';
+	player.get('streetDrumLo').displayName = 'Street Drum Low';
+	player.get('streetDrumHi').displayName = 'Street Drum High';
 	
 	// Set volume to equalize instrument volumes
 	player.get('cowbell').volume.value = 0;
-	player.get('ride').volume.value = -8;
+	player.get('ride').volume.value = 0;
 	player.get('tomLo').volume.value = -12;
 	player.get('tomHi').volume.value = -12;
 	player.get('kick').volume.value = -8;
 	
 	var defaultInstruments = [
-		player.get('cowbell'),
-		player.get('snare'),
 		player.get('kick'),
+		player.get('snare'),
 		player.get('hh'),
 		player.get('hho'),
-		player.get('bongoLo'),
-		player.get('bongoHi'),
-		player.get('congaLo'),
-		player.get('congaHi'),
-		player.get('congaMuteHigh'),
+		player.get('tomLo'),
+		player.get('tomHi'),
+		player.get('cowbell'),
 		player.get('ride')
-	];
-	
-	var bongos = [
-		player.get('bongoLo'),
-		player.get('bongoHi'),
-		player.get('congaLo'),
-		player.get('congaHi'),
-		player.get('congaMuteHigh')
 	];
 
 	//[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
@@ -105,9 +112,25 @@
 						player.get('hh'),
 						player.get('hho')
 					]
+				},
+				
+				parade: {
+					length: 16,
+					bpm: 115,
+					instruments: [
+						player.get('cowbell'),
+						player.get('bellHi'),
+						player.get('clave'),
+						player.get('rakeLo'),
+						player.get('rakeHi'),
+						player.get('clap'),
+						player.get('shakerLo'),
+						player.get('shakerHi'),
+						player.get('timbale'),
+						player.get('streetDrumLo'),
+						player.get('streetDrumHi')
+					]
 				}
-				
-				
 			},
 			
 			empty: {

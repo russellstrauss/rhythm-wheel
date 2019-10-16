@@ -12,6 +12,14 @@
 <body>
 	
 	<div class="play-selection">
+		
+		<select class="instrument-selection">
+			<option value="" disabled selected>Load Instrument Set</option>
+			<option value="bongos">Bongos</option>
+			<option value="rockDrumSet">Rock Drum Set</option>
+			<option value="parade">Parade</option>
+		</select>
+		
 		<select class="presets" name="presets">
 			<option value="" disabled selected>Load Rhythm</option>
 			<optgroup label="Africa">
@@ -36,13 +44,6 @@
 			<optgroup label="South America">
 				<option value="bossaNova">Bossa Nova (Brazil, South America)</option>
 			</optgroup>
-		</select>
-		
-		<select class="instrument-selection">
-			<option value="" disabled selected>Load Instrument Set</option>
-			<option value="bongos">Bongos</option>
-			<option value="rockDrumSet">Rock Drum Set</option>
-			<!-- <option value="parade">Parade</option> -->
 		</select>
 		
 		<ul class="instrument-names"></ul>
