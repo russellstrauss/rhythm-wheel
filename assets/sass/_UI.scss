@@ -10,13 +10,15 @@ $buttonWidth: 175px;
 }
 
 .play-selection {
+	pointer-events: none;
 	position: fixed;
 	top: 20px;
 	left: 20px;
 	
 	select {
-		display: block;
 		@include hover-state;
+		pointer-events: auto;
+		display: block;
 		padding: 10px;
 		border: 1px solid rgb(169, 169, 169);
 		margin: 0 0 10px 0;
@@ -28,6 +30,7 @@ $buttonWidth: 175px;
 	}
 	
 	.instrument-names {
+		@include disable-highlight;
 		padding: 0;
 		width: 50%;
 		font-size: 16px;

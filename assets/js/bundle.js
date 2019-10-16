@@ -62,11 +62,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   player.get('streetDrumLo').displayName = 'Street Drum Low';
   player.get('streetDrumHi').displayName = 'Street Drum High'; // Set volume to equalize instrument volumes
 
-  player.get('cowbell').volume.value = 0;
-  player.get('ride').volume.value = 0;
+  player.get('cowbell').volume.value = -5;
+  player.get('ride').volume.value = -3;
   player.get('tomLo').volume.value = -12;
   player.get('tomHi').volume.value = -12;
   player.get('kick').volume.value = -8;
+  player.get('streetDrumHi').volume.value = -5;
   var defaultInstruments = [player.get('kick'), player.get('snare'), player.get('hh'), player.get('hho'), player.get('tomLo'), player.get('tomHi'), player.get('cowbell'), player.get('ride')]; //[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
 
   window.beats = function () {
@@ -81,7 +82,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         rockDrumSet: {
           length: 16,
           bpm: 115,
-          instruments: [player.get('kick'), player.get('snare'), player.get('hh'), player.get('hho')]
+          instruments: [player.get('kick'), player.get('snare'), player.get('hh'), player.get('hho'), player.get('tomLo'), player.get('tomHi'), player.get('cowbell'), player.get('ride')]
         },
         parade: {
           length: 16,
