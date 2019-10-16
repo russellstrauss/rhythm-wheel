@@ -44,7 +44,7 @@
         rockDrumSet: {
           length: 16,
           bpm: 115,
-          instruments: [player.get('snare'), soft.get('kick'), player.get('hh'), player.get('hho')]
+          instruments: [soft.get('kick'), player.get('snare'), player.get('hh'), player.get('hho')]
         }
       },
       empty: {
@@ -54,10 +54,10 @@
         instruments: defaultInstruments
       },
       basic: {
-        beat: [[null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null], ['kick', null, null, null, null, null, null, 'kick', 'kick', null, null, null, null, null, 'kick', null], ['hh', null, 'hh', null, 'hh', null, 'hh', 'hh', 'hh', null, null, null, 'hh', null, 'hh', null], [null, null, null, null, null, null, null, null, null, null, 'hho', null, null, null, null, null]],
+        beat: [['kick', null, null, null, null, null, null, 'kick', 'kick', null, null, null, null, null, 'kick', null], [null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null], ['hh', null, 'hh', null, 'hh', null, 'hh', 'hh', 'hh', null, null, null, 'hh', null, 'hh', null], [null, null, null, null, null, null, null, null, null, null, 'hho', null, null, null, null, null]],
         length: 16,
         bpm: 100,
-        instruments: [player.get('snare'), soft.get('kick'), player.get('hh'), player.get('hho')]
+        instruments: [soft.get('kick'), player.get('snare'), player.get('hh'), player.get('hho')]
       },
       bossaNova: {
         beat: [['ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride'], ['kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick'], ['clave', null, null, 'clave', null, null, 'clave', null, null, null, 'clave', null, null, 'clave', null, null]],
@@ -287,6 +287,7 @@ module.exports = function () {
 
       Tone.Transport.bpm.value = bpm;
       document.querySelector('#bpm').value = preset.bpm.toString();
+      document.querySelector('#wheelLength').value = self.settings.rhythmWheel.beats.toString();
       Tone.Transport.timeSignature = [2, 4];
       self.initEmptyTracks();
       if (typeof preset.beat[0] !== 'undefined') tracks = preset.beat;
@@ -391,14 +392,21 @@ module.exports = function () {
       document.querySelector('canvas').addEventListener('click', function (event) {
         self.intersects(event);
       });
+      var wheelLengthInput = document.querySelector('#wheelLength');
+      var instrumentSelector = document.querySelector('.instrument-selection');
       var presetSelector = document.querySelector('.presets');
       if (presetSelector) presetSelector.addEventListener('change', function () {
+        instrumentSelector.selectedIndex = 0;
+        wheelLengthInput.parentElement.parentElement.style.display = 'none';
         preset = beats[presetSelector.value];
         tracks = [];
+        self.settings.rhythmWheel.tracks = preset.instruments.length;
+        self.settings.rhythmWheel.beats = preset.length;
         self.reset();
       });
-      var instrumentSelector = document.querySelector('.instrument-selection');
       if (instrumentSelector) instrumentSelector.addEventListener('change', function () {
+        presetSelector.selectedIndex = 0;
+        wheelLengthInput.parentElement.parentElement.style.display = 'block';
         self.clearAllNotes();
         preset = beats['empty'];
         preset.bpm = beats.instrumentSets[instrumentSelector.value].bpm;
@@ -409,6 +417,31 @@ module.exports = function () {
       var clearButton = document.querySelector('.clear-notes');
       if (clearButton) clearButton.addEventListener('click', function () {
         self.clearAllNotes();
+      });
+      var inputSteppers = document.querySelectorAll('.input-stepper');
+      inputSteppers.forEach(function (inputStepper) {
+        var input = inputStepper.querySelector('input');
+
+        if (input.getAttribute('id') === 'wheelLength') {
+          var increase = inputStepper.querySelector('.increase');
+          if (increase) increase.addEventListener('click', function () {
+            var max = parseInt(input.getAttribute('max'));
+
+            if (input.value < max) {
+              input.value = parseInt(input.value) + 1;
+              self.increaseWheel();
+            }
+          });
+          var decrease = inputStepper.querySelector('.decrease');
+          if (decrease) decrease.addEventListener('click', function () {
+            var min = parseInt(input.getAttribute('min'));
+
+            if (input.value > min) {
+              input.value = parseInt(input.value) - 1;
+              self.decreaseWheel();
+            }
+          });
+        }
       });
     },
     clearAllNotes: function clearAllNotes() {
@@ -432,8 +465,6 @@ module.exports = function () {
       Tone.Transport.stop();
       Tone.Transport.cancel(0);
       rhythmCount = 0;
-      self.settings.rhythmWheel.tracks = preset.instruments.length;
-      self.settings.rhythmWheel.beats = preset.length;
       targetList = [];
 
       while (scene.children.length > 0) {
@@ -445,6 +476,25 @@ module.exports = function () {
       self.setUpRhythm();
       var playToggle = document.querySelector('.play-toggle');
       playToggle.classList.remove('active');
+    },
+    increaseWheel: function increaseWheel() {
+      var self = this;
+      self.settings.rhythmWheel.beats += 1;
+      preset.beat.forEach(function (track) {
+        track.push(null);
+      });
+      self.reset();
+      self.clearAllNotes();
+    },
+    decreaseWheel: function decreaseWheel() {
+      var self = this;
+      self.settings.rhythmWheel.beats -= 1;
+      self.clearAllNotes();
+      preset.beat.forEach(function (track) {
+        track.pop(null);
+      });
+      self.reset();
+      self.clearAllNotes();
     },
     intersects: function intersects(event) {
       var self = this;
@@ -579,18 +629,27 @@ module.exports = function () {
       var inputSteppers = document.querySelectorAll('.input-stepper');
       inputSteppers.forEach(function (inputStepper) {
         var input = inputStepper.querySelector('input');
-        var increase = inputStepper.querySelector('.increase');
-        if (increase) increase.addEventListener('click', function () {
-          var max = parseInt(input.getAttribute('max'));
-          if (input.value < max) input.value = parseInt(input.value) + 1;
-          Tone.Transport.bpm.value += 1;
-        });
-        var decrease = inputStepper.querySelector('.decrease');
-        if (decrease) decrease.addEventListener('click', function () {
-          var min = parseInt(input.getAttribute('min'));
-          if (input.value > min) input.value = parseInt(input.value) - 1;
-          Tone.Transport.bpm.value -= 1;
-        });
+
+        if (input.getAttribute('id') === 'bpm') {
+          var increase = inputStepper.querySelector('.increase');
+          if (increase) increase.addEventListener('click', function () {
+            var max = parseInt(input.getAttribute('max'));
+
+            if (input.value < max) {
+              input.value = parseInt(input.value) + 1;
+              Tone.Transport.bpm.value += 1;
+            }
+          });
+          var decrease = inputStepper.querySelector('.decrease');
+          if (decrease) decrease.addEventListener('click', function () {
+            var min = parseInt(input.getAttribute('min'));
+
+            if (input.value > min) {
+              input.value = parseInt(input.value) - 1;
+              Tone.Transport.bpm.value -= 1;
+            }
+          });
+        }
       });
       var playToggle = document.querySelector('.play-toggle');
       playToggle.addEventListener('click', function () {

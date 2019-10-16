@@ -82,8 +82,8 @@
 					length: 16,
 					bpm: 115,
 					instruments: [
-						player.get('snare'),
 						soft.get('kick'),
+						player.get('snare'),
 						player.get('hh'),
 						player.get('hho')
 					]
@@ -101,16 +101,16 @@
 			
 			basic: {
 				beat: [
-					[null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null],
 					['kick', null, null, null, null, null, null, 'kick', 'kick', null, null, null, null, null, 'kick', null],
+					[null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null],
 					['hh', null, 'hh', null, 'hh', null, 'hh', 'hh', 'hh', null, null, null, 'hh', null, 'hh', null],
 					[null, null, null, null, null, null, null, null, null, null, 'hho', null, null, null, null, null]
 				],
 				length: 16,
 				bpm: 100,
 				instruments: [
-					player.get('snare'),
 					soft.get('kick'),
+					player.get('snare'),
 					player.get('hh'),
 					player.get('hho')
 				]

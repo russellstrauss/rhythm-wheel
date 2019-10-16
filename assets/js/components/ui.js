@@ -19,20 +19,26 @@ module.exports = function() {
 			inputSteppers.forEach(function(inputStepper) {
 				
 				let input = inputStepper.querySelector('input');
-				
-				let increase = inputStepper.querySelector('.increase');
-				if (increase) increase.addEventListener('click', function() {
-					let max = parseInt(input.getAttribute('max'));
-					if (input.value < max) input.value = parseInt(input.value) + 1;
-					Tone.Transport.bpm.value += 1;
-				});
-				
-				let decrease = inputStepper.querySelector('.decrease');
-				if (decrease) decrease.addEventListener('click', function() {
-					let min = parseInt(input.getAttribute('min'));
-					if (input.value > min) input.value = parseInt(input.value) - 1;
-					Tone.Transport.bpm.value -= 1;
-				});
+				if (input.getAttribute('id') === 'bpm') {
+					
+					let increase = inputStepper.querySelector('.increase');
+					if (increase) increase.addEventListener('click', function() {
+						let max = parseInt(input.getAttribute('max'));
+						if (input.value < max) {
+							input.value = parseInt(input.value) + 1;
+							Tone.Transport.bpm.value += 1;
+						}
+					});
+					
+					let decrease = inputStepper.querySelector('.decrease');
+					if (decrease) decrease.addEventListener('click', function() {
+						let min = parseInt(input.getAttribute('min'));
+						if (input.value > min) {
+							input.value = parseInt(input.value) - 1;
+							Tone.Transport.bpm.value -= 1;
+						}
+					});
+				}
 			});
 			
 			let playToggle = document.querySelector('.play-toggle');
