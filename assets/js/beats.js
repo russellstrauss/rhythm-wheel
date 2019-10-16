@@ -30,8 +30,7 @@
 			timbale: './assets/audio/jazz/timbale.wav',
 			streetDrumLo: './assets/audio/jazz/streetDrumLo.wav',
 			streetDrumHi: './assets/audio/jazz/streetDrumHi.wav',
-			clap: './assets/audio/jazz/RX21Clap.wav',
-			whistle: './assets/audio/jazz/whistle.wav'
+			clap: './assets/audio/jazz/RX21Clap.wav'
 		},
 		{
 			volume: 5
@@ -64,7 +63,6 @@
 	player.get('timbale').displayName = 'Timabale';
 	player.get('streetDrumLo').displayName = 'Street Drum Low';
 	player.get('streetDrumHi').displayName = 'Street Drum High';
-	player.get('whistle').displayName = 'Whistle';
 	
 	// Set volume to equalize instrument volumes
 	player.get('cowbell').volume.value = -5;
@@ -73,7 +71,6 @@
 	player.get('tomHi').volume.value = -12;
 	player.get('kick').volume.value = -8;
 	player.get('streetDrumHi').volume.value = -5;
-	player.get('whistle').volume.value = -10;
 	
 	var defaultInstruments = [
 		player.get('kick'),
@@ -136,7 +133,7 @@
 						player.get('shakerHi'),
 						player.get('timbale'),
 						player.get('streetDrumLo'),
-						player.get('whistle')
+						player.get('streetDrumHi')
 					]
 				}
 			},

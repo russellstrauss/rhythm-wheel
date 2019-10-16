@@ -171,29 +171,13 @@ module.exports = function() {
 			rhythmWheel.rotateY(Math.PI/2);
 			rhythmWheel.translate(0, this.settings.zBufferOffset, 0);
 			
-			let solidFaceMaterial = new THREE.MeshBasicMaterial({
-				color: new THREE.Color('white'),
-				vertexColors: THREE.FaceColors,
-				transparent: false
-			});
-			let translucentFaceMaterial = new THREE.MeshBasicMaterial({
+			let faceColorMaterial = new THREE.MeshBasicMaterial({
 				color: new THREE.Color('white'),
 				vertexColors: THREE.FaceColors,
 				transparent: true,
-				opacity: 0.14
+				opacity: 1
 			});
-			
-			let materials = [translucentFaceMaterial, solidFaceMaterial];
-			rhythmWheelMesh = new THREE.Mesh(rhythmWheel, materials);
-			
-			
-			
-			rhythmWheel.faces.forEach(function (face, i) { // set default color tracks
-				
-				let trackIndex = Math.floor(i / (self.settings.rhythmWheel.beats * 2));
-				face.materialIndex = 0;
-				face.color = distinctColors[trackIndex];
-			});
+			rhythmWheelMesh = new THREE.Mesh(rhythmWheel, faceColorMaterial);
 			
 			wireframeMesh = new THREE.Mesh(rhythmWheel, wireframeMaterial);
 			wireframeMesh.position.y += this.settings.zBufferOffset * 2;
@@ -215,8 +199,8 @@ module.exports = function() {
 			let facesPerRow = this.settings.rhythmWheel.beats * 2;
 			let faceIndex = (facesPerRow * track - 1) - (beatIndex * 2);
 
-			this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, distinctColors[trackIndex], 1);
-			this.setFaceColorByIndex(rhythmWheelMesh, faceIndex - 1, distinctColors[trackIndex], 1);
+			this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, distinctColors[trackIndex]);
+			this.setFaceColorByIndex(rhythmWheelMesh, faceIndex - 1, distinctColors[trackIndex]);
 			rhythmWheelMesh.geometry.faces[faceIndex].selected = true;
 			rhythmWheelMesh.geometry.faces[faceIndex - 1].selected = true;
 		},
@@ -228,8 +212,8 @@ module.exports = function() {
 			let facesPerRow = this.settings.rhythmWheel.beats * 2;
 			let faceIndex = (facesPerRow * track - 1) - (beatIndex * 2);
 
-			this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, white, 1);
-			this.setFaceColorByIndex(rhythmWheelMesh, faceIndex - 1, white, 1);
+			this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, white);
+			this.setFaceColorByIndex(rhythmWheelMesh, faceIndex - 1, white);
 			rhythmWheelMesh.geometry.faces[faceIndex].selected = false;
 			rhythmWheelMesh.geometry.faces[faceIndex - 1].selected = false;
 		},
@@ -411,38 +395,38 @@ module.exports = function() {
 			let beatIndex = (this.settings.rhythmWheel.beats - 1) - Math.floor(faceIndex / 2) % this.settings.rhythmWheel.beats;
 			let trackIndex = Math.floor(faceIndex / (this.settings.rhythmWheel.beats * 2));
 
-			let setMaterial = 1;
+			let setColor;
 			if (rhythmWheelMesh.geometry.faces[faceIndex].selected === true) {
-				setMaterial = 0;
+				setColor = new THREE.Color('white');
 			}
 			else {
-				setMaterial = 1;
+				setColor = distinctColors[trackIndex];
 			}
 			
 			let evenFace = (faceIndex % 2 === 0);
 			if (evenFace) {
-				this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, distinctColors[trackIndex], setMaterial);
-				this.setFaceColorByIndex(rhythmWheelMesh, faceIndex + 1, distinctColors[trackIndex], setMaterial);
+				this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, setColor);
+				this.setFaceColorByIndex(rhythmWheelMesh, faceIndex + 1, setColor);
 				rhythmWheelMesh.geometry.faces[faceIndex].selected = !rhythmWheelMesh.geometry.faces[faceIndex].selected;
 				rhythmWheelMesh.geometry.faces[faceIndex + 1].selected = !rhythmWheelMesh.geometry.faces[faceIndex + 1].selected;
 			}
 			else {
-				this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, distinctColors[trackIndex], setMaterial);
-				this.setFaceColorByIndex(rhythmWheelMesh, faceIndex - 1, distinctColors[trackIndex], setMaterial);
+				this.setFaceColorByIndex(rhythmWheelMesh, faceIndex, setColor);
+				this.setFaceColorByIndex(rhythmWheelMesh, faceIndex - 1, setColor);
 				rhythmWheelMesh.geometry.faces[faceIndex].selected = !rhythmWheelMesh.geometry.faces[faceIndex].selected;
 				rhythmWheelMesh.geometry.faces[faceIndex - 1].selected = !rhythmWheelMesh.geometry.faces[faceIndex - 1].selected;
 			}
+			rhythmWheelMesh.geometry.colorsNeedUpdate = true;
 			
 			if (tracks[trackIndex][beatIndex] === null) tracks[trackIndex][beatIndex] = Object.keys(beats.allInstruments._players)[trackIndex]; // get an instrument for each track row
 			else tracks[trackIndex][beatIndex] = null;
 		},
 		
-		setFaceColorByIndex: function(mesh, faceIndex, color, materialIndex) {
-			mesh.geometry.faces[faceIndex].materialIndex = materialIndex;
+		setFaceColorByIndex: function(mesh, faceIndex, color) {
 			mesh.geometry.faces[faceIndex].color.setRGB(color.r, color.g, color.b);
 			
-			rhythmWheelMesh.geometry.colorsNeedUpdate = true;
-			rhythmWheelMesh.geometry.groupsNeedUpdate = true;
+			console.log(mesh.geometry.faces[faceIndex]);
+			mesh.geometry.colorsNeedUpdate = true;
 		},
 		
 		loadFont: function() {
