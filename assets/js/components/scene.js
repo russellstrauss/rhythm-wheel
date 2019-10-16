@@ -340,6 +340,8 @@ module.exports = function() {
 			
 			if (tracks[trackIndex][beatIndex] === null) tracks[trackIndex][beatIndex] = Object.keys(beats.allInstruments._players)[trackIndex]; // get an instrument for each track row
 			else tracks[trackIndex][beatIndex] = null;
+
+			//this.convertBeatsToMelody(trackIndex); //TODO
 		},
 		
 		setFaceColorByIndex: function(mesh, faceIndex, color) {

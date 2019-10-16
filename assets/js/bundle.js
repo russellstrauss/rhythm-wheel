@@ -21,7 +21,91 @@
   }, {
     volume: 5
   }).toMaster();
-  var defaultInstruments = [player.get('cowbell'), player.get('snare'), player.get('kick'), player.get('hh'), player.get('hho'), player.get('bongoLow'), player.get('bongoHigh'), player.get('congaLow'), player.get('congaHigh'), player.get('congaMuteHigh')]; //[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+  var defaultInstruments = [player.get('cowbell'), player.get('snare'), player.get('kick'), player.get('hh'), player.get('hho'), player.get('bongoLow'), player.get('bongoHigh'), player.get('congaLow'), player.get('congaHigh'), player.get('congaMuteHigh')];
+  var synth1 = new Tone.FMSynth({
+    "harmonicity": 3.01,
+    "modulationIndex": 14,
+    "oscillator": {
+      "type": "triangle"
+    },
+    "envelope": {
+      "attack": 0.1,
+      "decay": 0.2,
+      "sustain": 0.5,
+      "release": 0.3
+    },
+    "modulation": {
+      "type": "square"
+    },
+    "modulationEnvelope": {
+      "attack": 0.1,
+      "decay": 0.2,
+      "sustain": 0.2,
+      "release": 0.5
+    }
+  });
+  var chorus1 = new Tone.Chorus({
+    "frequency": 4,
+    "delayTime": 20,
+    "type": "triangle",
+    "depth": 1,
+    "feedback": 0.2,
+    "spread": 80,
+    "wet": 0.8
+  });
+  synth1.chain(chorus1, Tone.Master);
+  var convertIntruments = {
+    kick: synth1,
+    cowbell: synth1,
+    ride: synth1,
+    snareRim: synth1,
+    snare: synth1,
+    hh: synth1,
+    hho: synth1,
+    bongoLow: synth1,
+    bongoHigh: synth1,
+    congaLow: synth1,
+    congaHigh: synth1,
+    congaMuteHigh: synth1,
+    brush1: synth1,
+    brush2: synth1,
+    brush3: synth1
+  };
+
+  var rule1 = function rule1(beats) {
+    var result = [];
+
+    for (var i = 0; i < beats.length; i++) {
+      if (beats[i]) {
+        result.push({
+          relativePitch: 0,
+          duration: '8n'
+        });
+      } else {
+        result.push(null);
+      }
+    }
+
+    return result;
+  };
+
+  var convertPatterns = {
+    kick: rule1,
+    cowbell: rule1,
+    ride: rule1,
+    snareRim: rule1,
+    snare: rule1,
+    hh: rule1,
+    hho: rule1,
+    bongoLow: rule1,
+    bongoHigh: rule1,
+    congaLow: rule1,
+    congaHigh: rule1,
+    congaMuteHigh: rule1,
+    brush1: rule1,
+    brush2: rule1,
+    brush3: rule1
+  }; //[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
 
   window.beats = function () {
     return {
@@ -366,7 +450,7 @@ module.exports = function () {
 
       rhythmWheelMesh.geometry.colorsNeedUpdate = true;
       if (tracks[trackIndex][beatIndex] === null) tracks[trackIndex][beatIndex] = Object.keys(beats.allInstruments._players)[trackIndex]; // get an instrument for each track row
-      else tracks[trackIndex][beatIndex] = null;
+      else tracks[trackIndex][beatIndex] = null; //this.convertBeatsToMelody(trackIndex); //TODO
     },
     setFaceColorByIndex: function setFaceColorByIndex(mesh, faceIndex, color) {
       mesh.geometry.faces[faceIndex].color.setRGB(color.r, color.g, color.b);
