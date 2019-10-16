@@ -276,7 +276,7 @@ module.exports = function () {
       },
       floorSize: 100,
       rhythmWheel: {
-        innerRadius: 1,
+        innerRadius: utils.mobile() ? .5 : 1,
         outerRadius: 5,
         beats: preset.length,
         tracks: preset.instruments.length
