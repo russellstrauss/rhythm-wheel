@@ -429,6 +429,7 @@ module.exports = function () {
         preset = beats['empty'];
         preset.bpm = beats.instrumentSets[instrumentSelector.value].bpm;
         preset.instruments = beats.instrumentSets[instrumentSelector.value].instruments;
+        self.settings.rhythmWheel.tracks = beats.instrumentSets[instrumentSelector.value].instruments.length;
         self.settings.rhythmWheel.beats = beats.instrumentSets[instrumentSelector.value].length;
         self.reset();
       });
