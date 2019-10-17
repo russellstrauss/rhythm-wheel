@@ -68,91 +68,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   player.get('tomHi').volume.value = -12;
   player.get('kick').volume.value = -8;
   player.get('streetDrumHi').volume.value = -5;
-  var defaultInstruments = [player.get('kick'), player.get('snare'), player.get('hh'), player.get('hho'), player.get('tomLo'), player.get('tomHi'), player.get('cowbell'), player.get('ride')];
-  var synth1 = new Tone.FMSynth({
-    "harmonicity": 3.01,
-    "modulationIndex": 14,
-    "oscillator": {
-      "type": "triangle"
-    },
-    "envelope": {
-      "attack": 0.1,
-      "decay": 0.2,
-      "sustain": 0.5,
-      "release": 0.3
-    },
-    "modulation": {
-      "type": "square"
-    },
-    "modulationEnvelope": {
-      "attack": 0.1,
-      "decay": 0.2,
-      "sustain": 0.2,
-      "release": 0.5
-    }
-  });
-  var chorus1 = new Tone.Chorus({
-    "frequency": 4,
-    "delayTime": 20,
-    "type": "triangle",
-    "depth": 1,
-    "feedback": 0.2,
-    "spread": 80,
-    "wet": 0.8
-  });
-  synth1.chain(chorus1, Tone.Master);
-  var convertIntruments = {
-    kick: synth1,
-    cowbell: synth1,
-    ride: synth1,
-    snareRim: synth1,
-    snare: synth1,
-    hh: synth1,
-    hho: synth1,
-    bongoLow: synth1,
-    bongoHigh: synth1,
-    congaLow: synth1,
-    congaHigh: synth1,
-    congaMuteHigh: synth1,
-    brush1: synth1,
-    brush2: synth1,
-    brush3: synth1
-  };
-
-  var rule1 = function rule1(beats) {
-    var result = [];
-
-    for (var i = 0; i < beats.length; i++) {
-      if (beats[i]) {
-        result.push({
-          relativePitch: 0,
-          duration: '8n'
-        });
-      } else {
-        result.push(null);
-      }
-    }
-
-    return result;
-  };
-
-  var convertPatterns = {
-    kick: rule1,
-    cowbell: rule1,
-    ride: rule1,
-    snareRim: rule1,
-    snare: rule1,
-    hh: rule1,
-    hho: rule1,
-    bongoLow: rule1,
-    bongoHigh: rule1,
-    congaLow: rule1,
-    congaHigh: rule1,
-    congaMuteHigh: rule1,
-    brush1: rule1,
-    brush2: rule1,
-    brush3: rule1
-  }; //[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+  var defaultInstruments = [player.get('kick'), player.get('snare'), player.get('hh'), player.get('hho'), player.get('tomLo'), player.get('tomHi'), player.get('cowbell'), player.get('ride')]; //[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
 
   window.beats = function () {
     return {
@@ -178,25 +94,29 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         beat: new Array(defaultInstruments.length),
         length: 16,
         bpm: 100,
-        instruments: defaultInstruments
+        instruments: defaultInstruments,
+        trackNames: ['kick', 'snare', 'hh', 'hho', 'tomLo', 'tomHi', 'cowbell', 'ride']
       },
       basic: {
         beat: [['kick', null, null, null, null, null, null, 'kick', 'kick', null, null, null, null, null, 'kick', null], [null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null], ['hh', null, 'hh', null, 'hh', null, 'hh', 'hh', 'hh', null, null, null, 'hh', null, 'hh', null], [null, null, null, null, null, null, null, null, null, null, 'hho', null, null, null, null, null]],
         length: 16,
         bpm: 100,
-        instruments: [player.get('kick'), player.get('snare'), player.get('hh'), player.get('hho')]
+        instruments: [player.get('kick'), player.get('snare'), player.get('hh'), player.get('hho')],
+        trackNames: ['kick', 'snare', 'hh', 'hho']
       },
       bossaNova: {
         beat: [['ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride'], ['kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick'], ['clave', null, null, 'clave', null, null, 'clave', null, null, null, 'clave', null, null, 'clave', null, null]],
         length: 16,
         bpm: 80,
-        instruments: [player.get('ride'), player.get('kick'), player.get('clave')]
+        instruments: [player.get('ride'), player.get('kick'), player.get('clave')],
+        trackNames: ['ride', 'kick', 'clave']
       },
       funkyCowbell: {
         beat: [['kick', null, 'kick', null, null, null, null, null, null, null, 'kick', null, null, 'kick', null, null], [null, null, null, null, 'snare', null, null, 'snare', null, 'snare', null, 'snare', 'snare', null, null, 'snare'], ['hh', 'hh', 'hh', 'hh', 'hh', 'hh', 'hh', null, 'hh', 'hh', 'hh', 'hh', 'hh', null, 'hh', 'hh'], [null, null, null, null, null, null, null, 'hho', null, null, null, null, null, 'hho', null, null], ['cowbell', null, 'cowbell', null, null, 'cowbell', null, 'cowbell', null, 'cowbell', null, 'cowbell', null, null, 'cowbell', null]],
         length: 16,
         bpm: 80,
-        instruments: [player.get('kick'), player.get('snare'), player.get('hh'), player.get('hho'), player.get('cowbell')]
+        instruments: [player.get('kick'), player.get('snare'), player.get('hh'), player.get('hho'), player.get('cowbell')],
+        trackNames: ['kick', 'snare', 'hh', 'hho', 'cowbell']
       },
       // lowrider: {
       // 	beat: [
@@ -230,49 +150,57 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         beat: [['ride', null, 'ride', null, 'ride', 'ride', null, 'ride', null, 'ride', null, 'ride'], ['hh', null, null, 'hh', null, null, 'hh', null, null, 'hh', null, null], ['kick', null, null, null, null, null, null, null, null, null, null, 'kick'], [null, null, 'rim', null, null, null, null, 'rim', null, null, null, null], [null, null, null, null, null, null, null, null, null, null, 'tomLo', 'tomLo'], [null, null, null, null, null, 'tomHi', null, null, null, null, null, null]],
         length: 12,
         bpm: 90,
-        instruments: [player.get('ride'), player.get('hh'), player.get('tomLo'), player.get('tomHi'), player.get('kick'), player.get('rim')]
+        instruments: [player.get('ride'), player.get('hh'), player.get('tomLo'), player.get('tomHi'), player.get('kick'), player.get('rim')],
+        trackNames: ['ride', 'hh', 'tomLo', 'tomHi', 'kick', 'rim']
       },
       sikyi: {
         beat: [['ride', null, 'ride', 'ride', null, null, 'ride', null, 'ride', null, 'ride', 'ride', null, null, 'ride', null], [null, null, null, null, null, null, 'hh', null, null, null, 'hh', null, null, null, 'hh', null], ['kick', null, null, null, 'kick', null, null, null, 'kick', null, null, null, 'kick', null, null, null], [null, 'tomLo', null, 'tomLo', null, null, null, null, null, null, 'tomLo', 'tomLo', null, null, null, null], [null, null, null, null, null, null, 'tomHi', 'tomHi', null, null, null, null, null, null, 'tomHi', 'tomHi']],
         length: 16,
         bpm: 130,
-        instruments: [player.get('ride'), player.get('hh'), player.get('kick'), player.get('tomLo'), player.get('tomHi')]
+        instruments: [player.get('ride'), player.get('hh'), player.get('kick'), player.get('tomLo'), player.get('tomHi')],
+        trackNames: ['ride', 'hh', 'kick', 'tomLo', 'tomHi']
       },
       sikyi2: {
         beat: [['ride', null, 'ride', 'ride', null, null, 'ride', null, 'ride', null, 'ride', 'ride', null, null, 'ride', null], [null, null, null, null, null, null, 'hh', null, null, null, 'hh', null, null, null, 'hh', null], ['kick', null, null, null, 'kick', null, null, null, 'kick', null, null, null, 'kick', null, null, null], [null, 'tomLo', null, 'tomLo', null, null, null, null, null, null, null, null, null, null, 'tomLo', 'tomLo'], [null, null, null, null, null, null, 'tomHi', null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null, 'rim', null, null, null, null]],
         length: 16,
         bpm: 130,
-        instruments: [player.get('ride'), player.get('hh'), player.get('kick'), player.get('tomLo'), player.get('tomHi'), player.get('rim')]
+        instruments: [player.get('ride'), player.get('hh'), player.get('kick'), player.get('tomLo'), player.get('tomHi'), player.get('rim')],
+        trackNames: ['ride', 'hh', 'kick', 'tomLo', 'tomHi', 'rim']
       },
       billieJean: {
         beat: [['kick', null, null, null, null, null, null, null, 'kick', null, null, null, null, null, null, null], [null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null], ['hh', null, 'hh', null, 'hh', null, 'hh', null, 'hh', null, 'hh', null, 'hh', null, 'hh', null]],
         length: 16,
         bpm: 115,
-        instruments: [player.get('snare'), player.get('kick'), player.get('hh')]
+        instruments: [player.get('snare'), player.get('kick'), player.get('hh')],
+        trackNames: ['snare', 'kick', 'hh']
       },
       rumba: {
         beat: [['kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick', 'kick', null, null, 'kick'], ['rim', null, null, 'rim', null, null, null, 'rim', null, null, 'rim', null, 'rim', null, null, null], ['ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride', 'ride']],
         length: 16,
         bpm: 90,
-        instruments: [player.get('kick'), player.get('rim'), player.get('ride')]
+        instruments: [player.get('kick'), player.get('rim'), player.get('ride')],
+        trackNames: ['kick', 'rim', 'ride']
       },
       gahu: {
         beat: [['kick', null, null, null, 'kick', null, null, null, 'kick', null, null, null, 'kick', null, 'kick', null], [null, null, 'rim', 'rim', null, null, 'rim', 'rim', null, null, 'rim', 'rim', null, null, 'rim', 'rim'], ['bellHi', null, null, null, 'bellHi', null, 'bellHi', null, null, null, 'bellHi', null, 'bellHi', null, null, null]],
         length: 16,
         bpm: 100,
-        instruments: [player.get('kick'), player.get('rim'), player.get('bellHi')]
+        instruments: [player.get('kick'), player.get('rim'), player.get('bellHi')],
+        trackNames: ['kick', 'rim', 'bellHi']
       },
       souskous: {
         beat: [['kick', null, null, null, 'kick', null, null, null, 'kick', null, null, null, 'kick', null, 'kick', null], ['rim', null, null, 'rim', null, null, 'rim', null, 'rim', null, null, 'rim', null, null, 'rim', null], ['bellHi', null, null, 'bellHi', null, null, 'bellHi', null, null, 'bellHi', 'bellHi', null, null, null, null, null]],
         length: 16,
         bpm: 120,
-        instruments: [player.get('kick'), player.get('rim'), player.get('bellHi')]
+        instruments: [player.get('kick'), player.get('rim'), player.get('bellHi')],
+        trackNames: ['kick', 'rim', 'bellHi']
       },
       shiko: {
         beat: [['kick', null, null, null, 'kick', null, 'kick', null, 'kick', null, null, null, 'kick', null, 'kick', null], [null, null, 'rim', 'rim', null, null, 'rim', 'rim', null, null, 'rim', 'rim', null, null, 'rim', 'rim'], ['bellHi', null, null, null, 'bellHi', null, 'bellHi', null, null, null, 'bellHi', null, 'bellHi', null, null, null]],
         length: 16,
         bpm: 120,
-        instruments: [player.get('kick'), player.get('rim'), player.get('bellHi')] //,
+        instruments: [player.get('kick'), player.get('rim'), player.get('bellHi')],
+        trackNames: ['kick', 'rim', 'bellHi'] //,
         // apache: {
         // 	beat: [
         // 		// ['bongoHi', null, null, 'bongoHi', 'bongoHi', null, null, 'bongoHi', null, 'bongoHi', null, 'bongoHi', 'bongoHi', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
@@ -319,9 +247,16 @@ module.exports = function () {
   var targetList = [];
   var rhythmWheelMesh, wireframeMesh;
   var tracks = [];
+  var melodies = [];
   var rhythmCount = 0;
   var scope;
   var loop;
+  var generateMelody = true;
+  var chordProgression = [1, 4, 7, 3, 6, 2, 5, 1];
+  var chordProgressIdx = 0;
+  var chord = 1;
+  var nextChord;
+  var insertChord = false;
   var preset = beats.empty;
   return {
     settings: {
@@ -399,9 +334,11 @@ module.exports = function () {
       for (var i = 0; i < this.settings.rhythmWheel.tracks; i++) {
         // init empty beats
         tracks.push([]);
+        melodies.push([]);
 
         for (var j = 0; j < this.settings.rhythmWheel.beats; j++) {
           tracks[i].push(null);
+          melodies[i].push(null);
         }
       }
     },
@@ -424,10 +361,18 @@ module.exports = function () {
         for (var beat = 0; beat < tracks[track].length; beat++) {
           if (tracks[track][beat]) this.setNoteOn(beat, track);
         }
+
+        console.log(preset.trackNames[track]);
+        this.convertBeatsToMelody(track);
       }
 
       loop = new Tone.Loop(function (time) {
+        if (generateMelody) {
+          triggerMelodies(time);
+        }
+
         triggerBeats(time);
+        updateChord();
       }, '16n');
       loop.start(0);
       scope = self;
@@ -446,6 +391,61 @@ module.exports = function () {
         }
 
         rhythmCount++;
+      }
+
+      ;
+
+      function triggerMelodies(time) {
+        var beat = rhythmCount % scope.settings.rhythmWheel.beats;
+
+        for (var i = 0; i < scope.settings.rhythmWheel.tracks; i++) {
+          if (melodies[i]) {
+            var trackName = preset.trackNames[i];
+            var noteInfo = melodies[i][beat];
+
+            if (noteInfo !== null) {
+              var keys = melody.chords[chord];
+              var note = keys[noteInfo.relativePitch] + noteInfo.octave;
+              melody.convertInstruments[trackName].triggerAttackRelease(note, noteInfo.duration, time);
+            }
+          }
+        }
+      }
+
+      ;
+
+      function updateChord() {
+        if (rhythmCount % 16 == 0) {
+          chord = chordProgression[chordProgressIdx];
+
+          if (insertChord) {
+            chord = nextChord;
+            insertChord = false;
+            chordProgressIdx++;
+          }
+
+          console.log("chord progress", chord);
+          var r = Math.random();
+
+          if (chordProgressIdx == 1 && r < 0.6) {
+            insertChord = true;
+            nextChord = 5;
+          } else if (chordProgressIdx == 3 && r < 0.6) {
+            insertChord = true;
+            nextChord = 1;
+          } else if (chordProgressIdx == 7 && r < 0.6) {
+            insertChord = true;
+            nextChord = 4;
+          }
+
+          if (!insertChord) {
+            chordProgressIdx++;
+          }
+
+          if (chordProgressIdx >= chordProgression.length) {
+            chordProgressIdx = 0;
+          }
+        }
       }
     },
     addGeometries: function addGeometries() {
@@ -526,6 +526,7 @@ module.exports = function () {
       var instrumentSelector = document.querySelector('.instrument-selection');
       var presetSelector = document.querySelector('.presets');
       if (presetSelector) presetSelector.addEventListener('change', function () {
+        generateMelody = true;
         instrumentSelector.selectedIndex = 0;
         wheelLengthInput.parentElement.parentElement.style.display = 'none';
         preset = beats[presetSelector.value];
@@ -533,8 +534,12 @@ module.exports = function () {
         self.settings.rhythmWheel.tracks = preset.instruments.length;
         self.settings.rhythmWheel.beats = preset.length;
         self.reset();
+        console.log(preset);
+        console.log(beats);
       });
       if (instrumentSelector) instrumentSelector.addEventListener('change', function () {
+        generateMelody = false; // TODO there will be bugs, just disable melody generation for now
+
         presetSelector.selectedIndex = 0;
         wheelLengthInput.parentElement.parentElement.style.display = 'block';
         self.clearAllNotes();
@@ -544,6 +549,33 @@ module.exports = function () {
         self.settings.rhythmWheel.tracks = beats.instrumentSets[instrumentSelector.value].instruments.length;
         self.settings.rhythmWheel.beats = beats.instrumentSets[instrumentSelector.value].length;
         self.reset();
+        console.log(preset);
+        console.log(beats);
+      });
+      var rules1 = document.querySelector('.rules1');
+      var trackName;
+      if (rules1) rules1.addEventListener('change', function () {
+        trackName = preset.trackNames[0];
+        melody.convertPatterns[trackName] = rules1.value;
+        self.convertBeatsToMelody(0);
+      });
+      var rules2 = document.querySelector('.rules2');
+      if (rules2) rules2.addEventListener('change', function () {
+        trackName = preset.trackNames[1];
+        melody.convertPatterns[trackName] = rules2.value;
+        self.convertBeatsToMelody(1);
+      });
+      var rules3 = document.querySelector('.rules3');
+      if (rules3) rules3.addEventListener('change', function () {
+        trackName = preset.trackNames[2];
+        melody.convertPatterns[trackName] = rules3.value;
+        self.convertBeatsToMelody(2);
+      });
+      var rules4 = document.querySelector('.rules4');
+      if (rules4) rules4.addEventListener('change', function () {
+        trackName = preset.trackNames[3];
+        melody.convertPatterns[trackName] = rules4.value;
+        self.convertBeatsToMelody(3);
       });
       var clearButton = document.querySelector('.clear-notes');
       if (clearButton) clearButton.addEventListener('click', function () {
@@ -580,13 +612,16 @@ module.exports = function () {
       self.reset();
       preset.beats = [];
       tracks = [];
+      melodies = [];
       self.initEmptyTracks();
 
       for (var i = 0; i < self.settings.rhythmWheel.beats; i++) {
         preset.beats.push([]);
+        melodies.push([]);
 
         for (var j = 0; j < self.settings.rhythmWheel.tracks; j++) {
           preset.beats[i].push(null);
+          melodies[i].push(null);
           self.setNoteOff(i, j);
         }
       }
@@ -664,11 +699,21 @@ module.exports = function () {
 
       rhythmWheelMesh.geometry.colorsNeedUpdate = true;
       if (tracks[trackIndex][beatIndex] === null) tracks[trackIndex][beatIndex] = Object.keys(beats.allInstruments._players)[trackIndex]; // get an instrument for each track row
-      else tracks[trackIndex][beatIndex] = null; //this.convertBeatsToMelody(trackIndex); //TODO
+      //if (tracks[trackIndex][beatIndex] === null) tracks[trackIndex][beatIndex] = preset.instruments[trackIndex];
+      else tracks[trackIndex][beatIndex] = null;
+      this.convertBeatsToMelody(trackIndex);
+    },
+    convertBeatsToMelody: function convertBeatsToMelody(trackIndex) {
+      if (!preset) return;
+      var trackName = preset.trackNames[trackIndex];
+      if (!trackName) return;
+      var convertedTrack = melody.convertRules[melody.convertPatterns[trackName]](tracks[trackIndex]); // call rule function
+
+      melodies[trackIndex] = convertedTrack;
     },
     setFaceColorByIndex: function setFaceColorByIndex(mesh, faceIndex, color) {
-      mesh.geometry.faces[faceIndex].color.setRGB(color.r, color.g, color.b);
-      console.log(mesh.geometry.faces[faceIndex]);
+      mesh.geometry.faces[faceIndex].color.setRGB(color.r, color.g, color.b); //console.log(mesh.geometry.faces[faceIndex]);
+
       mesh.geometry.colorsNeedUpdate = true;
     },
     loadFont: function loadFont() {
@@ -1227,6 +1272,8 @@ module.exports = function () {
 },{}],5:[function(require,module,exports){
 "use strict";
 
+var Melody = require('./melody.js');
+
 var Scene = require('./components/scene.js');
 
 var UI = require('./components/ui.js');
@@ -1244,7 +1291,407 @@ var Graphics = require('./graphics.js');
   });
 })();
 
-},{"./beats.js":1,"./components/scene.js":2,"./components/ui.js":3,"./graphics.js":4,"./utils.js":6}],6:[function(require,module,exports){
+},{"./beats.js":1,"./components/scene.js":2,"./components/ui.js":3,"./graphics.js":4,"./melody.js":6,"./utils.js":7}],6:[function(require,module,exports){
+"use strict";
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+(function () {
+  var synth1 = new Tone.FMSynth({
+    "harmonicity": 3.01,
+    "modulationIndex": 14,
+    "oscillator": {
+      "type": "triangle"
+    },
+    "envelope": {
+      "attack": 0.1,
+      "decay": 0.2,
+      "sustain": 0.5,
+      "release": 0.3
+    },
+    "modulation": {
+      "type": "square"
+    },
+    "modulationEnvelope": {
+      "attack": 0.1,
+      "decay": 0.2,
+      "sustain": 0.2,
+      "release": 0.5
+    }
+  });
+  var chorus1 = new Tone.Chorus({
+    "frequency": 4,
+    "delayTime": 20,
+    "type": "triangle",
+    "depth": 1,
+    "feedback": 0.2,
+    "spread": 80,
+    "wet": 0.8
+  });
+  synth1.chain(chorus1, Tone.Master);
+
+  var nullRule = function nullRule(beats) {
+    var result = [];
+
+    for (var i = 0; i < beats.length; i++) {
+      result.push(null);
+    }
+
+    return result;
+  };
+
+  var replicate = function replicate(beats) {
+    var result = [];
+
+    for (var i = 0; i < beats.length; i++) {
+      if (beats[i]) {
+        result.push({
+          relativePitch: i % 3,
+          octave: '4',
+          duration: '8n'
+        });
+      } else {
+        result.push(null);
+      }
+    }
+
+    return result;
+  };
+
+  var replicateLong = function replicateLong(beats) {
+    var result = [];
+
+    for (var i = 0; i < beats.length; i++) {
+      if (beats[i]) {
+        result.push({
+          relativePitch: 0,
+          octave: '4',
+          duration: '4n.'
+        });
+      } else {
+        result.push(null);
+      }
+    }
+
+    return result;
+  };
+
+  var replicateMono = function replicateMono(beats) {
+    var result = [];
+
+    for (var i = 0; i < beats.length; i++) {
+      if (beats[i]) {
+        result.push({
+          relativePitch: 0,
+          octave: '4',
+          duration: '8n'
+        });
+      } else {
+        result.push(null);
+      }
+    }
+
+    return result;
+  };
+
+  var shift1 = function shift1(beats) {
+    var result = [];
+
+    for (var i = 0; i < beats.length; i++) {
+      if (beats[i]) {
+        result.push({
+          relativePitch: i % 3,
+          octave: '4',
+          duration: '8n'
+        });
+      } else {
+        result.push(null);
+      }
+    }
+
+    var temp = result.shift();
+    result.push(temp);
+    return result;
+  };
+
+  var shift2 = function shift2(beats) {
+    var result = [];
+
+    for (var i = 0; i < beats.length; i++) {
+      if (beats[i]) {
+        result.push({
+          relativePitch: i % 3,
+          octave: '4',
+          duration: '8n'
+        });
+      } else {
+        result.push(null);
+      }
+    }
+
+    for (var i = 0; i < 2; i++) {
+      var temp = result.shift();
+      result.push(temp);
+    }
+
+    return result;
+  };
+
+  var shift3 = function shift3(beats) {
+    var result = [];
+
+    for (var i = 0; i < beats.length; i++) {
+      if (beats[i]) {
+        result.push({
+          relativePitch: i % 3,
+          octave: '4',
+          duration: '8n'
+        });
+      } else {
+        result.push(null);
+      }
+    }
+
+    for (var i = 0; i < 3; i++) {
+      var temp = result.shift();
+      result.push(temp);
+    }
+
+    return result;
+  };
+
+  var shift1Mono = function shift1Mono(beats) {
+    var result = [];
+
+    for (var i = 0; i < beats.length; i++) {
+      if (beats[i]) {
+        result.push({
+          relativePitch: 0,
+          octave: '4',
+          duration: '8n'
+        });
+      } else {
+        result.push(null);
+      }
+    }
+
+    var temp = result.shift();
+    result.push(temp);
+    return result;
+  };
+
+  var shift2Mono = function shift2Mono(beats) {
+    var result = [];
+
+    for (var i = 0; i < beats.length; i++) {
+      if (beats[i]) {
+        result.push({
+          relativePitch: 0,
+          octave: '4',
+          duration: '8n'
+        });
+      } else {
+        result.push(null);
+      }
+    }
+
+    for (var i = 0; i < 2; i++) {
+      var temp = result.shift();
+      result.push(temp);
+    }
+
+    return result;
+  };
+
+  var shift3Mono = function shift3Mono(beats) {
+    var result = [];
+
+    for (var i = 0; i < beats.length; i++) {
+      if (beats[i]) {
+        result.push({
+          relativePitch: 0,
+          octave: '4',
+          duration: '8n'
+        });
+      } else {
+        result.push(null);
+      }
+    }
+
+    for (var i = 0; i < 3; i++) {
+      var temp = result.shift();
+      result.push(temp);
+    }
+
+    return result;
+  };
+
+  var interval = function interval(beats) {
+    var result = [];
+
+    for (var i = 0; i < beats.length; i++) {
+      if (beats[i] && i % 2 == 0) {
+        result.push({
+          relativePitch: i % 3,
+          octave: '4',
+          duration: '8n'
+        });
+      } else {
+        result.push(null);
+      }
+    }
+
+    return result;
+  };
+
+  var intervalShift = function intervalShift(beats) {
+    var result = [];
+
+    for (var i = 0; i < beats.length; i++) {
+      if (beats[i] && i % 2 == 1) {
+        result.push({
+          relativePitch: i % 3,
+          octave: '4',
+          duration: '8n'
+        });
+      } else {
+        result.push(null);
+      }
+    }
+
+    return result;
+  };
+
+  var intervalMono = function intervalMono(beats) {
+    var result = [];
+
+    for (var i = 0; i < beats.length; i++) {
+      if (beats[i] && i % 2 == 0) {
+        result.push({
+          relativePitch: 0,
+          octave: '4',
+          duration: '8n'
+        });
+      } else {
+        result.push(null);
+      }
+    }
+
+    return result;
+  };
+
+  var intervalShiftMono = function intervalShiftMono(beats) {
+    var result = [];
+
+    for (var i = 0; i < beats.length; i++) {
+      if (beats[i] && i % 2 == 1) {
+        result.push({
+          relativePitch: 0,
+          octave: '4',
+          duration: '8n'
+        });
+      } else {
+        result.push(null);
+      }
+    }
+
+    return result;
+  };
+
+  window.melody = function () {
+    return {
+      chords: {
+        1: ['C', 'E', 'G'],
+        2: ['D', 'F', 'A'],
+        3: ['E', 'G', 'B'],
+        4: ['C', 'F', 'A'],
+        5: ['D', 'G', 'B'],
+        6: ['C', 'E', 'A'],
+        7: ['D', 'F', 'B']
+      },
+      convertRules: {
+        nullRule: nullRule,
+        replicate: replicate,
+        replicateLong: replicateLong,
+        replicateMono: replicateMono,
+        shift1: shift1,
+        shift2: shift2,
+        shift3: shift3,
+        shift1Mono: shift1Mono,
+        shift2Mono: shift2Mono,
+        shift3Mono: shift3Mono,
+        interval: interval,
+        intervalShift: intervalShift,
+        intervalMono: intervalMono,
+        intervalShiftMono: intervalShiftMono
+      },
+      convertPatterns: _defineProperty({
+        kick: "nullRule",
+        cowbell: "nullRule",
+        ride: "nullRule",
+        snareRim: "nullRule",
+        snare: "nullRule",
+        hh: "nullRule",
+        hho: "nullRule",
+        bongoLow: "nullRule",
+        bongoHigh: "nullRule",
+        congaLow: "nullRule",
+        congaHigh: "nullRule",
+        congaMuteHigh: "nullRule",
+        brush1: "nullRule",
+        brush2: "nullRule",
+        brush3: "nullRule",
+        rim: "nullRule",
+        tomLo: "nullRule",
+        tomHi: "nullRule",
+        bellHi: "nullRule",
+        clave: "nullRule",
+        rakeLo: "nullRule",
+        rakeHi: "nullRule",
+        clap: "nullRule",
+        shakerLo: "nullRule",
+        shakerHi: "nullRule",
+        timbale: "nullRule",
+        streetDrumLo: "nullRule",
+        streetDrumHi: "nullRule"
+      }, "clap", "nullRule"),
+      convertInstruments: _defineProperty({
+        kick: synth1,
+        cowbell: synth1,
+        ride: synth1,
+        snareRim: synth1,
+        snare: synth1,
+        hh: synth1,
+        hho: synth1,
+        bongoLow: synth1,
+        bongoHigh: synth1,
+        congaLow: synth1,
+        congaHigh: synth1,
+        congaMuteHigh: synth1,
+        brush1: synth1,
+        brush2: synth1,
+        brush3: synth1,
+        rim: synth1,
+        tomLo: synth1,
+        tomHi: synth1,
+        bellHi: synth1,
+        clave: synth1,
+        rakeLo: synth1,
+        rakeHi: synth1,
+        clap: synth1,
+        shakerLo: synth1,
+        shakerHi: synth1,
+        timbale: synth1,
+        streetDrumLo: synth1,
+        streetDrumHi: synth1
+      }, "clap", synth1)
+    };
+  }();
+
+  module.exports = window.melody;
+})();
+
+},{}],7:[function(require,module,exports){
 "use strict";
 
 (function () {

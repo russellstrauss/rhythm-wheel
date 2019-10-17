@@ -13,9 +13,17 @@ module.exports = function() {
 	var targetList = [];
 	var rhythmWheelMesh, wireframeMesh;
 	var tracks = [];
+	var melodies = [];
 	var rhythmCount = 0;
 	var scope;
 	var loop;
+
+	var generateMelody = true;
+	var chordProgression = [1, 4, 7, 3, 6, 2, 5, 1];
+	var chordProgressIdx = 0;
+	var chord = 1;
+	var nextChord;
+	var insertChord = false;
 
 	var preset = beats.empty;
 	
@@ -104,8 +112,10 @@ module.exports = function() {
 			
 			for (let i = 0; i < this.settings.rhythmWheel.tracks; i++) { // init empty beats
 				tracks.push([]);
+				melodies.push([]);
 				for (let j = 0; j < this.settings.rhythmWheel.beats; j++) {
 					tracks[i].push(null);
+					melodies[i].push(null);
 				}
 			}
 		},
@@ -126,17 +136,24 @@ module.exports = function() {
 			self.initEmptyTracks();
 			
 			if (typeof preset.beat[0] !== 'undefined') tracks = preset.beat;
-			
+
+		
 			for (let track = 0; track < tracks.length; track++) {
 				
 				for (let beat = 0; beat < tracks[track].length; beat++) {
 					
 					if (tracks[track][beat]) this.setNoteOn(beat, track);
 				}
+				console.log(preset.trackNames[track]);
+				this.convertBeatsToMelody(track);
 			}
 
 			loop = new Tone.Loop(function(time) {
+				if (generateMelody) {
+					triggerMelodies(time);
+				}
 				triggerBeats(time);
+				updateChord();
 			}, '16n');
 			loop.start(0);
 			
@@ -157,6 +174,57 @@ module.exports = function() {
 					}
 				}
 				rhythmCount++;
+			};
+
+			function triggerMelodies(time) {
+				let beat = rhythmCount % scope.settings.rhythmWheel.beats;
+				for (let i = 0; i < scope.settings.rhythmWheel.tracks; i++) {
+					
+					if (melodies[i]) {
+						let trackName = preset.trackNames[i];
+						let noteInfo = melodies[i][beat];
+						
+						if (noteInfo !== null) {
+							let keys = melody.chords[chord];
+							let note = keys[noteInfo.relativePitch] + noteInfo.octave;
+							melody.convertInstruments[trackName].triggerAttackRelease(note, noteInfo.duration, time);
+						}
+					}
+				}
+			};
+
+			function updateChord() {
+				if (rhythmCount % 16 == 0) {
+					chord = chordProgression[chordProgressIdx];
+					if (insertChord) {
+						chord = nextChord;
+						insertChord = false;
+						chordProgressIdx++;
+					}
+					console.log("chord progress", chord);
+
+					let r = Math.random();
+					if (chordProgressIdx == 1 && r < 0.6) {
+						insertChord = true;
+						nextChord = 5;
+					}
+					else if (chordProgressIdx == 3 && r < 0.6) {
+						insertChord = true;
+						nextChord = 1;
+					}
+					else if (chordProgressIdx == 7 && r < 0.6) {
+						insertChord = true;
+						nextChord = 4;
+					}
+
+					if (!insertChord) {
+						chordProgressIdx++;
+					}
+				
+					if (chordProgressIdx >= chordProgression.length) {
+						chordProgressIdx = 0;
+					}
+				}
 			}
 		},
 		
@@ -252,7 +320,7 @@ module.exports = function() {
 			let presetSelector = document.querySelector('.presets');
 			
 			if (presetSelector) presetSelector.addEventListener('change', function() {
-				
+				generateMelody = true;
 				instrumentSelector.selectedIndex = 0;
 				wheelLengthInput.parentElement.parentElement.style.display = 'none';
 				preset = beats[presetSelector.value];
@@ -260,19 +328,52 @@ module.exports = function() {
 				self.settings.rhythmWheel.tracks = preset.instruments.length;
 				self.settings.rhythmWheel.beats = preset.length;
 				self.reset();
+				console.log(preset);
+				console.log(beats);
 			});
 			
 			if (instrumentSelector) instrumentSelector.addEventListener('change', function() {
-				
+				generateMelody = false; // TODO there will be bugs, just disable melody generation for now
 				presetSelector.selectedIndex = 0;
 				wheelLengthInput.parentElement.parentElement.style.display = 'block';
 				self.clearAllNotes();
 				preset = beats['empty'];
-				preset.bpm = beats.instrumentSets[instrumentSelector.value].bpm
+				preset.bpm = beats.instrumentSets[instrumentSelector.value].bpm;
 				preset.instruments = beats.instrumentSets[instrumentSelector.value].instruments;
 				self.settings.rhythmWheel.tracks = beats.instrumentSets[instrumentSelector.value].instruments.length;
 				self.settings.rhythmWheel.beats = beats.instrumentSets[instrumentSelector.value].length;
 				self.reset();
+				console.log(preset);
+				console.log(beats);
+			});
+
+			let rules1 = document.querySelector('.rules1');
+			let trackName;
+			if (rules1) rules1.addEventListener('change', function() {
+				trackName = preset.trackNames[0];
+				melody.convertPatterns[trackName] = rules1.value;
+				self.convertBeatsToMelody(0);
+			});
+
+			let rules2 = document.querySelector('.rules2');
+			if (rules2) rules2.addEventListener('change', function() {
+				trackName = preset.trackNames[1];
+				melody.convertPatterns[trackName] = rules2.value;
+				self.convertBeatsToMelody(1);
+			});
+
+			let rules3 = document.querySelector('.rules3');
+			if (rules3) rules3.addEventListener('change', function() {
+				trackName = preset.trackNames[2];
+				melody.convertPatterns[trackName] = rules3.value;
+				self.convertBeatsToMelody(2);
+			});
+
+			let rules4 = document.querySelector('.rules4');
+			if (rules4) rules4.addEventListener('change', function() {
+				trackName = preset.trackNames[3];
+				melody.convertPatterns[trackName] = rules4.value;
+				self.convertBeatsToMelody(3);
 			});
 			
 			let clearButton = document.querySelector('.clear-notes');
@@ -317,16 +418,19 @@ module.exports = function() {
 			self.reset();
 			preset.beats = [];
 			tracks = [];
+			melodies = [];
 			
 			self.initEmptyTracks();
 			
 			for (let i = 0; i < self.settings.rhythmWheel.beats; i++) {
 				
 				preset.beats.push([]);
+				melodies.push([]);
 				
 				for (let j = 0; j < self.settings.rhythmWheel.tracks; j++) {
 					
 					preset.beats[i].push(null);
+					melodies[i].push(null);
 					self.setNoteOff(i, j);
 				}
 			}
@@ -419,15 +523,24 @@ module.exports = function() {
 			rhythmWheelMesh.geometry.colorsNeedUpdate = true;
 			
 			if (tracks[trackIndex][beatIndex] === null) tracks[trackIndex][beatIndex] = Object.keys(beats.allInstruments._players)[trackIndex]; // get an instrument for each track row
+			//if (tracks[trackIndex][beatIndex] === null) tracks[trackIndex][beatIndex] = preset.instruments[trackIndex];
 			else tracks[trackIndex][beatIndex] = null;
 
-			//this.convertBeatsToMelody(trackIndex); //TODO
+			this.convertBeatsToMelody(trackIndex);
+		},
+
+		convertBeatsToMelody: function(trackIndex) {
+			if(!preset) return;
+			let trackName = preset.trackNames[trackIndex];
+			if (!trackName) return;
+			var convertedTrack = melody.convertRules[melody.convertPatterns[trackName]](tracks[trackIndex]); // call rule function
+			melodies[trackIndex] = convertedTrack;
 		},
 		
 		setFaceColorByIndex: function(mesh, faceIndex, color) {
 			mesh.geometry.faces[faceIndex].color.setRGB(color.r, color.g, color.b);
 			
-			console.log(mesh.geometry.faces[faceIndex]);
+			//console.log(mesh.geometry.faces[faceIndex]);
 			mesh.geometry.colorsNeedUpdate = true;
 		},
 		

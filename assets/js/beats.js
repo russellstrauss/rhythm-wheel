@@ -82,88 +82,6 @@
 		player.get('cowbell'),
 		player.get('ride')
 	];
-
-	var synth1 = new Tone.FMSynth({
-		"harmonicity": 3.01,
-		"modulationIndex": 14,
-		"oscillator": {
-			"type": "triangle"
-		},
-		"envelope": {
-			"attack": 0.1,
-			"decay": 0.2,
-			"sustain": 0.5,
-			"release": 0.3
-		},
-		"modulation" : {
-			"type": "square"
-		},
-		"modulationEnvelope" : {
-			"attack": 0.1,
-			"decay": 0.2,
-			"sustain": 0.2,
-			"release": 0.5
-		}
-	});
-	var chorus1 = new Tone.Chorus({
-		"frequency": 4,
-		"delayTime": 20,
-		"type": "triangle",
-		"depth": 1,
-		"feedback": 0.2,
-		"spread": 80,
-		"wet": 0.8
-	});
-	synth1.chain(chorus1, Tone.Master);
-
-	var convertIntruments = {
-		kick: synth1,
-		cowbell: synth1,
-		ride: synth1,
-		snareRim: synth1,
-		snare: synth1,
-		hh: synth1,
-		hho: synth1,
-		bongoLow: synth1,
-		bongoHigh: synth1,
-		congaLow: synth1,
-		congaHigh: synth1,
-		congaMuteHigh: synth1,
-		brush1: synth1,
-		brush2: synth1,
-		brush3: synth1
-	};
-
-	var rule1 = function(beats) {
-		var result = [];
-		for (var i = 0; i < beats.length; i++) {
-			if (beats[i]) {
-				result.push({relativePitch: 0, duration: '8n'});
-			}
-			else {
-				result.push(null);
-			}
-		}
-		return result;
-	};
-
-	var convertPatterns = {
-		kick: rule1,
-		cowbell: rule1,
-		ride: rule1,
-		snareRim: rule1,
-		snare: rule1,
-		hh: rule1,
-		hho: rule1,
-		bongoLow: rule1,
-		bongoHigh: rule1,
-		congaLow: rule1,
-		congaHigh: rule1,
-		congaMuteHigh: rule1,
-		brush1: rule1,
-		brush2: rule1,
-		brush3: rule1
-	};
 	
 	//[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
 	
@@ -224,7 +142,8 @@
 				beat: new Array(defaultInstruments.length),
 				length: 16,
 				bpm: 100,
-				instruments: defaultInstruments
+				instruments: defaultInstruments,
+				trackNames: ['kick', 'snare', 'hh', 'hho', 'tomLo', 'tomHi', 'cowbell', 'ride']
 			},
 			
 			basic: {
@@ -241,6 +160,12 @@
 					player.get('snare'),
 					player.get('hh'),
 					player.get('hho')
+				],
+				trackNames: [
+					'kick',
+					'snare',
+					'hh',
+					'hho'
 				]
 			},
 			
@@ -256,6 +181,11 @@
 					player.get('ride'),
 					player.get('kick'),
 					player.get('clave')
+				],
+				trackNames: [
+					'ride',
+					'kick',
+					'clave'
 				]
 			},
 			
@@ -275,6 +205,13 @@
 					player.get('hh'),
 					player.get('hho'),
 					player.get('cowbell')
+				],
+				trackNames: [
+					'kick',
+					'snare',
+					'hh',
+					'hho',
+					'cowbell'
 				]
 			},
 			
@@ -326,6 +263,14 @@
 					player.get('tomHi'),
 					player.get('kick'),
 					player.get('rim')
+				],
+				trackNames: [
+					'ride',
+					'hh',
+					'tomLo',
+					'tomHi',
+					'kick',
+					'rim'
 				]
 			},
 			
@@ -345,6 +290,13 @@
 					player.get('kick'),
 					player.get('tomLo'),
 					player.get('tomHi')
+				],
+				trackNames: [
+					'ride',
+					'hh',
+					'kick',
+					'tomLo',
+					'tomHi'
 				]
 			},
 			
@@ -366,6 +318,14 @@
 					player.get('tomLo'),
 					player.get('tomHi'),
 					player.get('rim')
+				],
+				trackNames: [
+					'ride',
+					'hh',
+					'kick',
+					'tomLo',
+					'tomHi',
+					'rim'
 				]
 			},
 			
@@ -381,6 +341,11 @@
 					player.get('snare'),
 					player.get('kick'),
 					player.get('hh')
+				],
+				trackNames: [
+					'snare',
+					'kick',
+					'hh'
 				]
 			},
 			
@@ -396,6 +361,11 @@
 					player.get('kick'),
 					player.get('rim'),
 					player.get('ride')
+				],
+				trackNames: [
+					'kick',
+					'rim',
+					'ride'
 				]
 			},
 			
@@ -411,6 +381,11 @@
 					player.get('kick'),
 					player.get('rim'),
 					player.get('bellHi')
+				],
+				trackNames: [
+					'kick',
+					'rim',
+					'bellHi'
 				]
 			},
 			
@@ -426,6 +401,11 @@
 					player.get('kick'),
 					player.get('rim'),
 					player.get('bellHi')
+				],
+				trackNames: [
+					'kick',
+					'rim',
+					'bellHi'
 				]
 			},
 			
@@ -441,6 +421,11 @@
 					player.get('kick'),
 					player.get('rim'),
 					player.get('bellHi')
+				],
+				trackNames: [
+					'kick',
+					'rim',
+					'bellHi'
 				]
 			}//,
 			
