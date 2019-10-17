@@ -33,7 +33,7 @@ module.exports = function() {
 	var loop;
 
 	var generateMelody = true;
-	var chordProgression = [1, 4, 7, 3, 6, 2, 5, 1];
+	var chordProgression = [1, 4, 3, 6, 2, 5];
 	var chordProgressIdx = 0;
 	var chord = 1;
 	var nextChord;
@@ -222,13 +222,17 @@ module.exports = function() {
 						insertChord = true;
 						nextChord = 5;
 					}
-					else if (chordProgressIdx == 3 && r < 0.6) {
+					else if (chordProgressIdx == 2 && r < 0.6) {
 						insertChord = true;
 						nextChord = 1;
 					}
-					else if (chordProgressIdx == 7 && r < 0.6) {
+					else if (chordProgressIdx == 3 && r < 0.4) {
 						insertChord = true;
 						nextChord = 4;
+					}
+					else if (chordProgressIdx == 5 && r < 0.4) {
+						insertChord = true;
+						nextChord = 3;
 					}
 
 					if (!insertChord) {
@@ -356,6 +360,7 @@ module.exports = function() {
 				instrumentSelector.selectedIndex = 0;
 				wheelLengthInput.parentElement.parentElement.style.display = 'none';
 				preset = beats[presetSelector.value];
+				console.log("select preset", preset);
 				tracks = [];
 				self.settings.rhythmWheel.tracks = preset.instruments.length;
 				self.settings.rhythmWheel.beats = preset.length;

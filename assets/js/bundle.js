@@ -261,7 +261,7 @@ module.exports = function () {
   var scope;
   var loop;
   var generateMelody = true;
-  var chordProgression = [1, 4, 7, 3, 6, 2, 5, 1];
+  var chordProgression = [1, 4, 3, 6, 2, 5];
   var chordProgressIdx = 0;
   var chord = 1;
   var nextChord;
@@ -439,12 +439,15 @@ module.exports = function () {
           if (chordProgressIdx == 1 && r < 0.6) {
             insertChord = true;
             nextChord = 5;
-          } else if (chordProgressIdx == 3 && r < 0.6) {
+          } else if (chordProgressIdx == 2 && r < 0.6) {
             insertChord = true;
             nextChord = 1;
-          } else if (chordProgressIdx == 7 && r < 0.6) {
+          } else if (chordProgressIdx == 3 && r < 0.4) {
             insertChord = true;
             nextChord = 4;
+          } else if (chordProgressIdx == 5 && r < 0.4) {
+            insertChord = true;
+            nextChord = 3;
           }
 
           if (!insertChord) {
@@ -555,6 +558,7 @@ module.exports = function () {
         instrumentSelector.selectedIndex = 0;
         wheelLengthInput.parentElement.parentElement.style.display = 'none';
         preset = beats[presetSelector.value];
+        console.log("select preset", preset);
         tracks = [];
         self.settings.rhythmWheel.tracks = preset.instruments.length;
         self.settings.rhythmWheel.beats = preset.length;
@@ -1355,7 +1359,89 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     "spread": 80,
     "wet": 0.8
   });
-  synth1.chain(chorus1, Tone.Master);
+  var volume1 = new Tone.Volume(-10);
+  synth1.chain(chorus1, volume1, Tone.Master);
+  var synth2 = new Tone.MonoSynth({
+    "volume": 10,
+    "oscillator": {
+      "type": "sawtooth"
+    },
+    "filter": {
+      "Q": 2,
+      "type": "bandpass",
+      "rolloff": -24
+    },
+    "envelope": {
+      "attack": 0.01,
+      "decay": 0.1,
+      "sustain": 0.2,
+      "release": 0.6
+    },
+    "filterEnvelope": {
+      "attack": 0.02,
+      "decay": 0.4,
+      "sustain": 1,
+      "release": 0.7,
+      "releaseCurve": "linear",
+      "baseFrequency": 20,
+      "octaves": 5
+    }
+  });
+  var volume2 = new Tone.Volume(-5);
+  synth2.chain(volume2, Tone.Master);
+  var synth3 = new Tone.MonoSynth({
+    "oscillator": {
+      "type": "fmsquare5",
+      "modulationType": "triangle",
+      "modulationIndex": 2,
+      "harmonicity": 0.501
+    },
+    "filter": {
+      "Q": 1,
+      "type": "lowpass",
+      "rolloff": -24
+    },
+    "envelope": {
+      "attack": 0.01,
+      "decay": 0.1,
+      "sustain": 0.4,
+      "release": 2
+    },
+    "filterEnvelope": {
+      "attack": 0.01,
+      "decay": 0.1,
+      "sustain": 0.8,
+      "release": 1.5,
+      "baseFrequency": 50,
+      "octaves": 4.4
+    }
+  });
+  synth3.toMaster();
+  var synth4 = new Tone.Synth({
+    "oscillator": {
+      "type": "fatcustom",
+      "partials": [0.2, 1, 0, 0.5, 0.1],
+      "spread": 40,
+      "count": 3
+    },
+    "envelope": {
+      "attack": 0.2,
+      "decay": 0.2,
+      "sustain": 0.2,
+      "release": 0.5
+    }
+  });
+  var chorus4 = new Tone.Chorus({
+    "frequency": 4,
+    "delayTime": 10,
+    "type": "triangle",
+    "depth": 1,
+    "feedback": 0.2,
+    "spread": 80,
+    "wet": 0.5
+  });
+  var volume4 = new Tone.Volume(-10);
+  synth4.chain(volume4, Tone.Master);
 
   var nullRule = function nullRule(beats) {
     var result = [];
@@ -1683,13 +1769,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         streetDrumHi: "nullRule"
       }, "clap", "nullRule"),
       convertInstruments: _defineProperty({
-        kick: synth1,
+        kick: synth2,
         cowbell: synth1,
-        ride: synth1,
-        snareRim: synth1,
-        snare: synth1,
-        hh: synth1,
-        hho: synth1,
+        ride: synth2,
+        snareRim: synth3,
+        snare: synth3,
+        rim: synth3,
+        hh: synth4,
+        hho: synth4,
         bongoLow: synth1,
         bongoHigh: synth1,
         congaLow: synth1,
@@ -1698,9 +1785,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         brush1: synth1,
         brush2: synth1,
         brush3: synth1,
-        rim: synth1,
-        tomLo: synth1,
-        tomHi: synth1,
+        tomLo: synth2,
+        tomHi: synth2,
         bellHi: synth1,
         clave: synth1,
         rakeLo: synth1,
