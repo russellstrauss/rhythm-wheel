@@ -30,6 +30,7 @@
 			timbale: './assets/audio/jazz/timbale.wav',
 			streetDrumLo: './assets/audio/jazz/streetDrumLo.wav',
 			streetDrumHi: './assets/audio/jazz/streetDrumHi.wav',
+			whistle: './assets/audio/jazz/whistle.wav',
 			clap: './assets/audio/jazz/RX21Clap.wav'
 		},
 		{
@@ -60,9 +61,10 @@
 	player.get('clap').displayName = 'Clap';
 	player.get('shakerLo').displayName = 'Shaker Low';
 	player.get('shakerHi').displayName = 'Shaker High';
-	player.get('timbale').displayName = 'Timabale';
-	player.get('streetDrumLo').displayName = 'Street Drum Low';
+	player.get('timbale').displayName = 'Timabale High';
+	player.get('streetDrumLo').displayName = 'Timbale Low';
 	player.get('streetDrumHi').displayName = 'Street Drum High';
+	player.get('whistle').displayName = 'Whistle';
 	
 	// Set volume to equalize instrument volumes
 	player.get('cowbell').volume.value = -5;
@@ -71,6 +73,7 @@
 	player.get('tomHi').volume.value = -12;
 	player.get('kick').volume.value = -8;
 	player.get('streetDrumHi').volume.value = -5;
+	player.get('whistle').volume.value = -10;
 	
 	var defaultInstruments = [
 		player.get('kick'),
@@ -133,7 +136,7 @@
 						player.get('shakerHi'),
 						player.get('timbale'),
 						player.get('streetDrumLo'),
-						player.get('streetDrumHi')
+						player.get('whistle')
 					]
 				}
 			},
@@ -329,25 +332,20 @@
 				]
 			},
 			
-			billieJean: {
-				beat: [
-					['kick', null, null, null, null, null, null, null, 'kick', null, null, null, null, null, null, null],
-					[null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null],
-					['hh', null, 'hh', null, 'hh', null, 'hh', null, 'hh', null, 'hh', null, 'hh', null, 'hh', null]
-				],
-				length: 16,
-				bpm: 115,
-				instruments: [
-					player.get('snare'),
-					player.get('kick'),
-					player.get('hh')
-				],
-				trackNames: [
-					'snare',
-					'kick',
-					'hh'
-				]
-			},
+			// billieJean: {
+			// 	beat: [
+			// 		['kick', null, null, null, null, null, null, null, 'kick', null, null, null, null, null, null, null],
+			// 		[null, null, null, null, 'snare', null, null, null, null, null, null, null, 'snare', null, null, null],
+			// 		['hh', null, 'hh', null, 'hh', null, 'hh', null, 'hh', null, 'hh', null, 'hh', null, 'hh', null]
+			// 	],
+			// 	length: 16,
+			// 	bpm: 115,
+			// 	instruments: [
+			// 		player.get('snare'),
+			// 		player.get('kick'),
+			// 		player.get('hh')
+			// 	]
+			// },
 			
 			rumba: {
 				beat: [
